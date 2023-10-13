@@ -144,6 +144,27 @@ private:
 class LogFormatter {
 public:
 	using ptr = std::shared_ptr<LogFormatter>;
+	LogFormatter(const std::string& pattern);
+
+
+	std::string format(LogEvent::ptr event);
+public:
+	class FormatItem {
+	public:
+		using ptr = std::shared_ptr<FormatItem>;
+		virtual ~FormatItem() {}
+		virtual std::string format(LogEvent::ptr event) = 0;
+	};
+
+private:
+	//日志格式模板
+	std::string m_pattern;
+	//日志格式解析后信息
+	std::vector<FormatItem::ptr> m_items;
+	//是否有错误
+	bool m_error = false;
+	
+
 
 };
 
@@ -292,3 +313,4 @@ private:
 
 
 }
+

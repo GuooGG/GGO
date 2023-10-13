@@ -18,9 +18,21 @@
     <ClInclude Include="GGo\LogSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GGo\thread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GGo\mutex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GGo\LogSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GGo\thread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GGo\mutex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

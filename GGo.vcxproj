@@ -140,9 +140,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GGo\LogSystem.h" />
+    <ClInclude Include="GGo\mutex.h" />
+    <ClInclude Include="GGo\thread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GGo\LogSystem.cpp" />
+    <ClCompile Include="GGo\mutex.cpp" />
+    <ClCompile Include="GGo\thread.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
