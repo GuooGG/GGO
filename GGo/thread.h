@@ -1,4 +1,4 @@
-//�߳̿�
+//线程库
 #pragma once
 #include<thread>
 #include<functional>
@@ -12,7 +12,7 @@ public:
 
 
 private:
-	//��ֹ�߳̿���
+	/// 保证线程无法被拷贝 
 	Thread(const Thread&) = delete;
 	Thread(const Thread&&) = delete;
 	Thread& operator=(const Thread&) = delete;
