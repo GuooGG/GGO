@@ -8,18 +8,33 @@
  */
 #pragma once
 #include<string>
+#include<iostream>
 #include<memory>
 #include<list>
 #include<vector>
 #include<sstream>
 #include<map>
 #include<fstream>
+#include<cstdarg>
 #include"singleton.h"
 
+/**
+ * @brief 获取主日志器
+ * 
+ */
+#define GGO_LOG_ROOT() GGo::LoggerMgr::GetInstance()->getRoot()
+
+/**
+ * @brief 获取指定名称的日志器
+ * 
+ */
+#define GGO_LOG_NAME(name) GGo::LoggerMgr::GetInstance()->getLogger(name)
+
 namespace GGo {
+
+
 class Logger;
 class LoggerManager;
-
 //日志级别
 enum class LogLevel {
 	//UNKNOWN等级
@@ -38,11 +53,12 @@ enum class LogLevel {
 
 /// @brief 将日志级别转成文本输出
 /// @param level 日志级别
-static const char* TOString(LogLevel level);
+static const char* LogLevelTOString(LogLevel level);
 
 /// @brief 将文本转成日志级别
 /// @param str 日志级别文本
-static LogLevel FromString(const std::string& str);
+static LogLevel FromStringToLogLevel(const std::string& str);
+
 
 /**
  * @brief 日志事件
@@ -324,11 +340,16 @@ public:
 	/// @brief 返回日志器名称
 	const std::string& getNanme() const { return m_name; }
 
-	/// @brief 设置日志格式模板
+	/// @brief 设置日志格式器
 	void setFormatter(LogFormatter::ptr val);
 
-	/// @brief 获取日志格式器模板
+	/// @brief 设置日志格式模板 
+	void setFormatter(const std::string& val);
+
+	/// @brief 获取日志格式器
 	LogFormatter::ptr getFormatter();
+
+	void setRootLogger(Logger::ptr logger);
 private:
 	//日志名称
 	std::string m_name;
@@ -348,8 +369,6 @@ public:
 	using ptr = std::shared_ptr<StdoutLogAppender>;
 
 	void log(Logger::ptr logger,LogLevel level,LogEvent::ptr event) override;
-
-
 };
 
 
@@ -377,6 +396,7 @@ private:
 
 /// @brief 日志管理器类
 class LoggerManager{
+
 public:
 	/// @brief 构造函数
 	LoggerManager();
