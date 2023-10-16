@@ -15,6 +15,7 @@
 #include<sstream>
 #include<map>
 #include<fstream>
+#include<functional>
 #include<cstdarg>
 #include"singleton.h"
 
@@ -420,6 +421,7 @@ private:
 };
 
 using LoggerMgr = GGo::Singleton<LoggerManager>;
+
 
 }
 
