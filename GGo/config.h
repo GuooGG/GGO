@@ -20,6 +20,8 @@
 
 
 namespace GGo{
+
+
 class ConfigVarBase{
 public:
     using ptr = std::shared_ptr<ConfigVarBase>;
@@ -45,6 +47,7 @@ protected:
 
 template<class T>
 class ConfigVar : public ConfigVarBase{
+
 public:
     using ptr = std::shared_ptr<ConfigVar>;
 
@@ -70,7 +73,7 @@ public:
         return false;
     }
     
-privtae:
+private:
     T m_val;
 };
 
@@ -94,10 +97,10 @@ public:
         const std::string& name,
         const T& default_value,
         const std::string& description = ""){
-        auto temp = Lookup(name);
-        if(tmp){
+        auto temp = ConfigVar<T>::Lookup(name);
+        if(temp){
             //TODO::打印INFO日志
-            return tmp;
+            return temp;
         }
         //不能用小写字母，数字和特殊符号开头
         if(name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678")
@@ -106,11 +109,8 @@ public:
             throw std::invalid_argument(name);
         }
         typename ConfigVar<T>::ptr v(new ConfigVar<T>(name,default_value,description));
-        m_data[name] = v;
+        GetDatas()[name] = v;
         return v;
-
-        
-
     }
 
     /// @brief 查找配置参数
@@ -118,17 +118,23 @@ public:
     /// @return 返回配置参数名为name的配置参数 
     template<class T>
     static typename ConfigVar<T>::ptr Lookup(const std::string& name){
-        auto it = m_data.find(name);
-        if(it == m_data.end()){
+        auto it = GetDatas().find(name);
+        if(it == GetDatas().end()){
             return nullptr;
         }
         return std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
     }
 
-
+    /**
+     * @brief 得到所有配置项 
+     */
+    static ConfigVarMap& GetDatas(){
+        static ConfigVarMap s_datas;
+        return s_datas;
+    }
 
 private:
-    static ConfigVarMap m_data;
+
 
 };
 
