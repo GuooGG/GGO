@@ -78,7 +78,7 @@ public:
 	/// @param fiber_id 协程ID
 	/// @param time 日志时间（秒）
 	/// @param thread_name 线程名 
-	LogEvent(Logger::ptr logger, LogLevel level
+	LogEvent(std::shared_ptr<Logger> logger, LogLevel level
 		, const char* file, int32_t line
 		, uint32_t elapse, uint32_t thread_id
 		, uint32_t fiber_id, uint64_t time
@@ -110,7 +110,7 @@ public:
 	std::string getContent()const { return m_ss.str(); }
 
 	/// @brief 得到主日志器 
-	Logger::ptr getLogger() const { return m_logger; }
+	std::shared_ptr<Logger> getLogger() const { return m_logger; }
 	
 	/// @brief 得到事件等级 
 	LogLevel getLevel()const { return m_level; }
@@ -140,7 +140,7 @@ private:
 	//日志内容流
 	std::stringstream m_ss;
 	//主日志器
-	Logger::ptr m_logger;
+	std::shared_ptr<Logger> m_logger;
 	//日志等级
 	LogLevel m_level;
 
@@ -203,8 +203,8 @@ public:
 	/// @param logger 日志器
 	/// @param level 日志级别
 	/// @param event 日志事件
-	std::string format(Logger::ptr logger,LogLevel level,LogEvent::ptr event);
-	std::ostream& format(std::ostream& ofs,Logger::ptr logger,LogLevel level,LogEvent::ptr event);
+	std::string format(std::shared_ptr<Logger> logger,LogLevel level,LogEvent::ptr event);
+	std::ostream& format(std::ostream& ofs,std::shared_ptr<Logger> logger,LogLevel level,LogEvent::ptr event);
 
 public:
 	/// @brief 日志内容格式化单位
@@ -220,7 +220,7 @@ public:
 		/// @param logger 日志器
 		/// @param level 日志等级
 		/// @param event 日志事件
-		virtual void format(std::ostream& os,Logger::ptr logger,LogLevel level,LogEvent::ptr event) = 0;
+		virtual void format(std::ostream& os,std::shared_ptr<Logger> logger,LogLevel level,LogEvent::ptr event) = 0;
 
 	};
 
@@ -260,7 +260,7 @@ public:
 	/// @param logger 日志器 
 	/// @param level 日志等级
 	/// @param event 日志事件
-	virtual void log(Logger::ptr logger,LogLevel level,LogEvent::ptr event) = 0;
+	virtual void log(std::shared_ptr<Logger> logger,LogLevel level,LogEvent::ptr event) = 0;
 
 	/// @brief 更改日志格式器
 	/// @param val 目标格式器
@@ -349,7 +349,7 @@ public:
 	/// @brief 获取日志格式器
 	LogFormatter::ptr getFormatter();
 
-	void setRootLogger(Logger::ptr logger);
+	void setRootLogger(std::shared_ptr<Logger> logger);
 private:
 	//日志名称
 	std::string m_name;
