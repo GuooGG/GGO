@@ -179,4 +179,5 @@ CMakeFiles/LogTest01.dir/Test/LogTest01.cpp.o: \
  /opt/rh/devtoolset-8/root/usr/include/c++/8/chrono \
  /opt/rh/devtoolset-8/root/usr/include/c++/8/ratio \
  /opt/rh/devtoolset-8/root/usr/include/c++/8/ctime \
- /opt/rh/devtoolset-8/root/usr/include/c++/8/bits/parse_numbers.h
+ /opt/rh/devtoolset-8/root/usr/include/c++/8/bits/parse_numbers.h \
+ /root/workspace/GGoSeverFrame/GGo/include/util.h
