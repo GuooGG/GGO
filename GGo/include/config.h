@@ -15,7 +15,7 @@
 //lexical<TargetType>(SrcType);
 //TODO::两者相比有什么区别
 #include<boost/lexical_cast.hpp>
-#include"GGo/LogSystem.h"
+#include"LogSystem.h"
 
 
 

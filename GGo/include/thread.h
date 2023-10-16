@@ -1,14 +1,12 @@
 //线程模块
 #pragma once
-#include<thread>
 #include<functional>
-#pragma once
 #include<memory>
 #include<thread>
 #include<functional>
 #include<pthread.h>
 
-namespace GGo {
+namespace GGo{
 
 //线程类型
 class Thread {

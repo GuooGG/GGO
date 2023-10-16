@@ -342,19 +342,19 @@ void LogFormatter::init()
 		{"F",[](const std::string& fmt){return FormatItem::ptr(new FiberIDFormatItem(fmt));}},
 		{"N",[](const std::string& fmt){return FormatItem::ptr(new ThreadNameFormatItem(fmt));}}
 	};
-
-	for(auto& [str,fmt,status]: vec){
-		if(status == 0){
-			m_items.push_back(FormatItem::ptr(new StringFormatItem(str)));
+	//[str,fmt,status]
+	for(auto& item: vec){
+		if(std::get<2>(item) == 0){
+			m_items.push_back(FormatItem::ptr(new StringFormatItem(std::get<0>(item))));
 		}
 		else{
-			auto it = s_format_items.find(str);
+			auto it = s_format_items.find(std::get<0>(item));
 			if(it == s_format_items.end()){
-				m_items.push_back(FormatItem::ptr(new StringFormatItem("<<error_format %" + str + ">>")));
+				m_items.push_back(FormatItem::ptr(new StringFormatItem("<<error_format %" +std::get<0>(item) + ">>")));
 				m_error = true;
 			}
 			else{
-				m_items.push_back(it->second(fmt));
+				m_items.push_back(it->second(std::get<1>(item)));
 			}
 		}
 	}
