@@ -35,12 +35,6 @@ void Thread::join()
     m_thread = 0;
 }
 
-void *Thread::run(void *arg)
-{
-    Thread::ptr thread = (Thread::ptr) arg;
-    t_thread = thread;
-
-}
 
 const std::string &Thread::GetName()
 {

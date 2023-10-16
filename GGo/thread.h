@@ -22,7 +22,9 @@ public:
 	pid_t getID() const {return m_id;}
 
 	void join();
-	void* run(void* arg);
+
+	//TODO::编写run函数
+	// void* run(void* arg);
 
 	static Thread::ptr GetThis();
 	static const std::string& GetName();
