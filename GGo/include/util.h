@@ -63,6 +63,14 @@ public:
     static std::string dirName(const std::string& filename);
 
     /**
+     * @brief 创建文件夹
+     * 
+     * @param dirname 文件夹名称
+     */
+    static bool mkDir(const std::string& dirname);
+
+
+    /**
      * @brief 打开文件并读取
      * 
      * @param ifs 文件流

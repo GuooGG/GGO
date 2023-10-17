@@ -19,6 +19,7 @@
 #include<cstdarg>
 #include"singleton.h"
 #include"thread.h"
+#include"util.h"
 
 /**
  * @brief 获取主日志器

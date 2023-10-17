@@ -49,5 +49,6 @@
         "typeinfo": "cpp",
         "atomic": "cpp",
         "system_error": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }

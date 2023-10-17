@@ -1,0 +1,1 @@
+/usr/bin/g++  -std=c++11 -pthread -g CMakeFiles/LogTest01.dir/Test/LogTest01.cpp.o CMakeFiles/LogTest01.dir/GGo/src/LogSystem.cpp.o CMakeFiles/LogTest01.dir/GGo/src/config.cpp.o CMakeFiles/LogTest01.dir/GGo/src/mutex.cpp.o CMakeFiles/LogTest01.dir/GGo/src/thread.cpp.o CMakeFiles/LogTest01.dir/GGo/src/util.cpp.o -o /root/workspace/GGoSeverFrame/bin/LogTest01 

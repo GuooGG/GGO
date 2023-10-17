@@ -78,8 +78,72 @@ std::string FSUtil::dirName(const std::string &filename)
 
 }
 
-//例如，如果一个函数只被一个源文件中的其他函数调用，并且不需要被其他源文件访问，
-//那么这个函数可以只在该源文件中定义。这样的函数通常被声明为static，表示它只在当前源文件中可见。
+// 例如，如果一个函数只被一个源文件中的其他函数调用，并且不需要被其他源文件访问，
+// 那么这个函数可以只在该源文件中定义。这样的函数通常被声明为static，表示它只在当前源文件中可见。
+
+/**
+ * @brief 得到指定文件的stat结构体
+ * 
+ * @param filename 文件名
+ * @param st 结构体指针
+ * @return int lstat()的返回值 0成功 -1失败
+ */
+static int __lstat(const char* filename, struct stat* st = nullptr){
+    struct stat lst;
+    int ret = lstat(filename,  &lst);
+    if(st){
+        *st = lst;
+    }
+    return ret;
+}
+
+/**
+ * @brief 创建目录
+ * 
+ * @param dirname 目录名
+ * @return int 状态码 0:成功 
+ */
+static int __mkdir(const char *dirname)
+{
+    if (access(dirname, F_OK) == 0)
+    {
+        return 0;
+    }
+    return mkdir(dirname, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+}
+
+bool FSUtil::mkDir(const std::string &dirname)
+{
+    if(__lstat(dirname.c_str()) == 0){
+        //如果找到了目标目录，则不用创建，直接退出，返回true
+        return true;
+    }
+    //创建目标目录
+    char* path = strdup(dirname.c_str());
+    char* ptr = strchr(path + 1, '/');
+    do{
+        // /root/workspace/GGoSeverFrame/GGo/src
+        while(ptr){
+            *ptr = '\0';
+            if(__mkdir(path) != 0){
+                break;
+            }
+            *ptr = '/';
+            ptr = strchr(ptr + 1, '/');
+        }
+        if(ptr != nullptr){
+            break;
+            //创建最终目录
+        }else if(__mkdir(path) != 0){
+            break;
+        }
+        free(path);
+        return true;
+    }while(0);
+    free(path);
+    return false;
+}
+
 
 bool FSUtil::openForRead(std::ifstream &ifs, const std::string &filename, std::ios_base::openmode mode)
 {
@@ -91,10 +155,14 @@ bool FSUtil::openForRead(std::ifstream &ifs, const std::string &filename, std::i
 bool FSUtil::openForWrite(std::ofstream &ofs, const std::string &filename, std::ios_base::openmode mode)
 {
     ofs.open(filename.c_str(),mode);
+    //打开失败，一般是目录不存在
     if(!ofs.is_open()){
-        //TODO::打开文件失败
-        
+        //尝试创建目录新建文件
+        std::string dir = dirName(filename);
+        mkDir(dir);
+        ofs.open(filename,mode);    
     }
+    //不能直接返回true,因为目录的创建和文件的创建也可能因为权限的问题而失败
     return ofs.is_open();
 }
 

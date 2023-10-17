@@ -502,8 +502,8 @@ bool FileLogAppender::reopen()
     if(m_filestream){
 		m_filestream.close();
 	}
-	//TODO::打开文件
-	return false;
+	//app模式打开，所有操作发生在文件末尾，追加新的日志内容
+	return FSUtil::openForWrite(m_filestream, m_filename, std::ios::app);
 }
 
 void StdoutLogAppender::log(Logger::ptr logger, LogLevel level, LogEvent::ptr event)

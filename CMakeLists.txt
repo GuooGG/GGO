@@ -14,10 +14,12 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 
 
-#头文件路径
-include_directories(GGo/include)
+
 #源码变量
 aux_source_directory(./GGo/src SOURCES)
+
+#头文件路径
+include_directories(GGo/include)
 
 message("=============打印全部源码文件==============")
 foreach(SRC ${SOURCES})
@@ -30,5 +32,7 @@ message("===========================================")
 add_executable(GGoTest GGo/GGo.cpp ${SOURCES} )
 #生成日志测试 01
 add_executable(LogTest01 Test/LogTest01.cpp ${SOURCES})
+
+add_executable(LogTest02 Test/LogTest02.cpp ${SOURCES})
 
 
