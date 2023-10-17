@@ -1,4 +1,5 @@
 #include"thread.h"
+
 namespace GGo{
 
 static thread_local Thread::ptr t_thread = nullptr;

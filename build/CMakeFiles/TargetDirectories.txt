@@ -1,4 +1,0 @@
-/root/workspace/GGoSeverFrame/build/CMakeFiles/GGoTest.dir
-/root/workspace/GGoSeverFrame/build/CMakeFiles/LogTest01.dir
-/root/workspace/GGoSeverFrame/build/CMakeFiles/edit_cache.dir
-/root/workspace/GGoSeverFrame/build/CMakeFiles/rebuild_cache.dir

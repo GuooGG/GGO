@@ -378,7 +378,12 @@ public:
 class FileLogAppender :public LogAppender {
 public:
 	using ptr = std::shared_ptr<FileLogAppender>;
-
+	
+	/**
+	 * @brief 构造函数
+	 * 
+	 * @param filename 文件名
+	 */
 	FileLogAppender(const std::string& filename);
 	void log(Logger::ptr logger,LogLevel level,LogEvent::ptr event) override;
 	
