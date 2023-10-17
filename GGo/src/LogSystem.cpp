@@ -373,7 +373,7 @@ void Logger::log(LogLevel level, LogEvent::ptr event)
 		auto self = shared_from_this();
 		if(!m_appenders.empty()){
 			for(auto& appender:m_appenders){
-				appender->log(self,level,event);
+				appender->log(self, level, event);
 			}
 		}else if(m_root){
 			m_root->log(level,event);
@@ -491,9 +491,9 @@ void FileLogAppender::log(Logger::ptr logger, LogLevel level, LogEvent::ptr even
 			reopen();
 			m_lastTime = now;
 		}
-	}
-	if(!m_formatter->format(m_filestream,logger,level,event)){
-		std::cout<<"error"<<std::endl;
+		if(!m_formatter->format(m_filestream,logger,level,event)){
+			std::cout<<"error"<<std::endl;
+		}
 	}
 }
 

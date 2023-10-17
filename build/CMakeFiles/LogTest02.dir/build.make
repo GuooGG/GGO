@@ -73,85 +73,85 @@ CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o: CMakeFiles/LogTest02.dir/flags.ma
 CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o: /root/workspace/GGoSeverFrame/Test/LogTest02.cpp
 CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o: CMakeFiles/LogTest02.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/workspace/GGoSeverFrame/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o -MF CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o.d -o CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o -c /root/workspace/GGoSeverFrame/Test/LogTest02.cpp
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o -MF CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o.d -o CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.o -c /root/workspace/GGoSeverFrame/Test/LogTest02.cpp
 
 CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/Test/LogTest02.cpp > CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.i
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/Test/LogTest02.cpp > CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.i
 
 CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/Test/LogTest02.cpp -o CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.s
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/Test/LogTest02.cpp -o CMakeFiles/LogTest02.dir/Test/LogTest02.cpp.s
 
 CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o: CMakeFiles/LogTest02.dir/flags.make
 CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o: /root/workspace/GGoSeverFrame/GGo/src/LogSystem.cpp
 CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o: CMakeFiles/LogTest02.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/workspace/GGoSeverFrame/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/LogSystem.cpp
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/LogSystem.cpp
 
 CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/LogSystem.cpp > CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.i
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/LogSystem.cpp > CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.i
 
 CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/LogSystem.cpp -o CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.s
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/LogSystem.cpp -o CMakeFiles/LogTest02.dir/GGo/src/LogSystem.cpp.s
 
 CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o: CMakeFiles/LogTest02.dir/flags.make
 CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o: /root/workspace/GGoSeverFrame/GGo/src/config.cpp
 CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o: CMakeFiles/LogTest02.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/workspace/GGoSeverFrame/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/config.cpp
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/config.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/config.cpp
 
 CMakeFiles/LogTest02.dir/GGo/src/config.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LogTest02.dir/GGo/src/config.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/config.cpp > CMakeFiles/LogTest02.dir/GGo/src/config.cpp.i
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/config.cpp > CMakeFiles/LogTest02.dir/GGo/src/config.cpp.i
 
 CMakeFiles/LogTest02.dir/GGo/src/config.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LogTest02.dir/GGo/src/config.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/config.cpp -o CMakeFiles/LogTest02.dir/GGo/src/config.cpp.s
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/config.cpp -o CMakeFiles/LogTest02.dir/GGo/src/config.cpp.s
 
 CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o: CMakeFiles/LogTest02.dir/flags.make
 CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o: /root/workspace/GGoSeverFrame/GGo/src/mutex.cpp
 CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o: CMakeFiles/LogTest02.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/workspace/GGoSeverFrame/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/mutex.cpp
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/mutex.cpp
 
 CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/mutex.cpp > CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.i
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/mutex.cpp > CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.i
 
 CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/mutex.cpp -o CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.s
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/mutex.cpp -o CMakeFiles/LogTest02.dir/GGo/src/mutex.cpp.s
 
 CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o: CMakeFiles/LogTest02.dir/flags.make
 CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o: /root/workspace/GGoSeverFrame/GGo/src/thread.cpp
 CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o: CMakeFiles/LogTest02.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/workspace/GGoSeverFrame/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/thread.cpp
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/thread.cpp
 
 CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/thread.cpp > CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.i
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/thread.cpp > CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.i
 
 CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/thread.cpp -o CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.s
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/thread.cpp -o CMakeFiles/LogTest02.dir/GGo/src/thread.cpp.s
 
 CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o: CMakeFiles/LogTest02.dir/flags.make
 CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o: /root/workspace/GGoSeverFrame/GGo/src/util.cpp
 CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o: CMakeFiles/LogTest02.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/root/workspace/GGoSeverFrame/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/util.cpp
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o -MF CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o.d -o CMakeFiles/LogTest02.dir/GGo/src/util.cpp.o -c /root/workspace/GGoSeverFrame/GGo/src/util.cpp
 
 CMakeFiles/LogTest02.dir/GGo/src/util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LogTest02.dir/GGo/src/util.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/util.cpp > CMakeFiles/LogTest02.dir/GGo/src/util.cpp.i
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/workspace/GGoSeverFrame/GGo/src/util.cpp > CMakeFiles/LogTest02.dir/GGo/src/util.cpp.i
 
 CMakeFiles/LogTest02.dir/GGo/src/util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LogTest02.dir/GGo/src/util.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/util.cpp -o CMakeFiles/LogTest02.dir/GGo/src/util.cpp.s
+	/opt/rh/devtoolset-8/root/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/workspace/GGoSeverFrame/GGo/src/util.cpp -o CMakeFiles/LogTest02.dir/GGo/src/util.cpp.s
 
 # Object files for target LogTest02
 LogTest02_OBJECTS = \

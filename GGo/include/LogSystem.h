@@ -78,11 +78,11 @@ enum class LogLevel {
 
 /// @brief 将日志级别转成文本输出
 /// @param level 日志级别
-static const char* LogLevelTOString(LogLevel level);
+const char* LogLevelTOString(LogLevel level);
 
 /// @brief 将文本转成日志级别
 /// @param str 日志级别文本
-static LogLevel FromStringToLogLevel(const std::string& str);
+LogLevel FromStringToLogLevel(const std::string& str);
 
 
 /**
