@@ -1,1 +1,0 @@
-/opt/rh/devtoolset-8/root/usr/bin/c++  -std=c++11 -pthread CMakeFiles/GGoTest.dir/GGo/GGo.cpp.o CMakeFiles/GGoTest.dir/GGo/src/LogSystem.cpp.o CMakeFiles/GGoTest.dir/GGo/src/config.cpp.o CMakeFiles/GGoTest.dir/GGo/src/mutex.cpp.o CMakeFiles/GGoTest.dir/GGo/src/thread.cpp.o CMakeFiles/GGoTest.dir/GGo/src/util.cpp.o -o /root/workspace/GGoSeverFrame/bin/GGoTest 
