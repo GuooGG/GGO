@@ -32,7 +32,7 @@ message("===========================================")
 add_executable(GGoTest GGo/GGo.cpp ${SOURCES} )
 #生成日志测试 01
 add_executable(LogTest01 Test/LogTest01.cpp ${SOURCES})
-
+#生成日志测试 02 测试日志系统完整框架功能
 add_executable(LogTest02 Test/LogTest02.cpp ${SOURCES})
 
 

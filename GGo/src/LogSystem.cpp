@@ -61,16 +61,16 @@ LogEvent::LogEvent(Logger::ptr logger, LogLevel level, const char *file, int32_t
 
 
 
-LogEventWarp::LogEventWarp(LogEvent::ptr event)
+LogEventWrap::LogEventWrap(LogEvent::ptr event)
 	:m_event(event){
 }
 
-LogEventWarp::~LogEventWarp()
+LogEventWrap::~LogEventWrap()
 {
 	m_event->getLogger()->log(m_event->getLevel(),m_event);
 }
 
-std::stringstream &LogEventWarp::getSS()
+std::stringstream &LogEventWrap::getSS()
 {
     return m_event->getSS();
 }

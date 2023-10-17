@@ -33,6 +33,28 @@
  */
 #define GGO_LOG_NAME(name) GGo::LoggerMgr::GetInstance()->getLogger(name)
 
+/**
+ * @brief 使用流式方式将日志级别level的日志写入到logger
+ */
+#define GGO_LOG_LEVEL(logger, level)                                                                                       	\
+	if (logger->getLevel() <= level)                                                                                       	\
+	GGo::LogEventWrap(GGo::LogEvent::ptr(new GGo::LogEvent(logger, level,                                                	\
+																 __FILE__, __LINE__, 0, GGo::GetThreadID(),              	\
+																 GGo::GetFiberID(), time(0), "Thread Nmae")))            	\
+		.getSS()
+
+/**
+ * @brief 以流式方式写入不同级别的日志
+ * 
+ */
+#define GGO_LOG_DEBUG(logger) GGO_LOG_LEVEL(logger,GGo::LogLevel::DEBUG)
+#define GGO_LOG_INFO(logger) GGO_LOG_LEVEL(logger,GGo::LogLevel::INFO)
+#define GGO_LOG_WARN(logger) GGO_LOG_LEVEL(logger,GGo::LogLevel::WARN)
+#define GGO_LOG_ERROR(logger) GGO_LOG_LEVEL(logger,GGo::LogLevel::ERROR)
+#define GGO_LOG_FATAL(logger) GGO_LOG_LEVEL(logger,GGo::LogLevel::FATAL)
+
+
+
 namespace GGo {
 
 
@@ -154,15 +176,15 @@ private:
  * @brief 日志事件包装器
  * 
  */
-class LogEventWarp{
+class LogEventWrap{
 public:
 
 	/// @brief 构造函数
 	/// @param event 日志事件
-	LogEventWarp(LogEvent::ptr event);
+	LogEventWrap(LogEvent::ptr event);
 
 	/// @brief 析构函数
-	~LogEventWarp();
+	~LogEventWrap();
 
 	/// @brief 获取日志事件
 	LogEvent::ptr getEvent() const {return m_event;}

@@ -6,5 +6,7 @@ int main(){
     std::shared_ptr<GGo::LogEvent> pe(e);
     pe->getSS() << "hello";
     g_logger->fatal(pe);
+    GGO_LOG_LEVEL(g_logger,GGo::LogLevel::DEBUG) << "ll";
     return 0;
+
 }
