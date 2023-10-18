@@ -30,7 +30,7 @@ public:
         ,m_description(description)
     {}
 
-    virtual ~ConfigVarBase() = default;
+    virtual ~ConfigVarBase(){}
 
     virtual std::string toString() = 0;
     virtual bool fromString(const std::string& val) = 0;
@@ -71,6 +71,8 @@ public:
         }
         return false;
     }
+
+    const T getValue() const { return m_val;}
     
 private:
     T m_val;
@@ -95,21 +97,29 @@ public:
     static typename ConfigVar<T>::ptr Lookup(
         const std::string& name,
         const T& default_value,
-        const std::string& description = ""){
-        auto temp = ConfigVar<T>::Lookup(name);
-        if(temp){
-            //TODO::打印INFO日志
-            return temp;
+        const std::string& description = "")
+{
+        auto it = GetDatas().find(name);
+        if(it != GetDatas().end()){
+            auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
+            if(tmp){
+                GGO_LOG_INFO(GGO_LOG_ROOT()) << "Lookup name=" << name << " exists";
+                return tmp; 
+            }else{
+                GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Lookup name=" << name << " exists but type not right";
+                return nullptr;
+            }
         }
-        //不能用小写字母，数字和特殊符号开头
-        if(name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678")
-                != std::string::npos) {
-            //TODO::打印ERROR日志
+        //数据中没有name配置参数,检查名称是否合法
+        if(name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos){
+            GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Lookup name invalid :" << name;
             throw std::invalid_argument(name);
         }
-        typename ConfigVar<T>::ptr v(new ConfigVar<T>(name,default_value,description));
-        GetDatas()[name] = v;
-        return v;
+        //名称合法，可以创建新参数
+        typename ConfigVar<T>::ptr newConfigVal(new ConfigVar<T>(name,default_value,description));
+        GetDatas()[name] = newConfigVal;
+        return newConfigVal;
+
     }
 
     /// @brief 查找配置参数
