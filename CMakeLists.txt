@@ -21,30 +21,34 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 #头文件包含路径
 include_directories(GGo/include)
 
+#链接库路径
 link_directories(/usr/local/lib64)
-
+link_directories(/usr/local/lib)
+link_directories(${PROJECT_SOURCE_DIR}/lib)
+#yaml-cpp动态库
 find_library(yaml-cpp /usr/local/lib64/libyaml-cpp.so)
 
-#源码变量
-aux_source_directory(./GGo/src SOURCES)
+#源码文件
+aux_source_directory(./GGo/src GGO_LIB_SRC)
+#制作GGo动态库
+add_library(GGO_LIB SHARED ${GGO_LIB_SRC})
 
+set(LIBS 
+        GGO_LIB
+        yaml-cpp
+    )
 
-message("=============打印全部源码文件==============")
-foreach(SRC ${SOURCES})
-  message(STATUS "Source file: ${SRC}")
-endforeach()
-message("===========================================")
-
-#测试库
-add_executable(GGoTest GGo/GGo.cpp ${SOURCES} )
 #生成日志测试 01
-add_executable(LogTest01 Test/LogTest01.cpp ${SOURCES})
+add_executable(LogTest01 Test/LogTest01.cpp)
+target_link_libraries(LogTest01 ${LIBS})
 #生成日志测试 02 测试日志系统完整框架功能
-add_executable(LogTest02 Test/LogTest02.cpp ${SOURCES})
+add_executable(LogTest02 Test/LogTest02.cpp)
+target_link_libraries(LogTest02 ${LIBS})
 #生成配置测试 01
-add_executable(ConfigTest01 Test/ConfigTest01.cpp ${SOURCES})
+add_executable(ConfigTest01 Test/ConfigTest01.cpp)
+target_link_libraries(ConfigTest01 ${LIBS})
 #生成Yaml-cpp测试 01
-add_executable(YmlTest01 Test/YmlTest01.cpp ${SOURCES})
-target_link_libraries(YmlTest01 yaml-cpp)
+add_executable(YmlTest01 Test/YmlTest01.cpp)
+target_link_libraries(YmlTest01 ${LIBS})
 
 
