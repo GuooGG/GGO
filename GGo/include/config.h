@@ -13,6 +13,7 @@
 //std::stoi(),std::stod(),std::to_string()
 //lexical<TargetType>(SrcType);
 //TODO::两者相比有什么区别
+#include<yaml-cpp/yaml.h>
 #include<boost/lexical_cast.hpp>
 #include"LogSystem.h"
 
