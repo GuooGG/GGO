@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/GGo/include",
                 "${workspaceFolder}/GGo/include/**",
-                "${workspaceFolder}/GGo/include"
+                "${workspaceFolder}/GGo/include",
+                "${workspaceFolder}/GGo/src"
             ],
             "defines": [],
             "compilerPath": "/opt/rh/devtoolset-8/root/usr/bin/gcc",

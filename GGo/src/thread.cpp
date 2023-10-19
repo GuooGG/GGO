@@ -10,6 +10,7 @@ Thread::ptr Thread::GetThis(){
 
 }
 
+
 Thread::Thread(std::function<void()> cb, const std::string &name)
 {
     if(name.empty()){

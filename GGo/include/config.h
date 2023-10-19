@@ -29,7 +29,10 @@ public:
     ConfigVarBase(const std::string& name,const std::string& description = "")
         :m_name(name)
         ,m_description(description)
-    {}
+    {
+        //配置文件项目名全部小写
+        std::transform(m_name.begin(), m_name.end(), m_name.begin(), ::tolower);
+    }
 
     virtual ~ConfigVarBase(){}
 
@@ -68,7 +71,10 @@ public:
         try{
             m_val = boost::lexical_cast<T>(val);
         }catch(std::exception& e){
-            //TODO::打印ERROR日志
+            GGO_LOG_ERROR(GGO_LOG_ROOT()) << "ConfigVar::fromstring exception " 
+                                          << e.what() << " convert string to XXX"
+                                          << " name=" << m_name
+                                          << " - " << val;
         }
         return false;
     }
@@ -135,9 +141,15 @@ public:
         return std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
     }
 
-    /**
-     * @brief 得到所有配置项 
-     */
+    /// @brief 读入yaml节点 将其转换为配置名和配置项
+    /// @param root yaml节点对象
+    static void loadFromYaml(YAML::Node& root);
+    
+    /// @brief 查找配置参数，返回其参数的基类指针
+    /// @param name 配置名
+    static ConfigVarBase::ptr lookupBase(const std::string& name);
+
+    ///@brief 得到所有配置项 
     static ConfigVarMap& GetDatas(){
         static ConfigVarMap s_datas;
         return s_datas;
@@ -145,7 +157,7 @@ public:
 
 private:
 
-
+    
 };
 
 

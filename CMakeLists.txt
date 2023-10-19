@@ -19,6 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 #头文件包含路径
+include_directories(GGo/src)
 include_directories(GGo/include)
 
 #链接库路径
@@ -51,5 +52,6 @@ target_link_libraries(ConfigTest01 ${LIBS})
 #生成Yaml-cpp测试 01
 add_executable(YmlTest01 Test/YmlTest01.cpp)
 target_link_libraries(YmlTest01 ${LIBS})
-
-
+#生成YML文件转配置信息测试 01
+add_executable(YmlToConfigTest01 Test/YmlToConfigTest01.cpp)
+target_link_libraries(YmlToConfigTest01 ${LIBS})
