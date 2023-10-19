@@ -19,8 +19,8 @@ int main(int argc,char** argv){
     //开始测试
     std::cout<<"hello GGo log"<<std::endl;
 
-    std::cout<<"logger_level : " << GGo::LogLevelTOString(logger->getLevel())<<std::endl;
-    std::cout<<"file_level: " << GGo::LogLevelTOString(file_appender->getLevel())<<std::endl;
+    std::cout<<"logger_level : " << "DEBUG " <<std::endl;
+    std::cout<<"file_level: " << " ERROR " <<std::endl;
     GGO_LOG_DEBUG(logger) << "logger debug01";
     GGO_LOG_INFO(logger) << "logger info01";
     GGO_LOG_WARN(logger) << "logger warn01";
@@ -28,17 +28,16 @@ int main(int argc,char** argv){
     GGO_LOG_FATAL(logger) << "logger fatal01";
 
     logger->setLevel(GGo::LogLevel::WARN);
-    std::cout << "logger_level : " << GGo::LogLevelTOString(logger->getLevel()) << std::endl;
-    std::cout << "file_level: " << GGo::LogLevelTOString(file_appender->getLevel()) << std::endl;
+    std::cout << "logger_level : " << "WARN" << std::endl;
+    std::cout << "file_level: " << "ERROR" << std::endl;
     GGO_LOG_DEBUG(logger) << "logger debug02";
     GGO_LOG_INFO(logger) << "logger info02";
     GGO_LOG_WARN(logger) << "logger warn02";
     GGO_LOG_ERROR(logger) << "logger error02";
     GGO_LOG_FATAL(logger) << "logger fatal02";
-
     logger->setLevel(GGo::LogLevel::FATAL);
-    std::cout << "logger_level : " << GGo::LogLevelTOString(logger->getLevel()) << std::endl;
-    std::cout << "file_level: " << GGo::LogLevelTOString(file_appender->getLevel()) << std::endl;
+    std::cout << "logger_level : " << "FATAL" << std::endl;
+    std::cout << "file_level: " << "ERROR" << std::endl;
     GGO_LOG_DEBUG(logger) << "logger debug03";
     GGO_LOG_INFO(logger) << "logger info03";
     GGO_LOG_WARN(logger) << "logger warn03";

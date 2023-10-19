@@ -1,10 +1,14 @@
 #include"LogSystem.h"
+#include"yaml-cpp/yaml.h"
 
 namespace GGo {
 
-const char* LogLevelTOString(LogLevel level)
+/// @brief 将日志级别转成文本输出
+/// @param level 日志级别
+static const char *LogLevelTOString(LogLevel level)
 {
-	switch (level) {
+	switch (level)
+	{
 	case LogLevel::DEBUG:
 		return "DEBUG";
 		break;
@@ -12,7 +16,7 @@ const char* LogLevelTOString(LogLevel level)
 		return "INFO";
 		break;
 	case LogLevel::WARN:
-		return"WARN";
+		return "WARN";
 		break;
 	case LogLevel::ERROR:
 		return "ERROR";
@@ -24,27 +28,33 @@ const char* LogLevelTOString(LogLevel level)
 	}
 }
 
-
-
-LogLevel FromStringToLogLevel(const std::string& str)
-{
-	if (str == "DEBUG" || str == "debug") {
+/// @brief 将文本转成日志级别
+/// @param str 日志级别文本
+static LogLevel FromStringToLogLevel(const std::string &str){
+	if (str == "DEBUG" || str == "debug")
+	{
 		return LogLevel::DEBUG;
 	}
-	if (str == "INFO" || str == "info") {
+	if (str == "INFO" || str == "info")
+	{
 		return LogLevel::INFO;
 	}
-	if (str == "WARN" || str == "warn") {
+	if (str == "WARN" || str == "warn")
+	{
 		return LogLevel::WARN;
 	}
-	if (str == "ERROR" || str == "error") {
+	if (str == "ERROR" || str == "error")
+	{
 		return LogLevel::ERROR;
 	}
-	if (str == "FATAL" || str == "fatal") {
+	if (str == "FATAL" || str == "fatal")
+	{
 		return LogLevel::FATAL;
 	}
 	return LogLevel::UNKNOWN;
 }
+
+
 
 
 LogEvent::LogEvent(Logger::ptr logger, LogLevel level, const char *file, int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time, const std::string &thread_name)
@@ -447,6 +457,25 @@ LogFormatter::ptr Logger::getFormatter()
     return m_formatter;
 }
 
+std::string Logger::toYamlString()
+{
+    YAML::Node node;
+	node["name"] = m_name;
+	if(m_level != LogLevel::UNKNOWN){
+		node["level"] = LogLevelTOString(m_level);
+	}
+	if (m_formatter)
+	{
+		node["formatter"] = m_formatter->getPattern();
+	}
+	for(auto& i :m_appenders){
+		node["appenders"].push_back(YAML::Load(i->toYamlString()));
+	}
+	std::stringstream ss;
+	ss << node;
+	return ss.str();
+}
+
 void Logger::setRootLogger(Logger::ptr logger)
 {
 	m_root = logger;
@@ -476,6 +505,17 @@ Logger::ptr LoggerManager::getLogger(const std::string &name)
 
 void LoggerManager::init(){}
 
+std::string LoggerManager::toYamlString()
+{
+    YAML::Node node;
+	for(auto& i :m_loggers){
+		node.push_back(YAML::Load(i.second->toYamlString()));
+	}
+	std::stringstream ss;
+	ss << node;
+	return ss.str();
+}
+
 FileLogAppender::FileLogAppender(const std::string &filename)
 	:m_filename(filename)
 {
@@ -497,6 +537,22 @@ void FileLogAppender::log(Logger::ptr logger, LogLevel level, LogEvent::ptr even
 	}
 }
 
+std::string FileLogAppender::toYamlString()
+{
+    YAML::Node node;
+	node["type"] = "FileLogAppender";
+	node["file"] = m_filename;
+	if(m_level != LogLevel::UNKNOWN){
+		node["level"] = LogLevelTOString(m_level);
+	}
+	if(m_hasFormatter && m_formatter){
+		node["formatter"] = m_formatter->getPattern();
+	}
+	std::stringstream ss;
+	ss << node;
+	return ss.str();
+}
+
 bool FileLogAppender::reopen()
 {
     if(m_filestream){
@@ -513,6 +569,20 @@ void StdoutLogAppender::log(Logger::ptr logger, LogLevel level, LogEvent::ptr ev
 	}
 }
 
+std::string StdoutLogAppender::toYamlString()
+{
+    YAML::Node node;
+	node["type"] = "StdoutLogAppender";
+	if(m_level != LogLevel::UNKNOWN){
+		node["level"] = LogLevelTOString(m_level);
+	}
+	if(m_hasFormatter && m_formatter){
+		node["formatter"] = m_formatter->getPattern();
+	}
+	std::stringstream ss;
+	ss << node;
+	return ss.str();
+}
 
 struct LogAppenderDefine{
 	/// @brief 1 file / 2 stdout

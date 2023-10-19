@@ -76,13 +76,6 @@ enum class LogLevel {
 	FATAL = 5
 };
 
-/// @brief 将日志级别转成文本输出
-/// @param level 日志级别
-const char* LogLevelTOString(LogLevel level);
-
-/// @brief 将文本转成日志级别
-/// @param str 日志级别文本
-LogLevel FromStringToLogLevel(const std::string& str);
 
 
 /**
@@ -287,6 +280,12 @@ public:
 	/// @param event 日志事件
 	virtual void log(std::shared_ptr<Logger> logger,LogLevel level,LogEvent::ptr event) = 0;
 
+	/**
+	 * @brief 将日志输出目标配置成Yaml string
+	 * 
+	 */
+	virtual std::string toYamlString() = 0;
+
 	/// @brief 更改日志格式器
 	/// @param val 目标格式器
 	void setFormatter(LogFormatter::ptr val);
@@ -299,6 +298,7 @@ public:
 
 	/// @brief 设置日志级别
 	void setLevel(LogLevel val){ m_level = val;}
+
 protected:
 
 	// 日志级别
@@ -374,7 +374,11 @@ public:
 	/// @brief 获取日志格式器
 	LogFormatter::ptr getFormatter();
 
+	/// @brief  设置 root logger
 	void setRootLogger(std::shared_ptr<Logger> logger);
+
+	/// @brief 将日志器的配置转成YamL string 
+	std::string toYamlString();
 private:
 	//日志名称
 	std::string m_name;
@@ -394,6 +398,8 @@ public:
 	using ptr = std::shared_ptr<StdoutLogAppender>;
 
 	void log(Logger::ptr logger,LogLevel level,LogEvent::ptr event) override;
+
+	std::string toYamlString() override;
 };
 
 
@@ -410,6 +416,8 @@ public:
 	FileLogAppender(const std::string& filename);
 	void log(Logger::ptr logger,LogLevel level,LogEvent::ptr event) override;
 	
+	std::string toYamlString() override;
+
 	/// @brief 重新打开日志文件
 	/// @return 成功返回true
 	bool reopen();
@@ -441,6 +449,8 @@ public:
 	/// @brief 返回主日志器
 	Logger::ptr getRoot() const {return m_root;}
 
+	/// @brief 将所有的日志器配置转成YAML String
+	std::string toYamlString();
 
 private:
 	//日志器容器
