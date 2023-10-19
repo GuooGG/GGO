@@ -22,7 +22,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 include_directories(GGo/include)
 
 #链接库路径
-link_directories(/usr/local/lib)
+link_directories(/usr/local/lib64)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 #yaml-cpp动态库
 find_library(yaml-cpp /usr/local/lib64/libyaml-cpp.so)
