@@ -11,3 +11,6 @@ logs:
           - type: FileLogAppender
             file: /root/workspace/GGoSeverFrame/log/system.txt
           - type: StdoutLogAppender
+system:
+    port: 22
+    value: 15

@@ -1,5 +1,5 @@
 #cmake最低版本2.8
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 
 #项目名称GGo
 project(GGo)
