@@ -25,23 +25,44 @@ void listAllMembers(const std::string &prefix,
 int main()
 {
     GGo::ConfigVar<int>::ptr g_int_value_config = GGo::Config::Lookup("system.port", (int)8080, "system port");
-    YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/conf/log.yml");
+    GGo::ConfigVar<std::vector<int> >::ptr intvec1_val = GGo::Config::Lookup("system.intvec1",std::vector<int>{1,2},"intvec1");
+    GGo::ConfigVar<std::vector<int> >::ptr intvec2_val = GGo::Config::Lookup("system.intvec2", std::vector<int>{3,4}, "intvec1");
+    YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     // std::cout << "show root:" << std::endl;
     // std::cout << node << std::endl;
     std::list<std::pair<std::string, const YAML::Node>> all_nodes;
     std::cout << "============================" << std::endl;
     listAllMembers("",node,all_nodes);
-    // for(auto& pair : all_nodes){
-    //     std::cout << "path:[" << pair.first << "]  :  val: ["  << pair.second << " ] "<<std::endl;
-    // }
-    // std::cout << "============================" << std::endl;
+    for(auto& pair : all_nodes){
+        std::cout  << pair.first <<std::endl;
+    }
+    auto vec1 = intvec1_val->getValue();
+    auto vec2 = intvec2_val->getValue();
+    for(int& i :vec1){
+        std::cout << i << std::endl;
+    }
+    for (int &i : vec2)
+    {
+        std::cout << i << std::endl;
+    }
+    std::cout << "============================" << std::endl;
     GGO_LOG_INFO(GGO_LOG_ROOT()) << g_int_value_config->getValue();
     GGo::Config::loadFromYaml(node);
     GGO_LOG_INFO(GGO_LOG_ROOT()) << g_int_value_config->getValue();
     std::cout << "============================" << std::endl;
     auto map = GGo::Config::GetDatas();
-    for(auto& kv : map){
-        std::cout << kv.first << std::endl;
+    for(auto it = node.begin(); it != node.end(); it++){
+        std::cout << it->first << std::endl;
+    }
+    vec1 = intvec1_val->getValue();
+    vec2 = intvec2_val->getValue();
+    for (int &i : vec1)
+    {
+        std::cout << "intvec1 after" << i << std::endl;
+    }
+    for (int &i : vec2)
+    {
+        std::cout << i << std::endl;
     }
     return 0;
 }

@@ -11,3 +11,12 @@ logs:
           - type: FileLogAppender
             file: /root/workspace/GGoSeverFrame/log/system.txt
           - type: StdoutLogAppender
+system:
+    port: 22
+    value: 15
+    #两种形式的数组
+    intvec1: [10, 20]
+    intvec2:
+        - 40
+        - 80
+           

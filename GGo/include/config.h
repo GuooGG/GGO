@@ -48,7 +48,58 @@ protected:
     std::string m_description;
 };
 
+
+/// @brief 类型转换默认类型 用于基础类型之间的转换
+/// @tparam F 原类型
+/// @tparam T 目标类型
+template<class F,class T>
+class LexicalCast{
+public:
+    T operator()(const F& f){
+        return boost::lexical_cast<T>(f);
+    }
+};
+
+/// @brief 模板类型偏特化，从 YAML 字符串转为 vector<T>
 template<class T>
+class LexicalCast<std::string, std::vector<T> >{
+public:
+    std::vector<T> operator()(const std::string& ymlstr){
+        YAML::Node node = YAML::Load(ymlstr);
+        typename std::vector<T> ret;
+        std::stringstream ss;
+        for(size_t i = 0; i < node.size(); i++){
+            ss.str("");
+            ss << node[i];
+            ret.push_back(LexicalCast<std::string, T>()(ss.str()));
+        }
+        return ret;
+    }
+
+};
+
+/// @brief 模板类型偏特化，从 vector<T> 转为 YAML 字符串
+template<class T>
+class LexicalCast<std::vector<T>, std::string>{
+public:
+    std::string operator()(const std::vector<T>& vec){
+        YAML::Node node(YAML::NodeType::Sequence);
+        std::stringstream ss;
+        for(auto& i : vec){
+            node.push_back(YAML::Load(LexicalCast<T,std::string>()(i)));
+            ss << node;
+        }
+        ss << node;
+        return ss.str();
+    }
+};
+
+/// @brief 配置量类型
+/// @tparam T 配置量的值类型
+/// @tparam FromStr 用于从字符串转为值类型的类型
+/// @tparam ToStr 用于从值类型转为字符串的类型
+template<class T ,class FromStr = LexicalCast< std::string, T>
+                 ,class ToStr = LexicalCast< T, std::string> >
 class ConfigVar : public ConfigVarBase{
 
 public:
@@ -61,7 +112,7 @@ public:
             {}
     std::string toString() override{
         try{
-            return boost::lexical_cast<std::string>(m_val);
+            return ToStr()(m_val);
         }catch (std::exception& e){
             //TODO::打印ERROR日志
         }
@@ -69,7 +120,7 @@ public:
     }
     bool fromString(const std::string& val) override{
         try{
-            m_val = boost::lexical_cast<T>(val);
+            m_val = FromStr()(val);
         }catch(std::exception& e){
             GGO_LOG_ERROR(GGO_LOG_ROOT()) << "ConfigVar::fromstring exception " 
                                           << e.what() << " convert string to XXX"
