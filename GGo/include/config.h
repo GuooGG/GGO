@@ -94,6 +94,187 @@ public:
     }
 };
 
+/// @brief 模板类型偏特化，从 TAML 字符串转为 list<T>
+template<class T>
+class LexicalCast<std::string, std::list<T> >{
+public:
+    std::list<T> operator()(const std::string& ymlstr){
+        YAML::Node node = YAML::Load(ymlstr);
+        typename std::list<T> listT;
+        std::stringstream ss;
+        for(size_t i = 0; i != node.size(); i++){
+           ss.str("");
+           ss << node[i];
+            listT.push_back(LexicalCast<std::string,T>()(ss.str()));
+        }
+        return listT;
+    }
+};
+
+/// @brief 模板类型偏特化，从 list<T> 转为 YAML 字符串
+template <class T>
+class LexicalCast<std::list<T>, std::string>{
+public:
+    std::string operator()(const std::list<T>& listT){
+        std::stringstream ss;
+        YAML::Node node(YAML::NodeType::Sequence);
+        for(auto& t: listT){
+            node.push_back(YAML::Load(LexicalCast<T,std::string>()(t)));
+        }
+        ss << node;
+        return ss.str();
+    }
+};
+
+/// @brief 模板类型偏特化，从 TAML 字符串转为 set<T>
+template <class T>
+class LexicalCast<std::string, std::set<T>>
+{
+public:
+    std::set<T> operator()(const std::string &ymlstr)
+    {
+        YAML::Node node = YAML::Load(ymlstr);
+        typename std::set<T> setT;
+        std::stringstream ss;
+        for (size_t i = 0; i != node.size(); i++)
+        {
+            ss.str("");
+            ss << node[i];
+            setT.insert(LexicalCast<std::string, T>()(ss.str()));
+        }
+        return setT;
+    }
+};
+
+/// @brief 模板类型偏特化，从 set<T> 转为 YAML 字符串
+template <class T>
+class LexicalCast<std::set<T>, std::string>
+{
+public:
+    std::string operator()(const std::set<T> &setT)
+    {
+        std::stringstream ss;
+        YAML::Node node(YAML::NodeType::Sequence);
+        for (auto &t : setT)
+        {
+            node.push_back(YAML::Load(LexicalCast<T, std::string>()(t)));
+        }
+        ss << node;
+        return ss.str();
+    }
+};
+
+/// @brief 模板类型偏特化，从 TAML 字符串转为 unordered_set<T>
+template <class T>
+class LexicalCast<std::string, std::unordered_set<T>>
+{
+public:
+    std::unordered_set<T> operator()(const std::string &ymlstr)
+    {
+        YAML::Node node = YAML::Load(ymlstr);
+        typename std::unordered_set<T> setT;
+        std::stringstream ss;
+        for (size_t i = 0; i != node.size(); i++)
+        {
+            ss.str("");
+            ss << node[i];
+            setT.insert(LexicalCast<std::string, T>()(ss.str()));
+        }
+        return setT;
+    }
+};
+
+/// @brief 模板类型偏特化，从 unordered_set<T> 转为 YAML 字符串
+template <class T>
+class LexicalCast<std::unordered_set<T>, std::string>
+{
+public:
+    std::string operator()(const std::unordered_set<T> &setT)
+    {
+        std::stringstream ss;
+        YAML::Node node(YAML::NodeType::Sequence);
+        for (auto &t : setT)
+        {
+            node.push_back(YAML::Load(LexicalCast<T, std::string>()(t)));
+        }
+        ss << node;
+        return ss.str();
+    }
+};
+
+/// @brief 模板类型偏特化，从 map<string,T> 转为 YAML 字符串 
+template<class T>
+class LexicalCast<std::map<std::string,T>, std::string>{
+public:
+    std::string operator()(const std::map<std::string, T>& mapT){
+        YAML::Node node(YAML::NodeType::Map);
+        std::stringstream ss;
+        for (auto &kv : mapT)
+        {
+            node[kv.first] = YAML::Load(LexicalCast<T,std::string>()(kv.second));
+        }
+        ss << node;
+        return ss.str();
+    }
+};
+
+/// @brief 模板类型偏特化，从 YAML 字符串转为 map<string,T>
+template <class T>
+class LexicalCast<std::string, std::map<std::string, T> >{
+public:
+    std::map<std::string, T> operator()(const std::string& ymlstr){
+        YAML::Node node = YAML::Load(ymlstr);
+        typename std::map<std::string,T> mapT;
+        std::stringstream ss;
+        for(auto it = node.begin(); it != node.end(); it++){
+            ss.str("");
+            ss << it->second;
+            mapT.insert(std::make_pair(it->first.Scalar(),
+                        LexicalCast<std::string,T>()(ss.str())));
+        }
+        return mapT;
+    }
+};
+
+/// @brief 模板类型偏特化，从 unordered_map<string,T> 转为 YAML 字符串
+template <class T>
+class LexicalCast<std::unordered_map<std::string, T>, std::string>
+{
+public:
+    std::string operator()(const std::unordered_map<std::string, T> &mapT)
+    {
+        YAML::Node node(YAML::NodeType::Map);
+        std::stringstream ss;
+        for (auto &kv : mapT)
+        {
+            node[kv.first] = YAML::Load(LexicalCast<T, std::string>()(kv.second));
+        }
+        ss << node;
+        return ss.str();
+    }
+};
+
+/// @brief 模板类型偏特化，从 YAML 字符串转为 unordered_map<string,T>
+template <class T>
+class LexicalCast<std::string, std::unordered_map<std::string, T>>
+{
+public:
+    std::unordered_map<std::string, T> operator()(const std::string &ymlstr)
+    {
+        YAML::Node node = YAML::Load(ymlstr);
+        typename std::unordered_map<std::string, T> mapT;
+        std::stringstream ss;
+        for (auto it = node.begin(); it != node.end(); it++)
+        {
+            ss.str("");
+            ss << it->second;
+            mapT.insert(std::make_pair(it->first.Scalar(),
+                                       LexicalCast<std::string, T>()(ss.str())));
+        }
+        return mapT;
+    }
+};
+
 /// @brief 配置量类型
 /// @tparam T 配置量的值类型
 /// @tparam FromStr 用于从字符串转为值类型的类型
@@ -110,11 +291,14 @@ public:
             :ConfigVarBase(name,description)
             ,m_val(default_value)
             {}
+    //TODO::修改日志里的XXX
     std::string toString() override{
         try{
             return ToStr()(m_val);
         }catch (std::exception& e){
-            //TODO::打印ERROR日志
+            GGO_LOG_ERROR(GGO_LOG_ROOT()) << "ConfigVar::toString exception "
+                << e.what() <<" convert " << "XXX" << "to string"
+                << "name=" << m_name;
         }
         return "";
     }

@@ -3,66 +3,108 @@
 #include<iostream>
 #include<yaml-cpp/yaml.h>
 #include<fstream>
-void listAllMembers(const std::string &prefix,
-                    const YAML::Node node,
-                    std::list<std::pair<std::string, const YAML::Node>> &output)
-{
-    if (prefix.find_first_not_of("avcdefghijklmnopqrstuvwxyz._0123456789") != std::string::npos)
-    { // 日志项目名非法
-        GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Config invalid name: "
-                                      << prefix << " . " << node;
-        return;
-    }
-    output.emplace_back(std::make_pair(prefix, node));
-    if (node.IsMap())
-    {
-        for (auto it = node.begin(); it != node.end(); it++)
-        {
-            listAllMembers(prefix.empty() ? it->first.Scalar() : prefix + "." + it->first.Scalar(), it->second, output);
-        }
-    }
-}
+
+//约定配置项默认值
+GGo::ConfigVar<int>::ptr g_int_value_config = 
+    GGo::Config::Lookup("system.port", (int)8080, "system.port");
+GGo::ConfigVar<float>::ptr g_float_value_config = 
+    GGo::Config::Lookup("system.value", (float)100.2f, "system.value");
+GGo::ConfigVar<std::vector<int>>::ptr g_int_vec_value_config =
+    GGo::Config::Lookup("system.intvec", std::vector<int>{7,9}, "system.intvec");
+GGo::ConfigVar<std::list<std::string>>::ptr g_str_list_value_config = 
+    GGo::Config::Lookup("system.strlist",std::list<std::string>{"h","w"},"system.strlist");
+GGo::ConfigVar<std::set<int>>::ptr g_int_set_value_config = 
+    GGo::Config::Lookup("system.intset", std::set<int>{6,6,8},"system.intset");
+GGo::ConfigVar<std::unordered_set<int> >::ptr g_int_uset_value_config = 
+    GGo::Config::Lookup("system.intuset",std::unordered_set<int>{4,6},"system.intuset");
+GGo::ConfigVar<std::map<std::string,int> >::ptr g_str_int_map_value_config = 
+    GGo::Config::Lookup("system.strintmap", std::map<std::string,int>{{"k",2}}, "system.strintmap");
+GGo::ConfigVar<std::unordered_map<std::string, int>>::ptr g_str_int_umap_value_config =
+    GGo::Config::Lookup("system.strintumap", std::unordered_map<std::string, int>{{"g", 3}}, "system.strintumap");
+
 int main()
 {
-    GGo::ConfigVar<int>::ptr g_int_value_config = GGo::Config::Lookup("system.port", (int)8080, "system port");
-    GGo::ConfigVar<std::vector<int> >::ptr intvec1_val = GGo::Config::Lookup("system.intvec1",std::vector<int>{1,2},"intvec1");
-    GGo::ConfigVar<std::vector<int> >::ptr intvec2_val = GGo::Config::Lookup("system.intvec2", std::vector<int>{3,4}, "intvec1");
+    //int 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_value_config before: " << g_int_value_config->getValue();
+    //float 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_float_value_config before: " << g_float_value_config->getValue();
+    //vec 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_vec_value_config before: ";
+    for(auto& i : g_int_vec_value_config->getValue()){
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
+    }
+    //list 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_str_list_value_config before: ";
+    for(auto& i : g_str_list_value_config->getValue()){
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
+    }
+    //set 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_set_value_config before: ";
+    for(auto& i : g_int_set_value_config->getValue()){
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
+    }
+    // unordered_set 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_uset_value_config before: ";
+    for (auto &i : g_int_uset_value_config->getValue())
+    {
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
+    }
+    // map类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_str_int_map_value_config before: ";
+    for(auto& i :g_str_int_map_value_config->getValue()){
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i.first << " : " << i.second;
+    }
+    // unordered_map类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_str_uint_umap_value_config before: ";
+    for (auto &i : g_str_int_umap_value_config->getValue())
+    {
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i.first << " : " << i.second;
+    }
+
+    //载入配置
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
-    // std::cout << "show root:" << std::endl;
-    // std::cout << node << std::endl;
-    std::list<std::pair<std::string, const YAML::Node>> all_nodes;
-    std::cout << "============================" << std::endl;
-    listAllMembers("",node,all_nodes);
-    for(auto& pair : all_nodes){
-        std::cout  << pair.first <<std::endl;
-    }
-    auto vec1 = intvec1_val->getValue();
-    auto vec2 = intvec2_val->getValue();
-    for(int& i :vec1){
-        std::cout << i << std::endl;
-    }
-    for (int &i : vec2)
-    {
-        std::cout << i << std::endl;
-    }
-    std::cout << "============================" << std::endl;
-    GGO_LOG_INFO(GGO_LOG_ROOT()) << g_int_value_config->getValue();
     GGo::Config::loadFromYaml(node);
-    GGO_LOG_INFO(GGO_LOG_ROOT()) << g_int_value_config->getValue();
-    std::cout << "============================" << std::endl;
-    auto map = GGo::Config::GetDatas();
-    for(auto it = node.begin(); it != node.end(); it++){
-        std::cout << it->first << std::endl;
-    }
-    vec1 = intvec1_val->getValue();
-    vec2 = intvec2_val->getValue();
-    for (int &i : vec1)
+    std::cout<<"===================================================================================================================================================="<<std::endl;
+    // int 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_value_config after: " << g_int_value_config->getValue();
+    // float 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_float_value_config after: " << g_float_value_config->getValue();
+    // vec 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_vec_value_config after: ";
+    for (auto &i : g_int_vec_value_config->getValue())
     {
-        std::cout << "intvec1 after" << i << std::endl;
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
     }
-    for (int &i : vec2)
+    // list 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_str_list_value_config after: ";
+    for (auto &i : g_str_list_value_config->getValue())
     {
-        std::cout << i << std::endl;
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
     }
+    // set 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_set_value_config after: ";
+    for (auto &i : g_int_set_value_config->getValue())
+    {
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
+    }
+    // unordered_set 类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_uset_value_config after: ";
+    for (auto &i : g_int_uset_value_config->getValue())
+    {
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i;
+    }
+    // map类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_str_int_map_value_config after: ";
+    for (auto &i : g_str_int_map_value_config->getValue())
+    {
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i.first << " : " << i.second;
+    }
+    // unordered_map类型配置
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_str_uint_umap_value_config after: ";
+    for (auto &i : g_str_int_umap_value_config->getValue())
+    {
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << i.first << " : " << i.second;
+    }
+
     return 0;
 }

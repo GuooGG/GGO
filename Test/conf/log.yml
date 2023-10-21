@@ -13,10 +13,25 @@ logs:
           - type: StdoutLogAppender
 system:
     port: 22
-    value: 15
-    #两种形式的数组
-    intvec1: [10, 20]
-    intvec2:
+    value: 15.22
+    intvec: [10, 20]
+    strlist:
+        - hello
+        - world
+    intset:
+        - 20
+        - 20
+        - 30
+    intuset:
         - 40
-        - 80
+        - 40
+        - 60
+        - 60
+    strintmap:
+        a: 1
+        c: 3
+    strintumap:
+        c: 3
+        d: 4
+        
            
