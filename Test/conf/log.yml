@@ -33,5 +33,28 @@ system:
     strintumap:
         c: 3
         d: 4
-        
+class:
+    person:
+        name: "张三"
+        age: 18
+        sex: true
+    map:
+        person01:
+            name: "map"
+            age: 1
+            sex: true
+        person02:
+            name: "map2"
+            age: 2
+            sex: true
+    vecmap:
+        p1:
+            - name: "p1"
+              age: 3
+              sex: false
+            - name: "p2"
+              age: 4
+              sex: true
+            
+
            

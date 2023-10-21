@@ -307,7 +307,7 @@ public:
             m_val = FromStr()(val);
         }catch(std::exception& e){
             GGO_LOG_ERROR(GGO_LOG_ROOT()) << "ConfigVar::fromstring exception " 
-                                          << e.what() << " convert string to XXX"
+                                          << e.what() << " convert string to " << typeid(T).name()
                                           << " name=" << m_name
                                           << " - " << val;
         }
