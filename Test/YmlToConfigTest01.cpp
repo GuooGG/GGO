@@ -64,7 +64,7 @@ int main()
     //载入配置
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);
-    std::cout<<"===================================================================================================================================================="<<std::endl;
+    std::cout<<"====================================================================================================================================================================="<<std::endl;
     // int 类型配置
     GGO_LOG_INFO(GGO_LOG_ROOT()) << "g_int_value_config after: " << g_int_value_config->getValue();
     // float 类型配置
