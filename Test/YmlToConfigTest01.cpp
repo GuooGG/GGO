@@ -182,18 +182,252 @@ void showCustomType(){
     }
 }
 
+// 配置系统整合日志系统 ，定义 LogAppender 和 logger 的定义结构体，并作模板偏特化
 
+static const char *LogLevelTOString(GGo::LogLevel level)
+{
+    switch (level)
+    {
+    case GGo::LogLevel::DEBUG:
+        return "DEBUG";
+        break;
+    case GGo::LogLevel::INFO:
+        return "INFO";
+        break;
+    case GGo::LogLevel::WARN:
+        return "WARN";
+        break;
+    case GGo::LogLevel::ERROR:
+        return "ERROR";
+        break;
+    case GGo::LogLevel::FATAL:
+        return "FATAL";
+    default:
+        return "UNKNOWN";
+    }
+}
+static GGo::LogLevel FromStringToLogLevel(const std::string &str)
+{
+    if (str == "DEBUG" || str == "debug")
+    {
+        return GGo::LogLevel::DEBUG;
+    }
+    if (str == "INFO" || str == "info")
+    {
+        return GGo::LogLevel::INFO;
+    }
+    if (str == "WARN" || str == "warn")
+    {
+        return GGo::LogLevel::WARN;
+    }
+    if (str == "ERROR" || str == "error")
+    {
+        return GGo::LogLevel::ERROR;
+    }
+    if (str == "FATAL" || str == "fatal")
+    {
+        return GGo::LogLevel::FATAL;
+    }
+    return GGo::LogLevel::UNKNOWN;
+}
+struct LogAppenderDefine
+{
+    /// @brief 1 file / 2 stdout
+    int type = 0;
+    GGo::LogLevel level = GGo::LogLevel::UNKNOWN;
+    std::string formatter;
+    std::string file;
+
+    bool operator==(const LogAppenderDefine &other) const
+    {
+        return type == other.type &&
+               level == other.level &&
+               formatter == other.formatter &&
+               file == other.file;
+    }
+};
+struct LogDefine
+{
+    std::string name;
+    GGo::LogLevel level = GGo::LogLevel::UNKNOWN;
+    std::string formatter;
+    std::vector<LogAppenderDefine> appenders;
+
+    bool operator==(const LogDefine &other) const
+    {
+        return name == other.name &&
+               level == other.level &&
+               formatter == other.formatter &&
+               appenders == other.appenders;
+    }
+    // 为了能使用std::map，需要提供大小比较的方法
+    bool operator<(const LogDefine &other) const
+    {
+        return name < other.name;
+    }
+    bool isValid() const
+    {
+        return !name.empty();
+    }
+};
+namespace GGo{
+/// @brief 模板类型偏特化 实现 YAML 字符串和LogDefine 自定义类的相互转换
+template <>
+class LexicalCast<std::string, LogDefine>
+{
+public:
+    LogDefine operator()(const std::string &ymlstr)
+    {
+        YAML::Node node = YAML::Load(ymlstr);
+        LogDefine ret;
+        if (!node["name"].IsDefined())
+        {
+            std::cout << "log config error: name is a null, " << node << std::endl;
+            throw std::logic_error("log config is null");
+        }
+        if (!node["level"].IsDefined())
+        {
+            std::cout << "log config error: level is a null, " << node << std::endl;
+            throw std::logic_error("log config is null");
+        }
+        ret.name = node["name"].as<std::string>();
+        ret.level = FromStringToLogLevel(node["level"].as<std::string>());
+        if (node["formatter"].IsDefined())
+        {
+            ret.formatter = node["formatter"].as<std::string>();
+        }
+        if (node["appenders"].IsDefined())
+        {
+            for (size_t i = 0; i < node["appenders"].size(); i++)
+            {
+                YAML::Node appender_node = node["appenders"][i];
+                if (!appender_node["type"].IsDefined())
+                {
+                    std::cout << "log config error: appender type is null" << std::endl;
+                }
+                std::string type = appender_node["type"].as<std::string>();
+                LogAppenderDefine appender_define;
+                if (type == "FileLogAppender")
+                {
+                    appender_define.type = 1;
+                    if (appender_node["level"].IsDefined())
+                    {
+                        appender_define.level = FromStringToLogLevel(appender_node["level"].as<std::string>());
+                    }
+                    if (!appender_node["file"].IsDefined())
+                    {
+                        std::cout << "log config error: fileappender file is null"
+                                  << appender_node << std::endl;
+                        continue;
+                    }
+                    appender_define.file = appender_node["file"].as<std::string>();
+                    if (appender_node["formatter"].IsDefined())
+                    {
+                        appender_define.formatter = appender_node["formatter"].as<std::string>();
+                    }
+                }
+                else if (type == "StdoutLogAppender")
+                {
+                    appender_define.type = 2;
+                    if (appender_node["level"].IsDefined())
+                    {
+                        appender_define.level = FromStringToLogLevel(appender_node["level"].as<std::string>());
+                    }
+                    if (appender_node["formatter"].IsDefined())
+                    {
+                        appender_define.formatter = appender_node["formatter"].as<std::string>();
+                    }
+                }
+                else
+                {
+                    std::cout << "log config error: appender type is valid" << std::endl;
+                }
+                ret.appenders.push_back(appender_define);
+            }
+        }
+        return ret;
+    }
+};
+
+template <>
+class LexicalCast<LogDefine, std::string>
+{
+public:
+    std::string operator()(const LogDefine &input)
+    {
+        YAML::Node node;
+        std::stringstream ss;
+        node["name"] = input.name;
+        if (input.level != LogLevel::UNKNOWN)
+        {
+            node["level"] = LogLevelTOString(input.level);
+        }
+        if (!input.formatter.empty())
+        {
+            node["formatter"] = input.formatter;
+        }
+
+        for (auto &appender : input.appenders)
+        {
+            YAML::Node appender_node;
+            if (appender.type == 1)
+            {
+                appender_node["type"] = "FileLogAppender";
+                appender_node["file"] = appender.file;
+            }
+            else if (appender.type == 2)
+            {
+                appender_node["type"] = "StdoutLogAppender";
+            }
+            if (appender.level != LogLevel::UNKNOWN)
+            {
+                appender_node["level"] = LogLevelTOString(appender.level);
+            }
+            if (!appender.formatter.empty())
+            {
+                appender_node["formatter"] = appender.formatter;
+            }
+
+            node["appenders"].push_back(appender_node);
+        }
+        ss << node;
+        return ss.str();
+    }
+};
+}
+
+GGo::ConfigVar<std::vector<LogDefine>>::ptr g_log_vec_config =
+    GGo::Config::Lookup("logs",std::vector<LogDefine>(), "logs config");
+
+void test_log_config(){
+    auto logdefines = g_log_vec_config->getValue();
+    for(auto& logdefine : logdefines){
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << logdefine.name;
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << LogLevelTOString(logdefine.level);
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << logdefine.formatter;
+        auto appenders = logdefine.appenders;
+        for(auto appender : appenders){
+            GGO_LOG_INFO(GGO_LOG_ROOT()) << appender.type;
+            GGO_LOG_INFO(GGO_LOG_ROOT()) << LogLevelTOString(appender.level);
+            GGO_LOG_INFO(GGO_LOG_ROOT()) << appender.file;
+            GGO_LOG_INFO(GGO_LOG_ROOT()) << appender.formatter;
+        }
+    }
+
+}
 
 int main()
 {
-    g_person->addListener([](const Person& oldv,const Person& newv){
-        GGO_LOG_INFO(GGO_LOG_ROOT()) << "callback called";
-    });
-    showCustomType();
+
+    // 测试回调函数
+    // g_person->addListener([](const Person& oldv,const Person& newv){
+    //     GGO_LOG_INFO(GGO_LOG_ROOT()) << "callback called";
+    // });
+    test_log_config();
     //载入配置
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);
-    std::cout<<"=========================================================================================================================================="<<std::endl;
-   showCustomType();
+    std::cout<<"================================================================================================================================"<<std::endl;
+    test_log_config();
     return 0;
 }
