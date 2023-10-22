@@ -9,6 +9,7 @@
 #include<map>
 #include<set>
 #include<unordered_set>
+#include<functional>
 //boost::lexical_cast操作符，将字符串转为数字类型
 //std::stoi(),std::stod(),std::to_string()
 //lexical<TargetType>(SrcType);
@@ -285,13 +286,14 @@ class ConfigVar : public ConfigVarBase{
 
 public:
     using ptr = std::shared_ptr<ConfigVar>;
+    /// @brief 配置项的值发生改变时触发的回调函数
+    using on_change_callback = std::function<void (const T& oldv,const T& newv)>;
 
     ConfigVar(const std::string& name,const T& default_value
             ,const std::string& description)
             :ConfigVarBase(name,description)
             ,m_val(default_value)
             {}
-    //TODO::修改日志里的XXX
     std::string toString() override{
         try{
             return ToStr()(m_val);
@@ -304,7 +306,7 @@ public:
     }
     bool fromString(const std::string& val) override{
         try{
-            m_val = FromStr()(val);
+            setValue(FromStr()(val));
         }catch(std::exception& e){
             GGO_LOG_ERROR(GGO_LOG_ROOT()) << "ConfigVar::fromstring exception " 
                                           << e.what() << " convert string to " << typeid(T).name()
@@ -314,10 +316,51 @@ public:
         return false;
     }
 
+    /// @brief 设定新的配置项值，执行委托的函数
+    void setValue(const T& v){
+        if(m_val == v){
+            return;
+        }
+        for(auto& kv: m_cbs){
+            kv.second(m_val,v);
+        }
+        m_val = v;
+    }
+
     const T getValue() const { return m_val;}
-    
+
+    /// @brief 添加对应的回调函数委托
+    /// @param cb 回调函数指针
+    /// @return 回调函数对应的唯一key，用于定位对应的回调函数
+    uint64_t addListener(on_change_callback cb){
+        static uint64_t s_cbfunc_id = 0;
+        m_cbs[s_cbfunc_id] = cb;
+        s_cbfunc_id++;
+        return s_cbfunc_id;
+    }
+
+    /// @brief 得到对应key的回调函数委托
+    on_change_callback getListener(uint64_t key){
+        auto it = m_cbs.find(key);
+        if(it == m_cbs.end()){
+            return nullptr;
+        }
+        return it->second;
+    }
+
+    /// @brief  清理对应key的回调函数委托
+    void delListener(uint64_t key){
+        m_cbs.erase(key);
+    }
+
+    /// @brief 清理所有的回调函数委托
+    void clearListener(){
+        m_cbs.clear();
+    }
 private:
     T m_val;
+    /// @brief 委托模式，存储回调函数映射表
+    std::map<uint64_t,on_change_callback> m_cbs;
 };
 
 class Config{

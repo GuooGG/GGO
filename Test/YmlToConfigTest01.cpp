@@ -123,6 +123,12 @@ public:
            << "]";
         return ss.str();
     }
+    bool operator==(const Person& oth) const
+    {
+        return m_name == oth.m_name
+            && m_age == oth.m_age
+            && m_sex == oth.m_sex;
+    }
 };
 //模板偏特化
 namespace GGo{
@@ -180,6 +186,9 @@ void showCustomType(){
 
 int main()
 {
+    g_person->addListener([](const Person& oldv,const Person& newv){
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << "callback called";
+    });
     showCustomType();
     //载入配置
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
