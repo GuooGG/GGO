@@ -394,38 +394,50 @@ public:
     }
 };
 }
-GGo::ConfigVar<std::vector<LogDefine>>::ptr g_log_vec_config =
-    GGo::Config::Lookup("logs",std::vector<LogDefine>(), "logs config");
-void test_log_config(){
-    auto logdefines = g_log_vec_config->getValue();
-    for(auto& logdefine : logdefines){
-        GGO_LOG_INFO(GGO_LOG_ROOT()) << "logger name: " <<logdefine.name;
-        GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "logger level: " <<LogLevelTOString(logdefine.level);
-        GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "logger formatter: " << logdefine.formatter;
-        auto appenders = logdefine.appenders;
-        for(auto appender : appenders){
-            GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender type: " <<appender.type;
-            GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender level:  " << LogLevelTOString(appender.level);
-            GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "appender file: " << appender.file;
-            GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender formatter: " << appender.formatter;
-        }
-    }
 
+// GGo::ConfigVar<std::set<LogDefine>>::ptr g_log_vec_config =
+//     GGo::Config::Lookup("logs",std::set<LogDefine>(), "logs config");
+// void test_log_config(){
+//     auto logdefines = g_log_vec_config->getValue();
+//     for(auto& logdefine : logdefines){
+//         GGO_LOG_INFO(GGO_LOG_ROOT()) << "logger name: " <<logdefine.name;
+//         GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "logger level: " <<LogLevelTOString(logdefine.level);
+//         GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "logger formatter: " << logdefine.formatter;
+//         auto appenders = logdefine.appenders;
+//         for(auto appender : appenders){
+//             GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender type: " <<appender.type;
+//             GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender level:  " << LogLevelTOString(appender.level);
+//             GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "appender file: " << appender.file;
+//             GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender formatter: " << appender.formatter;
+//         }
+//     }
+// }
+
+void test_log(){
+    static GGo::Logger::ptr system_logger = GGO_LOG_NAME("system");
+    GGO_LOG_INFO(system_logger) << "hello system logger";
+    std::cout << system_logger->toYamlString() << std::endl;
+    std::cout <<"========================================" << std::endl;
+    std::cout << GGo::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+    YAML::Node root = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
+    GGo::Config::loadFromYaml(root);
+    std::cout << "=============" << std::endl;
+    std::cout << GGo::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+    std::cout << "=============" << std::endl;
+    std::cout << root <<std::endl;
+    GGO_LOG_INFO(system_logger) << "hello system logger" <<std::endl;
+    system_logger->setFormatter("%d - %m%n");
+    GGO_LOG_INFO(system_logger) << "hello system logger" << std::endl;
+    GGO_LOG_INFO(GGO_LOG_ROOT()) << "hello root logger" << std::endl;
 }
 
-
 int main()
-{
+{   
 
     // 测试回调函数
     // g_person->addListener([](const Person& oldv,const Person& newv){
     //     GGO_LOG_INFO(GGO_LOG_ROOT()) << "callback called";
     // });
-    test_log_config();
-    //载入配置
-    YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
-    GGo::Config::loadFromYaml(node);
-    std::cout<<"================================================================================================================================"<<std::endl;
-    test_log_config();
+    test_log();
     return 0;
 }

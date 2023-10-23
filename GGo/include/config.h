@@ -378,7 +378,7 @@ public:
     /// @param description 参数描述
     /// @details 获取参数名为name的配置参数，如果存在直接返回
     ///          如果不存在，则创建该配置参数并用default_value赋值
-    /// @return 返回对应的配置啊承诺书，如果参数名存在但是类型不匹配则返回nulptr
+    /// @return 返回对应的配置，如果参数名存在但是类型不匹配则返回nulptr
     /// @exception 如果参数名包含非法字符[^0-9a-z_.] 则抛出异常 std::valid_argument
     template<class T>
     static typename ConfigVar<T>::ptr Lookup(
@@ -393,7 +393,7 @@ public:
                 GGO_LOG_INFO(GGO_LOG_ROOT()) << "Lookup name=" << name << " exists";
                 return tmp; 
             }else{
-                GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Lookup name=" << name << " exists but type not right";
+                GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Lookup name=" << name << " exists but type not "  << typeToName<T>();
                 return nullptr;
             }
         }

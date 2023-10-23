@@ -386,6 +386,7 @@ void Logger::log(LogLevel level, LogEvent::ptr event)
 				appender->log(self, level, event);
 			}
 		}else if(m_root){
+			//如果该日志器没有appender，则使用root日志器输出
 			m_root->log(level,event);
 		}
 	}

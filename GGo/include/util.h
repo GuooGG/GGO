@@ -19,6 +19,7 @@
 #include<sys/stat.h>
 #include<dirent.h>
 #include<string.h>
+#include<cxxabi.h>
 
 #include"LogSystem.h"
 
@@ -96,6 +97,15 @@ public:
 
 
 };
+
+/// @brief 将类型转为字符串
+/// @tparam T 类型名
+/// @return 对应字符串
+template<class T>
+const char* typeToName(){
+    static const char* s_name = abi::__cxa_demangle(typeid(T).name(),nullptr,nullptr,nullptr);
+    return s_name;
+}
 
 
 }
