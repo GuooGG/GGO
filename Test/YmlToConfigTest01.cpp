@@ -183,7 +183,6 @@ void showCustomType(){
 }
 
 // 配置系统整合日志系统 ，定义 LogAppender 和 logger 的定义结构体，并作模板偏特化
-
 static const char *LogLevelTOString(GGo::LogLevel level)
 {
     switch (level)
@@ -395,26 +394,25 @@ public:
     }
 };
 }
-
 GGo::ConfigVar<std::vector<LogDefine>>::ptr g_log_vec_config =
     GGo::Config::Lookup("logs",std::vector<LogDefine>(), "logs config");
-
 void test_log_config(){
     auto logdefines = g_log_vec_config->getValue();
     for(auto& logdefine : logdefines){
-        GGO_LOG_INFO(GGO_LOG_ROOT()) << logdefine.name;
-        GGO_LOG_INFO(GGO_LOG_ROOT()) << LogLevelTOString(logdefine.level);
-        GGO_LOG_INFO(GGO_LOG_ROOT()) << logdefine.formatter;
+        GGO_LOG_INFO(GGO_LOG_ROOT()) << "logger name: " <<logdefine.name;
+        GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "logger level: " <<LogLevelTOString(logdefine.level);
+        GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "logger formatter: " << logdefine.formatter;
         auto appenders = logdefine.appenders;
         for(auto appender : appenders){
-            GGO_LOG_INFO(GGO_LOG_ROOT()) << appender.type;
-            GGO_LOG_INFO(GGO_LOG_ROOT()) << LogLevelTOString(appender.level);
-            GGO_LOG_INFO(GGO_LOG_ROOT()) << appender.file;
-            GGO_LOG_INFO(GGO_LOG_ROOT()) << appender.formatter;
+            GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender type: " <<appender.type;
+            GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender level:  " << LogLevelTOString(appender.level);
+            GGO_LOG_INFO(GGO_LOG_ROOT()) <<  "appender file: " << appender.file;
+            GGO_LOG_INFO(GGO_LOG_ROOT()) << "appender formatter: " << appender.formatter;
         }
     }
 
 }
+
 
 int main()
 {

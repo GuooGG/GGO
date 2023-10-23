@@ -723,4 +723,86 @@ public:
 	}
 };
 
+
+GGo::ConfigVar<std::set<LogDefine> >::ptr g_log_defines = 
+	GGo::Config::Lookup("logs", std::set<LogDefine>(), "logs define");
+
+//静态成员的实例化先于main函数之前 可以确保程序执行前日志配置加载完毕
+struct LogIniter
+{
+	LogIniter(){
+		g_log_defines->addListener([](const std::set<LogDefine>& oldv,
+									const std::set<LogDefine>& newv){
+			GGO_LOG_INFO(GGO_LOG_ROOT()) << "on log config changed";
+			for(auto& logdefine : newv){
+				auto it = oldv.find(logdefine);
+				GGo::Logger::ptr logger;
+				if(it == oldv.end()){
+					// 添加新的logger并添加到logger容器
+					logger = GGO_LOG_NAME(logdefine.name);
+				}else{
+					//按名字找到了logger
+					if(!(*it == logdefine)){
+						//日志被修改过
+						logger = GGO_LOG_NAME(logdefine.name);
+					}else{
+						//日志没有被修改，直接跳过后面的流程
+						continue;
+					}
+				}
+				//按logdefine编辑得到的日志器
+				logger->setLevel(logdefine.level);
+				if(!logdefine.formatter.empty()){
+					logger->setFormatter(logdefine.formatter);
+				}
+				//修改appenders,事先清空重添加，不再一一比较
+				logger->clearAppenders();
+				for(auto& appender: logdefine.appenders){
+					GGo::LogAppender::ptr ap;
+					if(appender.type == 1){
+						ap.reset(new FileLogAppender(appender.file));
+					}else if(appender.type == 2){
+						ap.reset(new StdoutLogAppender());
+					}else{
+						//类型错误，添加该appender
+						continue;
+					}
+					ap->setLevel(appender.level);
+					if(!appender.formatter.empty()){
+						LogFormatter::ptr fmt(new LogFormatter(appender.formatter));
+						if(!fmt->isError()){
+							ap->setFormatter(fmt);
+						}
+						else{
+							std::cout << "log.name= " << logdefine.name << " appender type= "
+								<< appender.type << " formatter= " << appender.formatter
+								<< "is valid" << std::endl;
+						}
+					}
+					logger->addAppender(ap);
+
+				}
+
+
+
+			}
+			
+			for(auto& logdefine : oldv){
+				auto it = newv.find(logdefine);
+				if(it == newv.end()){
+					//删除logger
+					auto logger = GGO_LOG_NAME(logdefine.name);
+					logger->setLevel(LogLevel::UNKNOWN);
+					logger->clearAppenders();
+				}
+			}
+		});
+	}
+};
+
+static LogIniter __log_init;
+
+
+
+
 }
