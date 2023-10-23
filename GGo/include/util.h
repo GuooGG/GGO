@@ -56,12 +56,20 @@ public:
                             const std::string& subfix = "");
 
     /**
-     * @brief 返回文件的父目录路径
+     * @brief 获取目标文件绝对路径
      * 
+     * @param path 目标文件路径
+     * @param rpath 存放结果
+     */
+    static bool realPath(const std::string &path, std::string &rpath);
+
+    /**
+     * @brief 返回文件的父目录路径
+     *
      * @param filename 文件名
      * @return std::string 父目录路径
      */
-    static std::string dirName(const std::string& filename);
+    static std::string dirName(const std::string &filename);
 
     /**
      * @brief 创建文件夹
@@ -70,6 +78,43 @@ public:
      */
     static bool mkDir(const std::string& dirname);
 
+    /**
+     * @brief 移除目标目录
+     * 
+     * @param path 路径名
+     */
+    static bool Rm(const std::string& path);
+
+    /**
+     * @brief 移动文件
+     * 
+     * @param from 源路径
+     * @param to 目标路径
+     */
+    static bool Mv(const std::string& from, const std::string& to);
+
+    /**
+    * @brief 删除一个文件
+    * @param filename 文件名
+    * @param force 是否强制执行删除/预期文件是否存在
+    * @return 是否删除成功
+    */
+    static bool unLink(const std::string& filename,bool force = false);
+
+    /**
+     * @brief 得到文件名
+     * 
+     * @param filename 文件路径
+     */
+    static std::string baseName(const std::string &filename);
+
+    /**
+     * @brief 新建符号链接
+     * 
+     * @param from 源文件
+     * @param to 目标链接位置
+     */
+    static bool symLink(const std::string& from, const std::string& to);
 
     /**
      * @brief 打开文件并读取

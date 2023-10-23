@@ -3,13 +3,14 @@ logs:
       level: debug
       appenders:
           - type: FileLogAppender
-            file: /root/workspace/GGoSeverFrame/log/logroot.txt
+            file: /root/workspace/GGoSeverFrame/Test/log/logroot.txt
           - type: StdoutLogAppender
     - name: system
       level: info
       appenders:
           - type: FileLogAppender
-            file: /root/workspace/GGoSeverFrame/log/system.txt
+            formatter: "%d - %m%n"
+            file: /root/workspace/GGoSeverFrame/Test/log/system.txt
           - type: StdoutLogAppender
 system:
     port: 22

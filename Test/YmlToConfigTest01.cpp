@@ -426,7 +426,6 @@ void test_log(){
     std::cout << "=============" << std::endl;
     std::cout << root <<std::endl;
     GGO_LOG_INFO(system_logger) << "hello system logger" <<std::endl;
-    system_logger->setFormatter("%d - %m%n");
     GGO_LOG_INFO(system_logger) << "hello system logger" << std::endl;
     GGO_LOG_INFO(GGO_LOG_ROOT()) << "hello root logger" << std::endl;
 }

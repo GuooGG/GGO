@@ -14,6 +14,41 @@ uint32_t GetFiberID()
     return 0;
 }
 
+// 例如，如果一个函数只被一个源文件中的其他函数调用，并且不需要被其他源文件访问，
+// 那么这个函数可以只在该源文件中定义。这样的函数通常被声明为static，表示它只在当前源文件中可见。
+
+/**
+ * @brief 得到指定文件的stat结构体
+ *
+ * @param filename 文件名
+ * @param st 结构体指针
+ * @return int lstat()的返回值 0成功 -1失败
+ */
+static int __lstat(const char *filename, struct stat *st = nullptr)
+{
+    struct stat lst;
+    int ret = lstat(filename, &lst);
+    if (st)
+    {
+        *st = lst;
+    }
+    return ret;
+}
+
+/**
+ * @brief 创建目录
+ *
+ * @param dirname 目录名
+ * @return int 状态码 0:成功
+ */
+static int __mkdir(const char *dirname)
+{
+    if (access(dirname, F_OK) == 0)
+    {
+        return 0;
+    }
+    return mkdir(dirname, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+}
 
 void FSUtil::listAllFile(std::vector<std::string> &files, const std::string &path , const std::string &subfix)
 {
@@ -58,6 +93,20 @@ void FSUtil::listAllFile(std::vector<std::string> &files, const std::string &pat
 
 }
 
+bool FSUtil::realPath(const std::string &path, std::string &rpath)
+{
+    if(__lstat(path.c_str())){
+        return false;
+    }
+    char* ptr = ::realpath(path.c_str(), nullptr);
+    if(ptr == nullptr){
+        return false;
+    }
+    std::string(ptr).swap(rpath);
+    free(ptr);
+    return true;
+}
+
 std::string FSUtil::dirName(const std::string &filename)
 {
     if(filename.empty()){
@@ -78,40 +127,6 @@ std::string FSUtil::dirName(const std::string &filename)
 
 }
 
-// 例如，如果一个函数只被一个源文件中的其他函数调用，并且不需要被其他源文件访问，
-// 那么这个函数可以只在该源文件中定义。这样的函数通常被声明为static，表示它只在当前源文件中可见。
-
-/**
- * @brief 得到指定文件的stat结构体
- * 
- * @param filename 文件名
- * @param st 结构体指针
- * @return int lstat()的返回值 0成功 -1失败
- */
-static int __lstat(const char* filename, struct stat* st = nullptr){
-    struct stat lst;
-    int ret = lstat(filename,  &lst);
-    if(st){
-        *st = lst;
-    }
-    return ret;
-}
-
-/**
- * @brief 创建目录
- * 
- * @param dirname 目录名
- * @return int 状态码 0:成功 
- */
-static int __mkdir(const char *dirname)
-{
-    if (access(dirname, F_OK) == 0)
-    {
-        return 0;
-    }
-    return mkdir(dirname, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-}
-
 bool FSUtil::mkDir(const std::string &dirname)
 {
     if(__lstat(dirname.c_str()) == 0){
@@ -122,7 +137,6 @@ bool FSUtil::mkDir(const std::string &dirname)
     char* path = strdup(dirname.c_str());
     char* ptr = strchr(path + 1, '/');
     do{
-        // /root/workspace/GGoSeverFrame/GGo/src
         while(ptr){
             *ptr = '\0';
             if(__mkdir(path) != 0){
@@ -144,6 +158,75 @@ bool FSUtil::mkDir(const std::string &dirname)
     return false;
 }
 
+bool FSUtil::Rm(const std::string &path)
+{
+    struct stat st;
+    if(lstat(path.c_str(),&st)){
+        //访问不到目标目录，不用删除
+        return true;
+    }
+    if(!(st.st_mode & S_IFDIR)){
+        //如果不是目录，直接删除文件即可
+        return unLink(path);
+    }
+    //处理是目录的情况
+    DIR* dir = opendir(path.c_str());
+    if(!dir){
+        return false;
+    }
+    bool ret = true;
+    struct dirent* dp = nullptr;
+    while((dp = readdir(dir))){
+        if((!strcmp(dp->d_name,"."))||(!strcmp(dp->d_name,".."))){
+            continue;
+        }
+        std::string dirname = path + "/" + dp->d_name;
+        ret = Rm(dirname);
+    }
+    closedir(dir);
+    if(::rmdir(path.c_str())){
+        ret = false;
+    }
+    return ret;
+    
+}
+
+bool FSUtil::Mv(const std::string &from, const std::string &to)
+{
+    if(!Rm(to)){
+        return false;
+    }
+    return rename(from.c_str(),to.c_str());
+}
+
+bool FSUtil::unLink(const std::string &filename, bool force)
+{
+    if(!force && __lstat(filename.c_str())){
+        return true;
+    }
+    return ::unlink(filename.c_str()) == 0;
+}
+
+std::string FSUtil::baseName(const std::string &filename)
+{
+    if(filename.empty()){
+        return filename;
+    }
+    auto pos = filename.rfind('/');
+    if(pos == std::string::npos){
+        return filename;
+    }else{
+        return filename.substr(pos + 1);
+    }
+}
+
+bool FSUtil::symLink(const std::string &from, const std::string &to)
+{
+    if(!Rm(to)){
+        return false;
+    }
+    return ::symlink(from.c_str(), to.c_str()) == 0;
+}
 
 bool FSUtil::openForRead(std::ifstream &ifs, const std::string &filename, std::ios_base::openmode mode)
 {
