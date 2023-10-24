@@ -55,3 +55,6 @@ target_link_libraries(YmlTest01 ${LIBS})
 #生成YML文件转配置信息测试 01
 add_executable(YmlToConfigTest01 Test/YmlToConfigTest01.cpp)
 target_link_libraries(YmlToConfigTest01 ${LIBS})
+# 线程模块测试
+add_executable(ThreadTest01 Test/ThreadTest01.cpp)
+target_link_libraries(ThreadTest01 ${LIBS})
