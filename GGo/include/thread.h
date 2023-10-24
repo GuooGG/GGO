@@ -16,6 +16,7 @@
 #include<pthread.h>
 
 #include"nonCopyable.h"
+#include"mutex.h"
 
 namespace GGo{
 
@@ -66,6 +67,8 @@ private:
 	std::function<void()> m_cb;
 	/// @brief 线程名称
 	std::string m_name;
+	/// @brief 信号量
+	Semaphore m_semaphore;
 
 };
 
