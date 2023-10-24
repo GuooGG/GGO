@@ -24,7 +24,7 @@ int main(){
 
     std::vector<GGo::Thread::ptr> threads;
 
-    for(int i = 0 ;i < 3; i++){
+    for(int i = 0 ;i < 2; i++){
         GGo::Thread::ptr thread(new GGo::Thread(&func,"name_" + std::to_string(i)));
         threads.push_back(thread);
     }
