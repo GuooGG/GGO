@@ -236,13 +236,13 @@ public:
     using Lock = ScopedLock<SpinLock>;
 
     /// @brief 构造函数
-    Spinlock()
+    SpinLock()
     {
         pthread_spin_init(&m_mutex, 0);
     }
 
     /// @brief 析构函数
-    ~Spinlock()
+    ~SpinLock()
     {
         pthread_spin_destroy(&m_mutex);
     }
