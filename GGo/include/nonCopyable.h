@@ -7,6 +7,7 @@
  * @copyright Copyright (c) 2023
  * 
  */
+#pragma once
 class nonCopyable{
 public:
 
