@@ -288,6 +288,7 @@ class ConfigVar : public ConfigVarBase{
 
 public:
     using ptr = std::shared_ptr<ConfigVar>;
+    using RWMutexType = RWMutex;
     /// @brief 配置项的值发生改变时触发的回调函数
     using on_change_callback = std::function<void (const T& oldv,const T& newv)>;
 
@@ -298,6 +299,7 @@ public:
             {}
     std::string toString() override{
         try{
+            RWMutexType::readLock lock(m_mutex);
             return ToStr()(m_val);
         }catch (std::exception& e){
             GGO_LOG_ERROR(GGO_LOG_ROOT()) << "ConfigVar::toString exception "
@@ -308,6 +310,7 @@ public:
     }
     bool fromString(const std::string& val) override{
         try{
+
             setValue(FromStr()(val));
         }catch(std::exception& e){
             GGO_LOG_ERROR(GGO_LOG_ROOT()) << "ConfigVar::fromstring exception " 
@@ -320,22 +323,32 @@ public:
 
     /// @brief 设定新的配置项值，执行委托的函数
     void setValue(const T& v){
-        if(m_val == v){
-            return;
+        {
+            RWMutexType::readLock lock(m_mutex);
+            if (m_val == v)
+            {
+                return;
+            }
+            for (auto &kv : m_cbs)
+            {
+                kv.second(m_val, v);
+            }
         }
-        for(auto& kv: m_cbs){
-            kv.second(m_val,v);
-        }
+        RWMutexType::writeLock lock(m_mutex);
         m_val = v;
     }
 
-    const T getValue() const { return m_val;}
+    const T getValue() {
+        RWMutexType::readLock lock(m_mutex);
+        return m_val;
+    }
 
     /// @brief 添加对应的回调函数委托
     /// @param cb 回调函数指针
     /// @return 回调函数对应的唯一key，用于定位对应的回调函数
     uint64_t addListener(on_change_callback cb){
         static uint64_t s_cbfunc_id = 0;
+        RWMutexType::writeLock lock(m_mutex);
         m_cbs[s_cbfunc_id] = cb;
         s_cbfunc_id++;
         return s_cbfunc_id;
@@ -343,6 +356,7 @@ public:
 
     /// @brief 得到对应key的回调函数委托
     on_change_callback getListener(uint64_t key){
+        RWMutexType::readLock lock(m_mutex);
         auto it = m_cbs.find(key);
         if(it == m_cbs.end()){
             return nullptr;
@@ -352,24 +366,28 @@ public:
 
     /// @brief  清理对应key的回调函数委托
     void delListener(uint64_t key){
+        RWMutexType::writeLock lock(m_mutex);
         m_cbs.erase(key);
     }
 
     /// @brief 清理所有的回调函数委托
     void clearListener(){
+        RWMutexType::writeLock lock(m_mutex);
         m_cbs.clear();
     }
 private:
     T m_val;
     /// @brief 委托模式，存储回调函数映射表
     std::map<uint64_t,on_change_callback> m_cbs;
+    // mutex
+    RWMutexType m_mutex;
 };
 
 class Config{
 public:
     using ptr = std::shared_ptr<Config>;
     using ConfigVarMap = std::unordered_map<std::string,ConfigVarBase::ptr>;
-
+    using RWMutexType = RWMutex;
 
     /// @brief 获取/创建对应参数名的配置参数
     /// @param name 配置参数名称
@@ -384,7 +402,8 @@ public:
         const std::string& name,
         const T& default_value,
         const std::string& description = "")
-{
+{       
+        RWMutexType::writeLock lock(GetMutex());
         auto it = GetDatas().find(name);
         if(it != GetDatas().end()){
             auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
@@ -413,6 +432,7 @@ public:
     /// @return 返回配置参数名为name的配置参数 
     template<class T>
     static typename ConfigVar<T>::ptr Lookup(const std::string& name){
+        RWMutexType::readLock lock(GetMutex());
         auto it = GetDatas().find(name);
         if(it == GetDatas().end()){
             return nullptr;
@@ -428,15 +448,22 @@ public:
     /// @param name 配置名
     static ConfigVarBase::ptr lookupBase(const std::string& name);
 
-    ///@brief 得到所有配置项 
-    static ConfigVarMap& GetDatas(){
+
+
+private:
+    /// @brief 静态函数中静态变量，保证读写配置时锁一定初始化完毕
+    /// @return 读写锁
+    static RWMutexType& GetMutex(){
+        static RWMutexType s_mutex;
+        return s_mutex;
+    }
+
+    ///@brief 得到所有配置项
+    static ConfigVarMap &GetDatas()
+    {
         static ConfigVarMap s_datas;
         return s_datas;
     }
-
-private:
-
-    
 };
 
 
