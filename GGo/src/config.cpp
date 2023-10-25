@@ -56,4 +56,13 @@ ConfigVarBase::ptr Config::lookupBase(const std::string &name)
     return it->second;
 
 }
+void Config::visit(std::function<void(ConfigVarBase::ptr)> cb)
+{
+    RWMutexType::readLock lock(GetMutex());
+    ConfigVarMap& m = GetDatas();
+    for(auto it = m.begin(); it != m.end(); it++){
+        cb(it->second);
+    }
+
+}
 }

@@ -448,7 +448,9 @@ public:
     /// @param name 配置名
     static ConfigVarBase::ptr lookupBase(const std::string& name);
 
-
+    /// @brief 遍历配置模块所有配置项
+    /// @param cb 每个配置项的回调函数
+    static void visit(std::function<void(ConfigVarBase::ptr)> cb);
 
 private:
     /// @brief 静态函数中静态变量，保证读写配置时锁一定初始化完毕
