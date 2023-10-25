@@ -192,7 +192,6 @@ private:
     pthread_mutex_t m_mutex;
 };
 
-
 /// @brief 读写互斥锁
 class RWMutex : nonCopyable{
 public:
@@ -227,7 +226,6 @@ private:
     /// 读写锁
     pthread_rwlock_t m_lock;
 };
-
 
 /// @brief 自旋锁
 class SpinLock : nonCopyable{
@@ -290,14 +288,19 @@ public:
     using readLock = ScopedReadLock<NullRWMutex>;
     using writeLock = ScopedWriteLock<NullRWMutex>;
 
+    /// @brief 构造函数
     NullRWMutex(){}
 
-    ~NullRWMutex(){}
+    /// @brief 析构函数
+    ~NullRWMutex(){}    
 
+    /// @brief 上读锁
     void rdlock(){}
 
+    /// @brief 上写锁
     void wrlock(){}
 
+    /// @brief 解锁
     void unlock(){}
 
 };

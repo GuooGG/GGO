@@ -20,6 +20,7 @@
 #include"singleton.h"
 #include"thread.h"
 #include"util.h"
+#include"mutex.h"
 
 /**
  * @brief 获取主日志器
@@ -254,7 +255,6 @@ public:
 
 
 private:
-
 	//日志格式模板
 	std::string m_pattern;
 	//日志解析后格式
@@ -270,6 +270,7 @@ class LogAppender {
 friend class Logger;
 public:
 	using ptr = std::shared_ptr<LogAppender>;
+	using mutexType = SpinLock;
 
 	/// @brief 析构函数
 	virtual ~LogAppender() = default;
@@ -307,14 +308,15 @@ protected:
 	bool m_hasFormatter = false;
 	//日志格式器
 	LogFormatter::ptr m_formatter;
-
+	// mutex
+	mutexType m_mutex;
 };
 
-//TODO::这个继承有什么作用
 //日志器
 class Logger :public std::enable_shared_from_this<Logger>{
 public:
 	using ptr = std::shared_ptr<Logger>;
+	using mutexType = SpinLock;
 
 	/// @brief 构造函数
 	/// @param name 日志器名称，默认为root
@@ -390,6 +392,8 @@ private:
 	LogFormatter::ptr m_formatter;
 	//主日志器
 	Logger::ptr m_root;
+	// mutex
+	mutexType m_mutex;
 };
 
 /// @brief 输出到控制台的Appender
@@ -436,6 +440,8 @@ private:
 class LoggerManager{
 
 public:
+	using mutexType = SpinLock;
+
 	/// @brief 构造函数
 	LoggerManager();
 
@@ -457,6 +463,8 @@ private:
 	std::map<std::string, Logger::ptr> m_loggers;
 	//主日志器
 	Logger::ptr m_root;
+	// mutex
+	mutexType m_mutex;
 };
 
 using LoggerMgr = GGo::Singleton<LoggerManager>;

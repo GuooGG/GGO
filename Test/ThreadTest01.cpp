@@ -46,7 +46,7 @@ void countter()
 void test_countter_without_mutex(){
     std::vector<GGo::Thread::ptr> threads;
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 1000; i++)
     {
         GGo::Thread::ptr thread(new GGo::Thread(&countter, "name_" + std::to_string(i)));
         threads.push_back(thread);
@@ -91,7 +91,7 @@ int main(){
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/conf/log.yml");
     GGo::Config::loadFromYaml(node);
 
-    test_countter_with_mutex();
+    test_countter_without_mutex();
 
     GGO_LOG_INFO(g_logger) << "ThreadTest01 end";
     return 0;

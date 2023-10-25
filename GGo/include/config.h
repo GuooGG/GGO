@@ -371,7 +371,6 @@ public:
     using ConfigVarMap = std::unordered_map<std::string,ConfigVarBase::ptr>;
 
 
-    //TODO：：C++模板编程中typename的作用，用以区分歧义
     /// @brief 获取/创建对应参数名的配置参数
     /// @param name 配置参数名称
     /// @param default_value 参数默认值
