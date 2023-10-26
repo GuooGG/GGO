@@ -1,7 +1,7 @@
 /**
  * @file utilsTest.cpp
  * @author GGo
- * @brief 测试utils.h模块
+ * @brief 测试常用工具函数
  * @date 2023-10-26
  * 
  * @copyright Copyright (c) 2023
