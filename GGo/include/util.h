@@ -21,7 +21,7 @@
 #include<string.h>
 #include<cxxabi.h>
 
-#include"LogSystem.h"
+
 
 namespace GGo{
 
@@ -35,6 +35,18 @@ pid_t GetThreadID();
  */
 uint32_t GetFiberID();
 
+/// @brief 获取当前调用栈
+/// @param bt 调用栈信息容器
+/// @param size 最大返回层数
+/// @param skip 跳过栈顶层数
+void backTrace(std::vector<std::string>& bt, int size, int skip = 1);
+
+/// @brief 获取当前调用栈
+/// @param size 最大返回层数
+/// @param skip 跳过栈顶层数
+/// @param prefix 调用栈信息前缀
+/// @return 
+std::string backTraceToString(size_t size ,int skip = 2, const std::string& prefix = "");
 
 /**
  * @brief 常用文件API类

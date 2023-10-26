@@ -1,5 +1,8 @@
 #include"util.h"
 
+#include<execinfo.h>
+
+#include "LogSystem.h"
 
 namespace GGo{
     
@@ -14,8 +17,54 @@ uint32_t GetFiberID()
     return 0;
 }
 
-// 例如，如果一个函数只被一个源文件中的其他函数调用，并且不需要被其他源文件访问，
-// 那么这个函数可以只在该源文件中定义。这样的函数通常被声明为static，表示它只在当前源文件中可见。
+/// @brief 将编译器混淆后变量名转为人类可读变量名
+/// @param mangled_name 
+/// @return 
+static std::string demangle(const char *mangled_name)
+{
+    int status;
+    char *demangled_name = abi::__cxa_demangle(mangled_name, 0, 0, &status);
+
+    if (status == 0)
+    {
+        std::string result(demangled_name);
+        free(demangled_name);
+        return result;
+    }
+    else
+    {
+        return std::string(mangled_name);
+    }
+}
+
+void backTrace(std::vector<std::string> &bt, int size, int skip)
+{
+    void** buffer = (void **)malloc((sizeof(void *) * size));
+    size_t s = ::backtrace(buffer, size);
+
+    char** strings = backtrace_symbols(buffer, s);
+    if(strings == nullptr){
+        free(buffer);
+        return;
+    }
+    for(size_t i = skip; i < s; i++){
+        bt.push_back(demangle(strings[i]));
+    }
+    free(buffer);
+    free(strings);
+
+}
+
+std::string backTraceToString(size_t size, int skip, const std::string &prefix)
+{
+    std::stringstream ss;
+    std::vector<std::string> bt;
+    backTrace(bt, size, skip);
+    for(size_t i = 0; i < bt.size(); i++){
+        ss << prefix << bt[i] << std::endl;
+    }
+    return ss.str();
+}
 
 /**
  * @brief 得到指定文件的stat结构体

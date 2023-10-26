@@ -58,3 +58,6 @@ target_link_libraries(YmlToConfigTest01 ${LIBS})
 # 线程模块测试
 add_executable(ThreadTest01 Test/ThreadTest01.cpp)
 target_link_libraries(ThreadTest01 ${LIBS})
+# 常用工具函数测试
+add_executable(UtilsTest01 Test/UtilsTest01.cpp)
+target_link_libraries(UtilsTest01 ${LIBS})
