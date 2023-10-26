@@ -1,7 +1,3 @@
-//线程模块
-#pragma once
-#include<functional>
-#include<memory>
 /**
  * @file thread.h
  * @author GGo
@@ -11,6 +7,9 @@
  * @copyright Copyright (c) 2023
  * 
  */
+#pragma once
+#include<functional>
+#include<memory>
 #include<thread>
 #include<functional>
 #include<pthread.h>

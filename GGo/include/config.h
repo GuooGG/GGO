@@ -1,3 +1,12 @@
+/**
+ * @file config.h
+ * @author GGo
+ * @brief 配置模块
+ * @date 2023-10-18
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #pragma once
 #include<memory>
 #include<sstream>

@@ -1,3 +1,12 @@
+/**
+ * @file mutex.h
+ * @author GGo
+ * @brief 信号量、互斥量封装
+ * @date 2023-10-24
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #pragma once
 #include<pthread.h>
 #include<semaphore.h>
