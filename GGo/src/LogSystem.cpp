@@ -538,7 +538,6 @@ void FileLogAppender::log(Logger::ptr logger, LogLevel level, LogEvent::ptr even
 {
 	if(level >= m_level){
 		uint64_t now = event->getTime();
-		//TODO::这里为什么要判断时间
 		if(now >= (m_lastTime + 3)){
 			reopen();
 			m_lastTime = now;

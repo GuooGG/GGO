@@ -19,10 +19,6 @@
 #include<set>
 #include<unordered_set>
 #include<functional>
-//boost::lexical_cast操作符，将字符串转为数字类型
-//std::stoi(),std::stod(),std::to_string()
-//lexical<TargetType>(SrcType);
-//TODO::两者相比有什么区别
 #include<yaml-cpp/yaml.h>
 #include<boost/lexical_cast.hpp>
 #include"LogSystem.h"
@@ -286,7 +282,6 @@ public:
 };
 
 
-//TODO::回调函数委托还需做到线程安全，异常安全，循环引用的问题
 /// @brief 配置量类型
 /// @tparam T 配置量的值类型
 /// @tparam FromStr 用于从字符串转为值类型的类型

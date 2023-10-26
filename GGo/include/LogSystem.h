@@ -266,7 +266,6 @@ private:
 
 //日志输出目标
 class LogAppender {
-//TODO::friend关键字效果
 friend class Logger;
 public:
 	using ptr = std::shared_ptr<LogAppender>;

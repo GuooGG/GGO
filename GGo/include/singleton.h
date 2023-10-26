@@ -32,7 +32,6 @@ std::shared_ptr<T> GetInstancePtr(){
 /// @tparam T 类型
 /// @tparam X 为了创造多个实例对应的Tag
 /// @tparam N 同一个Tag创造多个实例的索引
-//TODO:: X N 在模板中的作用
 template<class T,class X = void,int N = 0>
 class Singleton{
 public:
