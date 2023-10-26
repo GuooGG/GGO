@@ -38,6 +38,7 @@ void test_backtrace(){
     func0();
 }
 
+
 int main(){
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);

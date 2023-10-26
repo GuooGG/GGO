@@ -116,7 +116,6 @@ void FSUtil::listAllFile(std::vector<std::string> &files, const std::string &pat
             //DT_DIR目录文件
             if((!strcmp(dp->d_name,"."))||(!strcmp(dp->d_name,".."))){
                 //如果是当前目录和父目录则跳过
-                //TODO::strcmp(s1,s2)相等返回0，s1>s2返回正数
                 continue;
             }
             //如果是普通目录，列出递归列出其中的文件
