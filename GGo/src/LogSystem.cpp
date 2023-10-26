@@ -109,7 +109,7 @@ LogFormatter::LogFormatter(const std::string &pattern)
 	init();
 }
 
-std::string LogFormatter::format(Logger::ptr logger, LogLevel level, LogEvent::ptr event)
+std::string LogFormatter::format(std::shared_ptr<Logger> logger, LogLevel level, LogEvent::ptr event)
 {
     std::stringstream ss;
 	for(auto& i : m_items){
@@ -118,7 +118,7 @@ std::string LogFormatter::format(Logger::ptr logger, LogLevel level, LogEvent::p
 	return ss.str();
 }
 
-std::ostream &LogFormatter::format(std::ostream &ofs, Logger::ptr logger, LogLevel level, LogEvent::ptr event)
+std::ostream &LogFormatter::format(std::ostream &ofs, std::shared_ptr<Logger> logger, LogLevel level, LogEvent::ptr event)
 {
     for(auto& i : m_items){
 		i->format(ofs,logger,level,event);
