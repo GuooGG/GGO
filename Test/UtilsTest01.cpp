@@ -13,6 +13,7 @@
 #include "util.h"
 #include "LogSystem.h"
 #include"config.h"
+#include"macro.h"
 using std::cout;
 using std::endl;
 
@@ -38,10 +39,14 @@ void test_backtrace(){
     func0();
 }
 
+void test_assert(){
+    GGO_ASSERT(1==2);
+    return;
+}
 
 int main(){
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);
-    test_backtrace();
+    test_assert();
     return 0;
 }

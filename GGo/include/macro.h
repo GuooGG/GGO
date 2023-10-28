@@ -25,10 +25,11 @@
 #endif
 
 ///@brief 断言宏封装
-#define GGO_ASSERT(X)                                       \
-    if(GGO_UNLIKELY(!(x))){                                 \
-        GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Assertion: "  #x  \
-                << "\nbacktrace: \n"                        \
-                << GGo::backTraceToString(100,2,"    ");    \
-        assert(x);                                          \
-    }                       
+#define GGO_ASSERT(x)\
+    if(GGO_UNLIKELY(!(x))){\
+        GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Assertion: "  #x\
+                << "\nbacktrace: \n" \
+                << GGo::backTraceToString(100,2,"    ");\
+        assert(x);\
+        }  
+                     
