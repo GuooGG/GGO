@@ -31,6 +31,17 @@
                 << "\nbacktrace: \n" \
                 << GGo::backTraceToString(100,2,"    ");\
         assert(x);\
-        }  
+        }
 
-          
+#define GGO_ASSERT(x, W)                                                         \
+    if (GGO_UNLIKELY(!(x)))                                                      \
+    {                                                                            \
+        GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Assertion: " #x                        \
+                                      << "\n" << w                               \
+                                      << "\nbacktrace: \n"                       \
+                                      << GGo::backTraceToString(100, 2, "    "); \
+        assert(x);                                                               \
+    }
+
+
+

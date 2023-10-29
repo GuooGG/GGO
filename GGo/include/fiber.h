@@ -80,7 +80,7 @@ public:
     /// @brief 得到协程ID
     uint64_t getID() const { return m_id; }
 
-    /// @brief 得到协程状态VGB
+    /// @brief 得到协程状态
     State getState() const { return m_state; }
 
 // 类静态方法
