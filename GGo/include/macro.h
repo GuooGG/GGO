@@ -33,7 +33,7 @@
         assert(x);\
         }
 
-#define GGO_ASSERT(x, W)                                                         \
+#define GGO_ASSERT2(x, W)                                                         \
     if (GGO_UNLIKELY(!(x)))                                                      \
     {                                                                            \
         GGO_LOG_ERROR(GGO_LOG_ROOT()) << "Assertion: " #x                        \

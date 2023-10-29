@@ -55,7 +55,7 @@
 #define GGO_LOG_FATAL(logger) GGO_LOG_LEVEL(logger,GGo::LogLevel::FATAL)
 
 
-
+// TODO::日志输出没有做异步IO
 namespace GGo {
 
 

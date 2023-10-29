@@ -13,7 +13,7 @@
 #include<functional>
 #include<ucontext.h>
 
-
+// TODO:: 协程ID没有做回收，最小堆
 namespace GGo{
 
 /// @brief 协程类
@@ -40,7 +40,7 @@ public:
 
 private:
     /// @brief 无参构造函数
-    /// @attention 每个线程中的第一个协程
+    /// @attention 每个线程中的第一个协程，主协程
     Fiber();
 
 public:
@@ -58,7 +58,7 @@ public:
     /// @param cb 新任务函数
     /// @pre State 为 INIT, TERM, EXCEPT
     /// @post State 为 INIT
-    reset(mission cb);
+    void reset(mission cb);
 
     /// @brief 将当前协程切换到运行状态
     /// @pre State != EXEC
