@@ -32,4 +32,5 @@
                 << GGo::backTraceToString(100,2,"    ");\
         assert(x);\
         }  
-                     
+
+          
