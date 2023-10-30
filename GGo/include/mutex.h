@@ -11,7 +11,7 @@
 #include<pthread.h>
 #include<semaphore.h>
 #include<stdint.h>
-
+#include<atomic>
 #include"nonCopyable.h"
 #include"mutex.h"
 
