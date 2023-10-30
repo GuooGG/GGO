@@ -61,3 +61,6 @@ target_link_libraries(ThreadTest01 ${LIBS})
 # 常用工具函数测试
 add_executable(UtilsTest01 Test/UtilsTest01.cpp)
 target_link_libraries(UtilsTest01 ${LIBS})
+# 协程模块测试
+add_executable(FiberTest01 Test/FiberTest01.cpp)
+target_link_libraries(FiberTest01 ${LIBS})

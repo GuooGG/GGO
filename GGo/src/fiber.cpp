@@ -65,7 +65,7 @@ Fiber::Fiber(mission cb, size_t stacksize, bool use_caller)
     m_ctx.uc_stack.ss_size = m_stacksize;
 
     makecontext(&m_ctx, &Fiber::mainFunc, 0);
-
+    GGO_LOG_DEBUG(g_logger) << "Fiber::Fiber id=" << m_id;
 }
 
 Fiber::~Fiber()
@@ -86,7 +86,7 @@ Fiber::~Fiber()
             setThis(nullptr);
         }
     }
-    GGO_LOG_DEBUG(g_logger) << "Fiber::~Fiber()" << m_id
+    GGO_LOG_DEBUG(g_logger) << "Fiber::~Fiber() id= " << m_id
                             << " total=" << s_fiber_count;
 }
 
@@ -115,7 +115,6 @@ void Fiber::swapIn()
     setThis(this);
     GGO_ASSERT(m_state != State::EXEC);
     m_state = State::EXEC;
-    
     if(swapcontext(&(t_threadFiber->m_ctx), &m_ctx)){
         GGO_ASSERT2(false, "swapcontext");
     }
@@ -124,7 +123,7 @@ void Fiber::swapIn()
 void Fiber::swapOut()
 {
     setThis(t_threadFiber.get());
-
+    GGO_LOG_DEBUG(g_logger) << "swapOut()";
     if(swapcontext(&m_ctx,&(t_threadFiber->m_ctx))){
         GGO_ASSERT2(false, "swapcontext");
     }
