@@ -36,7 +36,7 @@ public:
         READY,
         //异常状态
         EXCEPT
-    }
+    };
 
 private:
     /// @brief 无参构造函数

@@ -3,6 +3,7 @@
 #include<execinfo.h>
 
 #include "LogSystem.h"
+#include"fiber.h"
 
 namespace GGo{
     
@@ -13,8 +14,8 @@ pid_t GetThreadID()
 
 uint32_t GetFiberID()
 {
-    //TODO::返回协程ID
-    return 0;
+    //不在这里getthis，有些线程不一定有协程，不然会在这里初始化一个main协程
+    return GGo::Fiber::getFiberID();
 }
 
 /// @brief 将编译器混淆后变量名转为人类可读变量名

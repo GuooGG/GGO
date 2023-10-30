@@ -60,11 +60,11 @@ Fiber::Fiber(mission cb, size_t stacksize, bool use_caller)
     if(getcontext(&m_ctx)){
         GGO_ASSERT2(false,"getcontext");
     }
-    m_ctx.uc_link - nullptr;
+    m_ctx.uc_link = nullptr;
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
 
-    makecontext(&m_ctx, &Fiber::mainFunc(), 0);
+    makecontext(&m_ctx, &Fiber::mainFunc, 0);
 
 }
 
@@ -102,10 +102,10 @@ void Fiber::reset(mission cb)
     {
         GGO_ASSERT2(false, "getcontext");
     }
-    m_ctx.uc_link == nullptr;
+    m_ctx.uc_link = nullptr;
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
-    makecontext(&m_ctx, &Fiber::mainFunc(), 0);
+    makecontext(&m_ctx, &Fiber::mainFunc, 0);
 
     m_state = State::INIT;
 }
@@ -148,13 +148,71 @@ Fiber::ptr Fiber::getThis()
     if(t_fiber){
         return t_fiber->shared_from_this();
     }
-
+    //没有正在执行的协程，创建一个主协程
     Fiber::ptr main_fiber(new Fiber());
     GGO_ASSERT(t_fiber == main_fiber.get());
     t_threadFiber = main_fiber;
     return t_fiber->shared_from_this();
 
 }
+
+void Fiber::yieldToReady()
+{
+    Fiber::ptr cur = getThis();
+    GGO_ASSERT(cur->m_state == State::EXEC);
+    cur->m_state = State::READY;
+    cur->swapOut();
+}
+void Fiber::yieldToHold()
+{
+    Fiber::ptr cur = getThis();
+    GGO_ASSERT(cur->m_state == State::EXEC);
+    cur->m_state = State::HOLD;
+    cur->swapOut();
+}
+
+uint64_t Fiber::TotalFibers()
+{
+    return s_fiber_count;
+}
+void Fiber::mainFunc()
+{
+    Fiber::ptr cur = getThis();
+    GGO_ASSERT(cur);
+    try{
+        cur->m_cb();
+        cur->m_cb = nullptr;
+        cur->m_state = State::TERM;
+    }catch (std::exception& ex){
+        cur->m_state = State::EXCEPT;
+        GGO_LOG_ERROR(g_logger) << "Fiber Except: " << ex.what()
+                                << "fiberID= " << cur->getID()
+                                << std::endl
+                                << backTraceToString();
+    }catch(...){
+        cur->m_state = State::EXCEPT;
+        GGO_LOG_ERROR(g_logger) << "Fiber Except"
+                                << "fiberID= " << cur->getID()
+                                << std::endl
+                                << backTraceToString();   
+    }
+    auto cur_ptr = cur.get();
+    cur.reset();
+    cur_ptr->swapOut();
+
+    GGO_ASSERT2(false, "never reach area reached by fiber_id= " + std::to_string(cur_ptr->getID()));
+
+
+}
+
+
+
+
+
+
+
+
+
 
 
 }

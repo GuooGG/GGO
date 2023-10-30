@@ -46,7 +46,7 @@ void backTrace(std::vector<std::string>& bt, int size, int skip = 1);
 /// @param skip 跳过栈顶层数
 /// @param prefix 调用栈信息前缀
 /// @return 
-std::string backTraceToString(size_t size ,int skip = 2, const std::string& prefix = "");
+std::string backTraceToString(size_t size = 100 ,int skip = 2, const std::string& prefix = "");
 
 /**
  * @brief 常用文件API类
