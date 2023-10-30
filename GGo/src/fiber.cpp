@@ -60,7 +60,7 @@ Fiber::Fiber(mission cb, size_t stacksize, bool use_caller)
     if(getcontext(&m_ctx)){
         GGO_ASSERT2(false,"getcontext");
     }
-    m_ctx.uc_link = nullptr;
+    m_ctx.uc_link = &(t_threadFiber->m_ctx);
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
 
@@ -102,7 +102,7 @@ void Fiber::reset(mission cb)
     {
         GGO_ASSERT2(false, "getcontext");
     }
-    m_ctx.uc_link = nullptr;
+    m_ctx.uc_link = &(t_threadFiber->m_ctx);
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
     makecontext(&m_ctx, &Fiber::mainFunc, 0);
@@ -174,9 +174,10 @@ uint64_t Fiber::TotalFibers()
 {
     return s_fiber_count;
 }
+//TODO::原本指针释放做得不好，可以把uc_link指向主协程或者使用weak_ptr(weak指针貌似不行?)
 void Fiber::mainFunc()
 {
-    Fiber::ptr cur = getThis();
+    Fiber::ptr cur = Fiber::getThis();
     GGO_ASSERT(cur);
     try{
         cur->m_cb();
@@ -195,11 +196,12 @@ void Fiber::mainFunc()
                                 << std::endl
                                 << backTraceToString();   
     }
-    auto cur_ptr = cur.get();
-    cur.reset();
-    cur_ptr->swapOut();
+    // auto cur_ptr = cur.get();
+    // GGO_LOG_DEBUG(g_logger) << "cur reference count=" << cur.use_count();
+    // cur.reset();
+    // cur_ptr->swapOut();
 
-    GGO_ASSERT2(false, "never reach area reached by fiber_id= " + std::to_string(cur_ptr->getID()));
+    // GGO_ASSERT2(false, "never reach area reached by fiber_id= " + std::to_string(cur_ptr->getID()));
 
 
 }
