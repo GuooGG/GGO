@@ -5,7 +5,7 @@ namespace GGo{
 
 /// @brief 线程局部存储，每个线程都有自己的副本,线程指针与名称
 static thread_local Thread* t_thread = nullptr;
-static thread_local std::string t_thread_name = "UNKNOWN";
+static thread_local std::string t_thread_name = "UNKNOWN_THREAD_NAME";
 
 static GGo::Logger::ptr g_logger = GGO_LOG_NAME("system");
 

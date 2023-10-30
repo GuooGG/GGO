@@ -41,7 +41,7 @@
 	if (logger->getLevel() <= level)                                                                                       	\
 	GGo::LogEventWrap(GGo::LogEvent::ptr(new GGo::LogEvent(logger, level,                                                	\
 																 __FILE__, __LINE__, 0, GGo::GetThreadID(),              	\
-																 GGo::GetFiberID(), time(0), "Thread Nmae")))            	\
+																 GGo::GetFiberID(), time(0), GGo::Thread::GetThisName())))  \
 		.getSS()
 
 /**
