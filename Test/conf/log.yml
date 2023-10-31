@@ -9,7 +9,6 @@ logs:
       level: info
       appenders:
           - type: FileLogAppender
-            formatter: "%d - %m%n"
             file: /root/workspace/GGoSeverFrame/Test/log/system.txt
           - type: StdoutLogAppender
 system:

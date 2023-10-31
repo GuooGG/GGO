@@ -18,7 +18,7 @@ void test_scheduler(){
     GGO_LOG_INFO(g_logger) << "scheduler start";
     scheduler->start();
     GGO_LOG_INFO(g_logger) << "scheduler started";
-    for(int i = 0;i<100;i++){
+    for(int i = 0;i<1000;i++){
         scheduler->schedule(&printcount);
     }
     GGO_LOG_INFO(g_logger) << "scheduler stopp";
