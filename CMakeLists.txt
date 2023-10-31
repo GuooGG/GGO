@@ -64,3 +64,5 @@ target_link_libraries(UtilsTest01 ${LIBS})
 # 协程模块测试
 add_executable(FiberTest01 Test/FiberTest01.cpp)
 target_link_libraries(FiberTest01 ${LIBS})
+add_executable(SchedulerTest01 Test/SchedulerTest01.cpp)
+target_link_libraries(SchedulerTest01 ${LIBS})

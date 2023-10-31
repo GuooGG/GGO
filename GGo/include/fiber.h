@@ -16,8 +16,11 @@
 // TODO:: 协程ID没有做回收，最小堆
 namespace GGo{
 
+
+class Scheduler;
 /// @brief 协程类
 class Fiber : public std::enable_shared_from_this<Fiber> {
+friend class Scheduler;
 public:
     using ptr = std::shared_ptr<Fiber>;
     using mission = std::function<void()>;

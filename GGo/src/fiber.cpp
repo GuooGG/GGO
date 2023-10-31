@@ -129,6 +129,14 @@ void Fiber::swapOut()
     }
 }
 
+void Fiber::call()
+{
+}
+
+void Fiber::back()
+{
+}
+
 uint64_t Fiber::getFiberID()
 {
     if(t_fiber){

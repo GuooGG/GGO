@@ -217,7 +217,7 @@ public:
     ~SchedulerSwitcher();
 private:    
     Scheduler* m_caller;
-}
+};
 
 
 
