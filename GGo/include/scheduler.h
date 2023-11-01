@@ -55,6 +55,7 @@ public:
     /// @brief 启动协程调度器，初始化线程池
     void start();
 
+    /// @brief 关闭协程调度器，等待线程结束
     void stop();
 
     /// @brief 调度协程
@@ -80,7 +81,6 @@ public:
         {
             mutexType::Lock lock(m_mutex);
             while(begin != end){
-                //TODO::看不懂
                 need_tickle = scheduleNoLock(&*begin,-1) || need_tickle;
                 begin++;
             }
@@ -94,6 +94,7 @@ public:
     void switchTo(int thread = -1);
 protected:
     
+    /// @brief 通知有新任务
     virtual void tickle();
 
     /// @brief 协程调度工作函数
@@ -102,6 +103,7 @@ protected:
     /// @brief 调度器是否可以停止
     virtual bool canStopNow();
 
+    /// @brief 待机状态协程
     virtual void idle();
 
     /// @brief 设置当前线程的协程调度器

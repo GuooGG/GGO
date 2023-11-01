@@ -16,13 +16,15 @@
 // TODO:: 协程ID没有做回收，最小堆
 namespace GGo{
 
-
+/// @brief  协程调度器
 class Scheduler;
 /// @brief 协程类
 class Fiber : public std::enable_shared_from_this<Fiber> {
 friend class Scheduler;
 public:
+    /// @brief 智能指针
     using ptr = std::shared_ptr<Fiber>;
+    /// @brief 协程任务
     using mission = std::function<void()>;
 
     /// @brief 协程状态
@@ -51,8 +53,7 @@ public:
     /// @brief 协程构造函数
     /// @param cb 协程执行任务
     /// @param stacksize 协程栈大小
-    /// @param use_caller 执行后是否回到调度协程
-    Fiber(mission cb, size_t stacksize = 0, bool use_caller = false);
+    Fiber(mission cb, size_t stacksize = 0);
 
     /// @brief 析构函数
     ~Fiber();
@@ -68,17 +69,8 @@ public:
     /// @post State = EXEC
     void swapIn();
 
-    /// @brief 将当前协程挂起
+    /// @brief 退出当前协程
     void swapOut();
-
-    /// @brief 将当前协程切换到执行状态
-    /// @pre 执行的为当前线程的主协程
-    void call();
-
-    /// @brief 将当前线程切换到后台
-    /// @pre 执行的为该协程
-    /// @post 返回到线程的主协程
-    void back();
 
     /// @brief 得到协程ID
     uint64_t getID() const { return m_id; }
@@ -105,12 +97,7 @@ public:
     static uint64_t TotalFibers();
 
     /// @brief 协程执行函数
-    /// @post 执行完毕返回到线程主协程
     static void mainFunc();
-
-    /// @brief 协程执行函数
-    /// @post 执行完成返回到线程调度协程
-    static void callerMainFunc();
 
     /// @brief 返回当前协程的ID
     static uint64_t getFiberID();

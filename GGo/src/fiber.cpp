@@ -2,7 +2,7 @@
 #include"macro.h"
 #include"LogSystem.h"
 #include"config.h"
-
+#include"scheduler.h"
 #include <atomic>
 
 
@@ -49,7 +49,7 @@ Fiber::Fiber()
     GGO_LOG_DEBUG(g_logger) << "Fiber::Fiber main";
 }
 
-Fiber::Fiber(mission cb, size_t stacksize, bool use_caller)
+Fiber::Fiber(mission cb, size_t stacksize)
     :m_id(++s_fiber_id)
     ,m_cb(cb)
 {
@@ -123,18 +123,9 @@ void Fiber::swapIn()
 void Fiber::swapOut()
 {
     setThis(t_threadFiber.get());
-    GGO_LOG_DEBUG(g_logger) << "swapOut()";
     if(swapcontext(&m_ctx,&(t_threadFiber->m_ctx))){
         GGO_ASSERT2(false, "swapcontext");
     }
-}
-
-void Fiber::call()
-{
-}
-
-void Fiber::back()
-{
 }
 
 uint64_t Fiber::getFiberID()

@@ -9,19 +9,20 @@ static uint64_t count = 0;
 
 
 void printcount(){
-    count++;
-    GGO_LOG_INFO(g_logger) << "count now= " << count;
-    GGo::Fiber::yieldToReady();
-    count++;
-    GGO_LOG_INFO(g_logger) << "count now= " << count;
+    for(int i = 0; i < 100; i++){
+        count++;
+        GGO_LOG_INFO(g_logger) << "count now= " << count;
+        GGo::Fiber::yieldToReady();
+
+    }
 }
 void test_scheduler(bool use_caller){
-    GGo::Scheduler::ptr scheduler(new GGo::Scheduler(2, use_caller, "test scheduler"));
+    GGo::Scheduler::ptr scheduler(new GGo::Scheduler(1, use_caller, "test scheduler"));
     GGO_LOG_INFO(g_logger) << "scheduler structed";
     GGO_LOG_INFO(g_logger) << "scheduler start";
     scheduler->start();
     GGO_LOG_INFO(g_logger) << "scheduler started";
-    for(int i = 0;i<10;i++){
+    for(int i = 0;i<100;i++){
         GGO_LOG_INFO(g_logger) << "mission " << i << " appended";
         scheduler->schedule(&printcount);
     }
@@ -34,6 +35,6 @@ int main(){
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);
 
-    test_scheduler(false);
+    test_scheduler(true);
     return 0;
 }

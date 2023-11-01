@@ -25,7 +25,7 @@ Scheduler::Scheduler(size_t thread_pool_size, bool use_caller, const std::string
         GGO_ASSERT(getThis() == nullptr);
         t_scheduler = this;
         // 执行构造函数的该线程作为调度协程
-        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
+        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0));
         GGo::Thread::setName(m_name);
 
         t_scheduler_fiber = m_rootFiber.get();
@@ -103,7 +103,7 @@ void Scheduler::stop()
     }
 
     if(m_rootFiber && !canStopNow()){
-        m_rootFiber->call();
+        m_rootFiber->swapIn();
     }
 
     std::vector<Thread::ptr> thrs;
