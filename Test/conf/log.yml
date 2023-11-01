@@ -6,7 +6,7 @@ logs:
             file: /root/workspace/GGoSeverFrame/Test/log/logroot.txt
           - type: StdoutLogAppender
     - name: system
-      level: info
+      level: debug
       appenders:
           - type: FileLogAppender
             file: /root/workspace/GGoSeverFrame/Test/log/system.txt
