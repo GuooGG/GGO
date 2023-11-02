@@ -49,9 +49,10 @@ Fiber::Fiber()
     GGO_LOG_DEBUG(g_logger) << "Fiber::Fiber main";
 }
 
-Fiber::Fiber(mission cb, size_t stacksize)
+Fiber::Fiber(mission cb, size_t stacksize, bool use_scheduler)
     :m_id(++s_fiber_id)
     ,m_cb(cb)
+    ,m_hasScheduler(use_scheduler)
 {
     s_fiber_count++;
 
@@ -60,7 +61,15 @@ Fiber::Fiber(mission cb, size_t stacksize)
     if(getcontext(&m_ctx)){
         GGO_ASSERT2(false,"getcontext");
     }
-    m_ctx.uc_link = &(t_threadFiber->m_ctx);
+    //使用了调度器就回到调度协程，没有使用调度器回到主协程
+    if (m_hasScheduler)
+    {
+        m_ctx.uc_link = &(Scheduler::getMainFiber()->m_ctx);
+    }
+    else
+    {
+        m_ctx.uc_link = &(t_threadFiber->m_ctx);
+    }
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
 
@@ -115,17 +124,29 @@ void Fiber::swapIn()
     setThis(this);
     GGO_ASSERT(m_state != State::EXEC);
     m_state = State::EXEC;
-    if(swapcontext(&(t_threadFiber->m_ctx), &m_ctx)){
-        GGO_ASSERT2(false, "swapcontext");
+    if(m_hasScheduler){
+        if(swapcontext(&(Scheduler::getMainFiber()->m_ctx),&m_ctx))
+    }else{
+        if (swapcontext(&(t_threadFiber->m_ctx), &m_ctx))
+        {
+            GGO_ASSERT2(false, "swapcontext");
+        }
     }
+
 }
 
 void Fiber::swapOut()
 {
     setThis(t_threadFiber.get());
-    if(swapcontext(&m_ctx,&(t_threadFiber->m_ctx))){
-        GGO_ASSERT2(false, "swapcontext");
+    if(m_hasScheduler){
+        if(swapcontext(&m_ctx,&(Scheduler::getMainFiber()->m_ctx)));
+    }else{
+        if (swapcontext(&m_ctx, &(t_threadFiber->m_ctx)))
+        {
+            GGO_ASSERT2(false, "swapcontext");
+        }
     }
+
 }
 
 uint64_t Fiber::getFiberID()
@@ -173,7 +194,7 @@ uint64_t Fiber::TotalFibers()
 {
     return s_fiber_count;
 }
-//TODO::原本指针释放做得不好，可以把uc_link指向主协程或者使用weak_ptr(weak指针貌似不行?)
+
 void Fiber::mainFunc()
 {
     Fiber::ptr cur = Fiber::getThis();
@@ -195,13 +216,6 @@ void Fiber::mainFunc()
                                 << std::endl
                                 << backTraceToString();   
     }
-    // auto cur_ptr = cur.get();
-    // GGO_LOG_DEBUG(g_logger) << "cur reference count=" << cur.use_count();
-    // cur.reset();
-    // cur_ptr->swapOut();
-
-    // GGO_ASSERT2(false, "never reach area reached by fiber_id= " + std::to_string(cur_ptr->getID()));
-
 
 }
 

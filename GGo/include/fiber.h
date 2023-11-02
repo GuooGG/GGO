@@ -53,7 +53,8 @@ public:
     /// @brief 协程构造函数
     /// @param cb 协程执行任务
     /// @param stacksize 协程栈大小
-    Fiber(mission cb, size_t stacksize = 0);
+    /// @param use_caller 是否使用调度器
+    Fiber(mission cb, size_t stacksize = 0, bool use_scheduler = false);
 
     /// @brief 析构函数
     ~Fiber();
@@ -114,6 +115,8 @@ private:
     void* m_stack = nullptr;
     // 协程运行函数
     mission m_cb;
+    // 是否使用了调度器
+    bool m_hasScheduler = false;
 
 };
 
