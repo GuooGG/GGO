@@ -12,7 +12,7 @@ void printcount(){
     for(int i = 0; i < 3; i++){
         count++;
         GGO_LOG_INFO(g_logger) << "count now= " << count;
-        // GGo::Fiber::yieldToReady();
+        GGo::Fiber::yieldToReady();
 
     }
 }
@@ -22,7 +22,7 @@ void test_scheduler(bool use_caller){
     GGO_LOG_INFO(g_logger) << "scheduler start";
     scheduler->start();
     GGO_LOG_INFO(g_logger) << "scheduler started";
-    for(int i = 0;i<100;i++){
+    for(int i = 0;i<5;i++){
         GGO_LOG_INFO(g_logger) << "mission " << i << " appended";
         scheduler->schedule(&printcount);
     }

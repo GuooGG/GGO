@@ -15,9 +15,9 @@ void fiber_01(){
 void test_fiber_basic_01(){
     GGo::Fiber::getThis();
     GGo::Fiber::ptr fiber(new GGo::Fiber(fiber_01));
-    for(int i = 0;i<=10;i++){
+    for(int i = 0; i <= 10; i++){
         fiber->swapIn();
-        GGO_LOG_INFO(g_logger) << "basic_01 " <<"swapin " << i+1 << " times ";
+        GGO_LOG_INFO(g_logger) << "basic_01 " <<"swapin " << i + 1 << " times ";
     }
 
 }
