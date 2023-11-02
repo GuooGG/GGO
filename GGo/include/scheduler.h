@@ -11,7 +11,7 @@
 #pragma once
 #include<memory>
 #include<list>
-#include<verto>
+#include<vector>
 #include<iostream>
 
 #include"fiber.h"
@@ -43,9 +43,68 @@ public:
     /// @brief 析构函数
     ~Scheduler();
 
+    /// @brief 得到当前协程调度器的名称
+    const std::string& getName() const { return m_name; }
 
+    /// @brief 返回当前线程的协程调度器
+    static Scheduler* getThis();
 
+    /// @brief 返回当前线程的调度协程
+    static Fiber* getMainFiber();
 
+    /// @brief 启动调度器，初始化线程池
+    void start();
+
+    /// @brief 停止协程调度器
+    void stop();
+
+    /// @brief 调度任务
+    template<class FiberOrCb>
+    void schedule(FiberOrCb fc, int thread = -1){
+        bool need_tickle = false;
+        {
+            mutexType::Lock lock(m_mutex);
+            need_tickle = scheduleNoLock(fc, thread);
+        }
+        if(need_tickle){
+            tickle();
+        }
+    }
+
+    /// @brief 批量调度任务
+    /// @tparam InputIterator 任务迭代器
+    template<class InputIterator>
+    void schedule(InputIterator begin, InputIterator end){
+        bool need_tickle = false;
+        {
+            mutexType::Lock lock(m_mutex);
+            while(begin != end){
+                need_tickle = scheduleNoLock(&*begin, -1) || need_tickle;
+            }
+        }
+        if(need_tickle){
+            tickle();
+        }
+    }
+protected:
+
+    /// @brief 通知调度器有新任务了
+    virtual void tickle();
+
+    /// @brief 调度器调度算法
+    void run();
+
+    /// @brief 返回调度器目前是否可以停止
+    virtual bool canStopNow();
+
+    /// @brief 无任务时调度时执行的idle协程
+    virtual void idle();
+
+    /// @brief 设置当前线程的协程调度器
+    void setThis();
+
+    /// @brief 是否有空闲线程
+    bool hasIdleThread() const { return m_idleThreadCount > 0; }
 private:
     /// @brief 任务内容构造体
     struct Misson{
@@ -84,6 +143,16 @@ private:
         }
     };
 
+    /// @brief 向任务队列中添加任务（无锁）
+    template<class FiberOrCb>
+    bool scheduleNoLock(FiberOrCb fc, int thread){
+        bool need_tickle = m_missons.empty();
+        Misson misson(fc,thread);
+        if(misson.cb || misson.fiber){
+            m_missons.push_back(misson);
+        }
+        return need_tickle;
+    }
 private:
     // 互斥量
     mutexType m_mutex;
@@ -95,7 +164,24 @@ private:
     Fiber::ptr m_rootFiber;
     // 调度器名称
     std::string m_name;
-}
+
+protected:
+    // 线程ID数组
+    std::vector<int> m_threadIDs;
+    // 线程数量
+    size_t m_threadCount = 0;
+    // 工作线程数量
+    std::atomic<size_t> m_activeThreadCount = {0};
+    // 空闲线程数量
+    std::atomic<size_t> m_idleThreadCount = {0};
+    // 是否正在停止
+    bool m_isStopping = true;
+    // 是否自动停止
+    bool m_autoStop = false;
+    // 主线程
+    pid_t m_rootThread = 0;
+
+};
 
 
 

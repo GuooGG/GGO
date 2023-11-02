@@ -56,7 +56,7 @@ Fiber::Fiber(mission cb, size_t stacksize, bool use_scheduler)
 {
     s_fiber_count++;
 
-    m_stacksize = stacksize ? stacksize : g_fiber_stack_size->getValue();
+    m_stacksize = stacksize != 0 ? stacksize : g_fiber_stack_size->getValue();
     m_stack = StackAlloactor::Alloc(m_stacksize);
     if(getcontext(&m_ctx)){
         GGO_ASSERT2(false,"getcontext");
