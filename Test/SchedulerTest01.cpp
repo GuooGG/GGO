@@ -30,10 +30,30 @@ void test_scheduler(bool use_caller){
     GGO_LOG_INFO(g_logger) << "scheduler stopped";
 }
 
+void test_fiber(){
+    static int s_count = 10;
+    GGO_LOG_INFO(g_logger) << "test in fiber s_count=" << s_count;
+
+    // sleep(1);
+    // GGo::Fiber::yieldToReady();
+    if (--s_count >= 0)
+    {
+        GGo::Scheduler::getThis()->schedule(&test_fiber, GGo::GetThreadID());
+    }
+}
+void test(){
+    GGo::Scheduler sc(6, false, "test");
+    sc.start();
+    // sleep(2);
+    sc.schedule(&test_fiber);
+    sc.stop();
+    return;
+
+}
 int main(){
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);
 
-    test_scheduler(true);
+    test();
     return 0;
 }
