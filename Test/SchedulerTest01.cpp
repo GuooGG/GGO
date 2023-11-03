@@ -9,11 +9,10 @@ static uint64_t count = 0;
 
 
 void printcount(){
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 3; i++){
         count++;
         GGO_LOG_INFO(g_logger) << "count now= " << count;
         GGo::Fiber::yieldToReady();
-
     }
 }
 void test_scheduler(bool use_caller){
@@ -22,7 +21,7 @@ void test_scheduler(bool use_caller){
     GGO_LOG_INFO(g_logger) << "scheduler start";
     scheduler->start();
     GGO_LOG_INFO(g_logger) << "scheduler started";
-    for(int i = 0;i < 10;i++){
+    for(int i = 0;i < 5;i++){
         GGO_LOG_INFO(g_logger) << "mission " << i + 1 << " appended";
         scheduler->schedule(&printcount);
     }

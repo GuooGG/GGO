@@ -20,8 +20,9 @@ Scheduler::Scheduler(size_t thread_pool_size, bool use_caller, const std::string
         GGo::Thread::setName(m_name);
         thread_pool_size--;
         // 在当前线程新建一个主协程作为调度协程
-        GGo::Fiber::getThis();
 
+        GGo::Fiber::getThis();
+        GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "main fiber id= " << Fiber::getThis()->m_id;
         // 断言当前线程没有其他调度器
         GGO_ASSERT(Scheduler::getThis() == nullptr);
         t_scheduler = this;
@@ -114,7 +115,7 @@ void Scheduler::stop()
 }
 void Scheduler::tickle()
 {
-    GGO_LOG_INFO(g_logger) << "tickle";
+    // GGO_LOG_INFO(g_logger) << "tickle";
 }
 void Scheduler::run()
 {
@@ -125,8 +126,8 @@ void Scheduler::run()
     if(GGo::GetThreadID() != m_rootThread){
         t_scheduler_fiber = Fiber::getThis().get();
     }
-
     Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle,this),0,true));
+    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "idle fiber id= " << idle_fiber->m_id;
     Fiber::ptr cb_fiber;
     Misson mission;
     // 开始调度
@@ -165,14 +166,12 @@ void Scheduler::run()
 
         if(mission.fiber && mission.fiber->getState() != Fiber::State::TERM
                             && mission.fiber->getState() != Fiber::State::EXCEPT){
-            // mission.fiber->m_hasScheduler = true;
+            // 执行前任务不可以是结束状态和出错状态
             mission.fiber->swapIn();
             m_activeThreadCount--;
             if(mission.fiber->getState() == Fiber::State::READY){
+                // 执行完是ready状态，可以继续进入调度队列
                 schedule(mission.fiber);
-            }else if(mission.fiber->getState() != Fiber::State::TERM
-                    && mission.fiber->getState() != Fiber::State::EXCEPT){
-                mission.fiber->m_state = Fiber::State::HOLD;
             }
             mission.reset();
         }else if(mission.cb){
@@ -180,18 +179,20 @@ void Scheduler::run()
                 cb_fiber->reset(mission.cb);
             }else{
                 cb_fiber.reset(new Fiber(mission.cb,1024 * 128, true));
+                GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "mission fiber id= " << cb_fiber->m_id;
             }
             mission.reset();
             cb_fiber->swapIn();
             m_activeThreadCount--;
             if(cb_fiber->getState() == Fiber::State::READY){
+                // 执行完是ready状态，可以继续进入调度队列
                 schedule(cb_fiber);
                 cb_fiber.reset();
             }else if(cb_fiber->getState() == Fiber::State::EXCEPT
-                    || cb_fiber->getState() == Fiber::State::EXEC){
+                    || cb_fiber->getState() == Fiber::State::TERM){
+                // 执行完任务是结束或出错状态，重设任务为空
                 cb_fiber->reset(nullptr);
             }else{
-                cb_fiber->m_state = Fiber::State::HOLD;
                 cb_fiber.reset();
             }
         }else{

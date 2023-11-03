@@ -46,7 +46,7 @@ Fiber::Fiber()
 
     s_fiber_count++;
 
-    GGO_LOG_DEBUG(g_logger) << "Fiber::Fiber main";
+    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "Fiber::Fiber main " << m_id;
 }
 
 Fiber::Fiber(mission cb, size_t stacksize, bool use_scheduler)
@@ -82,6 +82,7 @@ Fiber::~Fiber()
     s_fiber_count--;
     if(m_stack){
         //释放一般协程的资源
+        GGO_LOG_DEBUG(GGO_LOG_ROOT()) << " Misson Fiber ID: " << m_id << " to destructed" << " state: " << (int)m_state;
         GGO_ASSERT(m_state == State::TERM 
                 || m_state == State::INIT
                 || m_state == State::EXCEPT);
@@ -173,6 +174,7 @@ Fiber::ptr Fiber::getThis()
     }
     //没有正在执行的协程，创建一个主协程
     Fiber::ptr main_fiber(new Fiber());
+    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "main fiber id= " << main_fiber->m_id;
     GGO_ASSERT(t_fiber == main_fiber.get());
     t_threadFiber = main_fiber;
     return t_fiber->shared_from_this();
@@ -182,6 +184,7 @@ Fiber::ptr Fiber::getThis()
 void Fiber::yieldToReady()
 {
     Fiber::ptr cur = getThis();
+    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "FIBER " << cur->m_id << " to yield" << " state: " << (int)cur->m_state;
     GGO_ASSERT(cur->m_state == State::EXEC);
     cur->m_state = State::READY;
     cur->swapOut();
