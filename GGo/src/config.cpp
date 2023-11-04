@@ -1,5 +1,5 @@
 #include "config.h"
-
+#include"bytearray.h"
 namespace GGo{
 
 
