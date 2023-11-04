@@ -41,7 +41,7 @@ public:
                 const std::string& name = "scheduler");
     
     /// @brief 析构函数
-    ~Scheduler();
+    virtual ~Scheduler();
 
     /// @brief 得到当前协程调度器的名称
     const std::string& getName() const { return m_name; }
