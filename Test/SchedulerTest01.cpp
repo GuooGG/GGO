@@ -10,11 +10,11 @@ static uint64_t count = 0;
 //TODO:: 没有挂起点的函数在单线程下,use_caller=false时剩下三个协程不析构
 void printcount(){
 
-        // GGo::Fiber::yieldToReady();
-        // GGo::Fiber::yieldToReady();
         GGo::Fiber::yieldToReady();
-        // GGo::Fiber::yieldToReady();
-        // GGo::Fiber::yieldToReady();
+        GGo::Fiber::yieldToReady();
+        GGo::Fiber::yieldToReady();
+        GGo::Fiber::yieldToReady();
+        GGo::Fiber::yieldToReady();
 }
 void test_scheduler(bool use_caller){
     GGo::Scheduler scheduler(1, use_caller, "test scheduler");
@@ -56,6 +56,6 @@ int main(){
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);
 
-    test_scheduler(false);
+    test_scheduler(true);
     return 0;
 }
