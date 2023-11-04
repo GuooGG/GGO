@@ -13,7 +13,7 @@
 #include<functional>
 #include<ucontext.h>
 
-// TODO:: 协程ID没有做回收，最小堆
+// TODO:: 协程ID没有做回收，可以用最小堆
 namespace GGo{
 
 /// @brief  协程调度器
@@ -59,6 +59,12 @@ public:
     /// @brief 析构函数
     ~Fiber();
 
+    /// @brief 执行当前协程
+    void call();
+
+    /// @brief 退出当前协程
+    void back();
+
     /// @brief 重设协程的执行任务
     /// @param cb 新任务函数
     /// @pre State 为 INIT, TERM, EXCEPT
@@ -99,6 +105,9 @@ public:
 
     /// @brief 协程执行函数
     static void mainFunc();
+
+    /// @brief 调度协程执行函数
+    static void schedulerMainFunc();
 
     /// @brief 返回当前协程的ID
     static uint64_t getFiberID();

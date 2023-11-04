@@ -27,7 +27,7 @@ Scheduler::Scheduler(size_t thread_pool_size, bool use_caller, const std::string
         GGO_ASSERT(Scheduler::getThis() == nullptr);
         t_scheduler = this;
 
-        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this)));
+        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0 , true));
         t_scheduler_fiber = m_rootFiber.get();
         m_rootThread = GGo::GetThreadID();
         m_threadIDs.push_back(m_rootThread);
@@ -98,7 +98,7 @@ void Scheduler::stop()
     if(m_rootFiber){
         tickle();
         if(!canStopNow()){
-            m_rootFiber->swapIn();
+            m_rootFiber->call();
         }
     }
 
@@ -126,7 +126,7 @@ void Scheduler::run()
     if(GGo::GetThreadID() != m_rootThread){
         t_scheduler_fiber = Fiber::getThis().get();
     }
-    Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle,this),0,true));
+    Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle,this)));
     Fiber::ptr cb_fiber;
     Misson mission;
     // 开始调度
@@ -177,7 +177,7 @@ void Scheduler::run()
             if(cb_fiber){
                 cb_fiber->reset(mission.cb);
             }else{
-                cb_fiber.reset(new Fiber(mission.cb,1024 * 128, true));
+                cb_fiber.reset(new Fiber(mission.cb));
             }
             mission.reset();
             cb_fiber->swapIn();
