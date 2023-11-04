@@ -74,7 +74,6 @@ Fiber::Fiber(mission cb, size_t stacksize, bool use_scheduler)
     m_ctx.uc_stack.ss_size = m_stacksize;
 
     makecontext(&m_ctx, &Fiber::mainFunc, 0);
-    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "Fiber::Fiber id=" << m_id;
 }
 
 Fiber::~Fiber()
@@ -148,6 +147,7 @@ void Fiber::swapOut()
     }else{
         if (swapcontext(&m_ctx, &(t_threadFiber->m_ctx)))
         {
+
             GGO_ASSERT2(false, "swapcontext");
         }
     }

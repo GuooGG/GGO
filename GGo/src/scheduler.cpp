@@ -127,7 +127,6 @@ void Scheduler::run()
         t_scheduler_fiber = Fiber::getThis().get();
     }
     Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle,this),0,true));
-    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "idle fiber id= " << idle_fiber->m_id;
     Fiber::ptr cb_fiber;
     Misson mission;
     // 开始调度
@@ -179,7 +178,6 @@ void Scheduler::run()
                 cb_fiber->reset(mission.cb);
             }else{
                 cb_fiber.reset(new Fiber(mission.cb,1024 * 128, true));
-                GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "mission fiber id= " << cb_fiber->m_id;
             }
             mission.reset();
             cb_fiber->swapIn();
@@ -201,7 +199,6 @@ void Scheduler::run()
                 continue;
             }
             if(idle_fiber->getState() == Fiber::State::TERM){
-                GGO_LOG_INFO(g_logger) << m_name << " idle fiber term";
                 break;
             }
 
@@ -225,10 +222,11 @@ bool Scheduler::canStopNow()
 }
 void Scheduler::idle()
 {
-    GGO_LOG_INFO(g_logger) << m_name << " is idling";
+
     while(!canStopNow()){
         GGo::Fiber::yieldToHold();
     }
+    GGO_LOG_INFO(g_logger) << m_name << " idle term";
 }
 void Scheduler::setThis()
 {
