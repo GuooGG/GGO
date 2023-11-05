@@ -53,6 +53,164 @@ ByteArray::~ByteArray()
     }
 }
 
+void ByteArray::writeFixedint8(int8_t value)
+{
+    write(&value, sizeof(value));
+}
+
+void ByteArray::writeFixeduint8(uint8_t value)
+{
+    write(&value, sizeof(value));
+}
+
+void ByteArray::writeFixedint16(int16_t value)
+{
+    if(m_endian != GGO_BYTE_ORDER){
+        value = byteswap(value);
+    }
+    write(&value, sizeof(value));
+}
+
+void ByteArray::writeFixeduint16(uint16_t value)
+{
+    if (m_endian != GGO_BYTE_ORDER)
+    {
+        value = byteswap(value);
+    }
+    write(&value, sizeof(value));
+}
+
+void ByteArray::writeFixedint32(int32_t value)
+{
+    if (m_endian != GGO_BYTE_ORDER)
+    {
+        value = byteswap(value);
+    }
+    write(&value, sizeof(value));
+}
+
+void ByteArray::writeFixeduint32(uint32_t value)
+{
+    if (m_endian != GGO_BYTE_ORDER)
+    {
+        value = byteswap(value);
+    }
+    write(&value, sizeof(value));
+}
+
+void ByteArray::writeFixedint64(int64_t value)
+{
+    if (m_endian != GGO_BYTE_ORDER)
+    {
+        value = byteswap(value);
+    }
+    write(&value, sizeof(value));
+}
+
+void ByteArray::writeFixeduint64(uint64_t value)
+{
+    if (m_endian != GGO_BYTE_ORDER)
+    {
+        value = byteswap(value);
+    }
+    write(&value, sizeof(value));
+}
+
+int8_t ByteArray::readFixedint8()
+{
+    int8_t value;
+    read(&value, sizeof(value));
+    return value;
+}
+
+uint8_t ByteArray::readFixeduint8()
+{
+    uint8_t value;
+    read(&value, sizeof(value));
+    return value;
+}
+
+int16_t ByteArray::readFixedint16()
+{
+    int16_t value;
+    read(&value, sizeof(value));
+    if(m_endian == GGO_BYTE_ORDER){
+        return value;
+    }else{
+        return byteswap(value);
+    }
+}
+
+uint16_t ByteArray::readFixeduint16()
+{
+    uint16_t value;
+    read(&value, sizeof(value));
+    if (m_endian == GGO_BYTE_ORDER)
+    {
+        return value;
+    }
+    else
+    {
+        return byteswap(value);
+    }
+}
+
+int32_t ByteArray::readFixedint32()
+{
+    int32_t value;
+    read(&value, sizeof(value));
+    if (m_endian == GGO_BYTE_ORDER)
+    {
+        return value;
+    }
+    else
+    {
+        return byteswap(value);
+    }
+}
+
+uint32_t ByteArray::readFixeduint32()
+{
+    uint32_t value;
+    read(&value, sizeof(value));
+    if (m_endian == GGO_BYTE_ORDER)
+    {
+        return value;
+    }
+    else
+    {
+        return byteswap(value);
+    }
+}
+
+int64_t ByteArray::readFixedint64()
+{
+    int64_t value;
+    read(&value, sizeof(value));
+    if (m_endian == GGO_BYTE_ORDER)
+    {
+        return value;
+    }
+    else
+    {
+        return byteswap(value);
+    }
+}
+
+uint64_t ByteArray::readFixeduint64()
+{
+    uint64_t value;
+    read(&value, sizeof(value));
+    if (m_endian == GGO_BYTE_ORDER)
+    {
+        return value;
+    }
+    else
+    {
+        return byteswap(value);
+    }
+}
+
 void ByteArray::write(const void *buf, size_t size)
 {
     if(size == 0){
@@ -175,13 +333,52 @@ void ByteArray::read(const void *buf, size_t size, size_t position)
     }
 }
 
-void ByteArray::showInfo()
+void ByteArray::clear()
 {
-    GGO_LOG_INFO(g_logger) << "bytearray info:" << std::endl
-        << "block size= " << m_blockSize << std::endl
-        << "current postion= " << m_position << std::endl
-        << "current capacity= " << m_capacity << std::endl
-        << "current size= " << m_size << std::endl;
+    m_position = 0;
+    m_size = 0;
+    m_capacity = m_blockSize;
+    ByteNode* tmp_node = m_rootBlock->next;
+    while(tmp_node){
+        m_curBlock = tmp_node;
+        tmp_node = tmp_node->next;
+        delete m_curBlock;
+    }
+    m_curBlock = m_rootBlock;
+    m_rootBlock->next = nullptr;
+}
+
+void ByteArray::setPosition(size_t position)
+{
+    if(position > m_capacity){
+        throw std::out_of_range("set_position out of range");
+    }
+    m_position = position;
+    if(m_position > m_size){
+        m_size = m_position;
+    }
+    m_curBlock = m_rootBlock;
+    while(position > m_curBlock->size){
+        position -= m_curBlock->size;
+        m_curBlock = m_curBlock->next;
+    }
+    if(position == m_curBlock->size){
+        m_curBlock = m_curBlock->next;
+    }
+}
+
+bool ByteArray::isLittleEndian() const
+{
+    return m_endian == GGO_LITTLE_ENDIAN;
+}
+
+void ByteArray::setLittleEndian(bool val)
+{
+    if(val){
+        m_endian = GGO_LITTLE_ENDIAN;
+    }else{
+        m_endian = GGO_BIG_ENDIAN;
+    }
 }
 
 void ByteArray::addCapacity(size_t size)

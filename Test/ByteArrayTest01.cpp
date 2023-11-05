@@ -1,17 +1,25 @@
 #include"bytearray.h"
 #include"logSystem.h"
+#include<vector>
 #include<malloc.h>
 #define LOG GGO_LOG_INFO(GGO_LOG_ROOT())
 
 void test_basic(){
     LOG << "basic test begin";
     GGo::ByteArray ba(512);
-    ba.showInfo();
-    int* buffer = new int(0x12345678);
-    for(int i = 0; i < 100; i++){
-        ba.write(buffer,32);
+    for(int i = 0; i <= 512; i++){
+        ba.writeFixeduint32(i);
     }
-    ba.showInfo();
+    std::vector<uint32_t> vec;
+    ba.setPosition(0);
+    for(int i = 0; i <= 512; i++){
+        vec.push_back(ba.readFixedint32());
+        ba.setPosition(ba.getPosition()+sizeof(uint32_t));
+    }
+    for(auto i : vec){
+        std::cout << i << std::endl;
+    }
+
 }
 
 int main(){

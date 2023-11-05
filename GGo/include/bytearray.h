@@ -49,6 +49,55 @@ public:
     /// @brief 析构函数
     ~ByteArray();
 
+    /// @brief 写入固定长度的int8_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixedint8(int8_t value);
+
+    /// @brief 写入固定长度的uint8_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixeduint8(uint8_t value);
+
+    /// @brief 写入固定长度的int16_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixedint16(int16_t value);
+
+    /// @brief 写入固定长度的uint16_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixeduint16(uint16_t value);
+
+    /// @brief 写入固定长度的int32_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixedint32(int32_t value);
+
+    /// @brief 写入固定长度的uint32_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixeduint32(uint32_t value);
+
+    /// @brief 写入固定长度的int64_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixedint64(int64_t value);
+
+    /// @brief 写入固定长度的iint64_t类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFixeduint64(uint64_t value);
+
+    int8_t readFixedint8();
+    uint8_t readFixeduint8();
+    int16_t readFixedint16();
+    uint16_t readFixeduint16();
+    int32_t readFixedint32();
+    uint32_t readFixeduint32();
+    int64_t readFixedint64();
+    uint64_t readFixeduint64();
+
     /// @brief 写入size长度的数据
     /// @param buf 写入内容
     /// @param size 数据长度
@@ -65,12 +114,32 @@ public:
     /// @param position 开始读取位置
     void read(const void* buf, size_t size, size_t position);
 
+    /// @brief 清空字节数组
+    void clear();
+
+    /// @brief 得到字节数组的当前位置
+    /// @return 
+    size_t getPosition() const { return m_position; }
+
+    /// @brief 设置字节数组的当前位置
+    /// @post if(m_position > m_size) m_size = m_position
+    /// @exception if(m_position > m_capacity) std::out_of_range
+    void setPosition(size_t position);
+
+    /// @brief 返回内存块大小
+    size_t getBlockSzie() const { return m_blockSize; }
+
     /// @brief 返回数据的长度
     size_t getSize() const { return m_size; }
 
+    /// @brief 返回可以读取的数据长度
     size_t getReadableSize() const { return m_size - m_position; }
 
-    void showInfo();
+    /// @brief 机器是否为小端
+    bool isLittleEndian() const;
+
+    /// @brief 是否设置为小端
+    void setLittleEndian(bool val);
 
 private:
 
