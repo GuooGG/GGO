@@ -1,5 +1,5 @@
 #include<yaml-cpp/yaml.h>
-#include<LogSystem.h>
+#include<logSystem.h>
 #include<config.h>
 #include<iostream>
 #include<fstream>

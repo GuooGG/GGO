@@ -1,5 +1,5 @@
 #include"thread.h"
-#include"LogSystem.h"
+#include"logSystem.h"
 #include"util.h"
 namespace GGo{
 

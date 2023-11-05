@@ -10,7 +10,7 @@
  */
 #include"config.h"
 #include"fiber.h"
-#include"LogSystem.h"
+#include"logSystem.h"
 #include"macro.h"
 #include"mutex.h"
 #include"nonCopyable.h"

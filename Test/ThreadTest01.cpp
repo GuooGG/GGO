@@ -1,7 +1,7 @@
 #include<thread.h>
 #include<iostream>
 #include"config.h"
-#include<LogSystem.h>
+#include<logSystem.h>
 #include<yaml-cpp/yaml.h>
 #include<vector>
 #include"util.h"

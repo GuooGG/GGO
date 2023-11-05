@@ -1,4 +1,4 @@
-#include"LogSystem.h"
+#include"logSystem.h"
 #include"yaml-cpp/yaml.h"
 #include"config.h"
 namespace GGo {

@@ -1,5 +1,5 @@
 #include<iostream>
-#include"LogSystem.h"
+#include"logSystem.h"
 
 int main(int argc,char** argv){
     //创建日志器

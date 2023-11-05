@@ -1,8 +1,8 @@
+#include<iostream>
 #include"endianParser.h"
-#include"iostream"
 using namespace std;
 int main(){
-    uint32_t value = 0x12345678;
+    float value = 3.14159f;
     if(GGO_BYTE_ORDER == GGO_BIG_ENDIAN){
         cout << "this machine is big endian" << endl;
     }else if( GGO_BYTE_ORDER == GGO_LITTLE_ENDIAN){
@@ -15,7 +15,7 @@ int main(){
     cout << dec << "DEC swapped= " << swapped << endl;
     cout << hex << "HEX swapped= " << swapped << endl;
     cout << "==========================================" << endl;
-    swapped = GGo::byteswap(value);
+    swapped = GGo::byteswap(swapped);
     cout << dec << "DEC swapped= " << swapped << endl;
     cout << hex << "HEX swapped= " << swapped << endl;
     return 0;

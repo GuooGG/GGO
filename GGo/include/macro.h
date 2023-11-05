@@ -9,7 +9,7 @@
  */
 #pragma once
 #include<assert.h>
-#include"LogSystem.h"
+#include"logSystem.h"
 #include"util.h"
 /**
  * @brief 编译器条件判断优化宏

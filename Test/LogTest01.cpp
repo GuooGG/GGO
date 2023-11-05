@@ -1,4 +1,4 @@
-#include"LogSystem.h"
+#include"logSystem.h"
 #include"util.h"
 int main(){
     static std::shared_ptr<GGo::Logger> g_logger = GGO_LOG_ROOT();

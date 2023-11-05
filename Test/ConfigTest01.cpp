@@ -1,5 +1,5 @@
 #include"config.h"
-#include"LogSystem.h"
+#include"logSystem.h"
 #include"bytearray.h"
 int main(){
     GGo::ConfigVar<int>::ptr g_int_value_config = GGo::Config::Lookup("system.port" , (int)8080, "system port");

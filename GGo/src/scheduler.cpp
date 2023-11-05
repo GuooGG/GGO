@@ -1,5 +1,5 @@
 #include"scheduler.h"
-#include"LogSystem.h"
+#include"logSystem.h"
 #include"macro.h"
 
 namespace GGo{

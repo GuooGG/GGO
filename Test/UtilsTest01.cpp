@@ -11,7 +11,7 @@
 #include<iostream>
 #include<yaml-cpp/yaml.h>
 #include "util.h"
-#include "LogSystem.h"
+#include "logSystem.h"
 #include"config.h"
 #include"macro.h"
 using std::cout;

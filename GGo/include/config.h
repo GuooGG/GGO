@@ -21,7 +21,7 @@
 #include<functional>
 #include<yaml-cpp/yaml.h>
 #include<boost/lexical_cast.hpp>
-#include"LogSystem.h"
+#include"logSystem.h"
 
 
 

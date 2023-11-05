@@ -5,7 +5,7 @@
 #include <iomanip>
 
 #include"endianParser.h"
-#include "LogSystem.h"
+#include "logSystem.h"
 namespace GGo{
 
 

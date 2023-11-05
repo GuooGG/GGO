@@ -1,3 +1,12 @@
+/**
+ * @file endianParser.h
+ * @author GGo
+ * @brief 字节序处理模块
+ * @date 2023-11-05
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #pragma once
 
 #define GGO_LITTLE_ENDIAN 1
