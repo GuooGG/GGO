@@ -70,6 +70,8 @@ public:
 
     size_t getReadableSize() const { return m_size - m_position; }
 
+    void showInfo();
+
 private:
 
     /// @brief 为ByteArray扩容，使其可以容纳size个数据，如果原本可以容纳则不做任何事

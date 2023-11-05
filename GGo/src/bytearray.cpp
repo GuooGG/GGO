@@ -8,10 +8,12 @@
 #include "logSystem.h"
 namespace GGo{
 
+static GGo::Logger::ptr g_logger = GGO_LOG_NAME("system");
+
 ByteArray::ByteNode::ByteNode(size_t bytes)
         :ptr(new char[bytes])
         ,next(nullptr)
-        ,size(0){
+        ,size(bytes){
 
         }
 
@@ -66,7 +68,28 @@ void ByteArray::write(const void *buf, size_t size)
     size_t bpos = 0;
 
     while(size){
+        if(ncap >= size){
+            memcpy(m_curBlock->ptr + npos, (const char*)buf + bpos, size);
+            if(m_curBlock->size == (npos + size)){
+                m_curBlock = m_curBlock->next;
+            }
+            m_position += size;
+            bpos += size;
+            size = 0;
 
+        }else{
+            memcpy(m_curBlock->ptr + npos, (const char*)buf + bpos, ncap);
+            m_position += ncap;
+            bpos += ncap;
+            size -= ncap;
+            m_curBlock = m_curBlock->next;
+            ncap = m_curBlock->size;
+            npos = 0;
+        }
+    }
+
+    if(m_position >= m_size){
+        m_size = m_position;
     }
 
 }
@@ -108,7 +131,7 @@ void ByteArray::read(const void *buf, size_t size)
     }
 }
 
-/// TODO:: 好像postion并没有起到作用？
+/// TODO:: 好像postion并没有起到作用？是不是因为块都很大，在测试时候没有出现分块所以没有出现错误？
 void ByteArray::read(const void *buf, size_t size, size_t position)
 {
     if(size >= (m_size - position)){
@@ -150,6 +173,15 @@ void ByteArray::read(const void *buf, size_t size, size_t position)
             npos = 0;
         }
     }
+}
+
+void ByteArray::showInfo()
+{
+    GGO_LOG_INFO(g_logger) << "bytearray info:" << std::endl
+        << "block size= " << m_blockSize << std::endl
+        << "current postion= " << m_position << std::endl
+        << "current capacity= " << m_capacity << std::endl
+        << "current size= " << m_size << std::endl;
 }
 
 void ByteArray::addCapacity(size_t size)

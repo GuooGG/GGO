@@ -70,3 +70,6 @@ target_link_libraries(SchedulerTest01 ${LIBS})
 # 字节序转换模块测试
 add_executable(EndianTest01 Test/EndianTest01.cpp)
 target_link_libraries(EndianTest01 ${LIBS})
+# 字节数组模块测试
+add_executable(ByteArrayTest01 Test/ByteArrayTest01.cpp)
+target_link_libraries(ByteArrayTest01 ${LIBS})
