@@ -49,7 +49,32 @@ public:
     /// @brief 析构函数
     ~ByteArray();
 
+    /// @brief 写入size长度的数据
+    /// @param buf 写入内容
+    /// @param size 数据长度
+    void write(const void* buf, size_t size);
+
+    /// @brief 向目标指针读入size大小的数据
+    /// @param buf 数据存放地址
+    /// @param size 数据长度
+    void read(const void* buf, size_t size);
+
+    /// @brief 从指定位置向指定内存读入szie长度的数据
+    /// @param buf 数据存放地址
+    /// @param size 数据长度
+    /// @param position 开始读取位置
+    void read(const void* buf, size_t size, size_t position);
+
+    /// @brief 返回数据的长度
+    size_t getSize() const { return m_size; }
+
+    size_t getReadableSize() const { return m_size - m_position; }
+
 private:
+
+    /// @brief 为ByteArray扩容，使其可以容纳size个数据，如果原本可以容纳则不做任何事
+    void addCapacity(size_t  size);
+
     /// @brief 获取可写入的空间大小
     size_t getWirtableCapacity() const { return m_capacity - m_position; }
 
