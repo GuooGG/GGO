@@ -31,6 +31,50 @@ public:
         // 写事件 epoll_out
         WRITE = 0X4,
     };
+private:
+    /// @brief Socket事件上下文
+    struct FdContext
+    {
+        // 互斥量
+        using mutexType = Mutex;
+
+        /// @brief 事件上下文
+        struct EventContext
+        {   
+            // 事件执行的调度器
+            Scheduler* scheduler = nullptr;
+            // 事件协程
+            Fiber::ptr fiber;
+            // 事件回调函数
+            std::function<void()> cb;
+        };
+
+        /// @brief 获取事件上下文
+        /// @param event 事件类型
+        /// @return 对应事件的上下文
+        EventContext& getContext(Event event);
+
+        /// @brief 重置事件上下文
+        /// @param ctx 待重置的上下文
+        void resetContext(EventContext& ctx);
+
+        /// @brief 触发事件
+        /// @param event 事件类型
+        void tiggerEvent(Event event);
+
+        // 读事件
+        EventContext read;
+        // 写事件
+        EventContext write;
+        // 文件句柄
+        int fd = 0;
+        // 当前的事件
+        Event event_now = Event::NONE;
+        // 互斥量
+        mutexType m_mutex;
+        
+    };
+    
 public:
     /// @brief IO协程调度器构造函数
     /// @param thread_pool_size 线程池大小
@@ -48,10 +92,24 @@ public:
     /// @return 成功返回0，失败返回-1
     int addEvent(int fd, Event event, std::function<void()> cb = nullptr);
 
+    static IOScheduler* getThis();
 protected:
+    /// @brief 通知有新任务
     void tickle() override;
-    bool canStopNow() override;
+
+    /// @brief 待机时函数
     void idle() override;
+
+    /// @brief 重置socket句柄上下文容器的大小
+    void contextResize(size_t size);
+
+    /// @brief 判断是否可以停止
+    bool canStopNow() override;
+
+    /// @brief 判断是否可以停止
+    /// @param timeout 最近要触发的定时器事件间隔
+    /// @return 是否可以停止
+    bool canStopNow(uint64_t& timeout);
 
 private:
     // epoll 文件句柄
@@ -62,7 +120,8 @@ private:
     std::atomic<size_t> m_pendingEventCount = {0};
     // 读写锁
     RWMutexType m_mutex;
-
+    // socket事件上下文容器
+    std::vector<FdContext *> m_fdContexts;
 };
 
 
