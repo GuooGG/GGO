@@ -1,8 +1,8 @@
 #include"util.h"
 
 #include<execinfo.h>
-
-#include "logSystem.h"
+#include<sys/time.h>
+#include"logSystem.h"
 #include"fiber.h"
 
 namespace GGo{
@@ -65,6 +65,20 @@ std::string backTraceToString(size_t size, int skip, const std::string &prefix)
         ss << prefix << bt[i] << std::endl;
     }
     return ss.str();
+}
+
+uint64_t getCurrentMS()
+{
+    struct timeval tv;
+    gettimeofday(&tv, nullptr);
+    return tv.tv_sec * 1000ul + tv.tv_usec / 1000;
+}
+
+uint64_t getCurrentUS()
+{
+    struct timeval tv;
+    gettimeofday(&tv, nullptr);
+    return tv.tv_sec * 1000 * 1000ul + tv.tv_usec / 1000;
 }
 
 /**

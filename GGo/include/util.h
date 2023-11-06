@@ -25,14 +25,11 @@
 
 namespace GGo{
 
-/**
- * @brief 返回当前线程ID
- */
+
+/// @brief 返回当前线程ID
 pid_t GetThreadID();
 
-/**
- * @brief 得到当前协程ID
- */
+/// @brief 得到当前协程ID
 uint32_t GetFiberID();
 
 /// @brief 获取当前调用栈
@@ -45,12 +42,19 @@ void backTrace(std::vector<std::string>& bt, int size, int skip = 1);
 /// @param size 最大返回层数
 /// @param skip 跳过栈顶层数
 /// @param prefix 调用栈信息前缀
-/// @return 
 std::string backTraceToString(size_t size = 100 ,int skip = 2, const std::string& prefix = "");
+
+
+
+/// @brief 返回当前时间的毫秒数
+uint64_t getCurrentMS();
+
+/// @brief 获取当前时间的微秒数
+uint64_t getCurrentUS();
 
 /**
  * @brief 常用文件API类
- * 
+ *
  */
 class FSUtil{
 public:
