@@ -140,6 +140,9 @@ public:
     ///        if(m_position > m_size) m_size = m_position
     void writeStringWithoutLength(const std::string& value);
 
+    /// @brief 写入std::string类型的数据，无固定长度
+    /// @post m_position += value.size();
+    ///        if(m_position > m_size) m_size = m_position
     void writeStringVarint(const std::string& value);
 
     /// @brief 读固定长度的int8_t类型数据
@@ -190,6 +193,65 @@ public:
     /// @exception if(getReadableSize() < sizeof(uint64_t)) std::out_of_range
     uint64_t readFixeduint64();
 
+    /// @brief 读取无固定长度有符号的int32_t类型数据
+    /// @pre getReadableSize() >= 数据实际占用内存
+    /// @post m_position += 数据实际占用内存
+    /// @exception if(getReadableSize() < 数据实际占用内存 std::out_of_range
+    int32_t readInt32();
+
+    /// @brief 读取无固定长度无符号的uint32_t类型数据
+    /// @pre getReadableSize() >= 数据实际占用内存
+    /// @post m_position += 数据实际占用内存
+    /// @exception if(getReadableSize() < 数据实际占用内存 std::out_of_range
+    uint32_t readUint32();
+
+    /// @brief 读取无固定长度有符号的int64_t类型数据
+    /// @pre getReadableSize() >= 数据实际占用内存
+    /// @post m_position += 数据实际占用内存
+    /// @exception if(getReadableSize() < 数据实际占用内存 std::out_of_range
+    int64_t readInt64();
+
+    /// @brief 读取无固定长度无符号的uint64_t类型数据
+    /// @pre getReadableSize() >= 数据实际占用内存
+    /// @post m_position += 数据实际占用内存
+    /// @exception if(getReadableSize() < 数据实际占用内存 std::out_of_range
+    uint64_t readUint64();
+
+    /// @brief 读取float类型数据
+    /// @pre getReadableSize() >= sizeof(float)
+    /// @post m_position += sizeof(float)
+    /// @exception if(getReadableSize() < sizeof(float) std::out_of_range
+    float readFloat();
+
+    /// @brief 读取double类型数据
+    /// @pre getReadableSize() >= sizeof(double)
+    /// @post m_position += sizeof(double)
+    /// @exception if(getReadableSize() < sizeof(double) std::out_of_range
+    double readDouble();
+
+    /// @brief  读取std::string类型的数据，uint16_t作为其长度范围
+    /// @pre getReadableSize() >= sizeof(uint16_t) + size
+    /// @post m_position += sizeof(uint16_t) + size
+    /// @exception if(getReadableSize()) < sizeof(uint16_t) + size std::out_of_range
+    std::string readStringFixed16();
+
+    /// @brief  读取std::string类型的数据，uint32_t作为其长度范围
+    /// @pre getReadableSize() >= sizeof(uint32_t) + size
+    /// @post m_position +=sizeof(uint32_t) + size
+    /// @exception if(getReadableSize() < sizeof(uint32_t) + size std::out_of_range
+    std::string readStringFixed32();
+
+    /// @brief  读取std::string类型的数据，uint64_t作为其长度范围
+    /// @pre getReadableSize() >= sizeof(uint64_t) + size
+    /// @post m_position +=sizeof(uint64_t) + size
+    /// @exception if(getReadableSize() < sizeof(uint64_t) + size std::out_of_range
+    std::string readStringFixed64();
+
+    /// @brief 读取std::string类型的数据，用无符号无固定长度的uint64_t作为其长度范围
+    /// @pre getReadableSize() >= 无符号数实际大小 + size
+    /// @post m_position +=无符号数实际大小 + size
+    /// @exception if(getReadableSize() < 无符号数实际大小 + size std::out_of_range
+    std::string readStringVarint();
 
     /// @brief 写入size长度的数据
     /// @param buf 写入内容
@@ -239,6 +301,34 @@ public:
 
     /// @brief 将ByteArray内数据序列化成16进制显示的std::string 
     std::string toHexString() const;
+
+    /// @brief 将数组内容写入到文件中
+    /// @param filename 文件名
+    bool readFromFile(const std::string& filename);
+
+    /// @brief 从文件中读取字节数据
+    /// @param filename 文件名
+    bool writeToFile(const std::string& filename);
+
+    /// @brief 获取可读取的缓存，保存在iovec数组中
+    /// @param buffers 可读取数据的iovec数组
+    /// @param len 读取数据的长度 if(len > getReadableSize() ) len = getReadableSize()
+    /// @return 实际数据的长度
+    uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len) const;
+
+    /// @brief 从position开始,获取可读取的缓存，保存在iovec数组中
+    /// @param buffers 可读取数据的iovec数组
+    /// @param len 读取数据的长度 if(len > getReadableSize() ) len = getReadableSize()
+    /// @param position 开始读取的位置
+    /// @return 实际数据的长度
+    uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len, uint64_t position) const;
+
+    /// @brief 获取可写入的缓存，保存在iovec数组中
+    /// @param buffers 可写入内存的iovec数组
+    /// @param len 写入的长度
+    /// @return 实际写入的长度
+    /// @post if((m_position + len) > m_capacity) addCapacity(len)
+    uint64_t getWriteBuffers(std::vector<iovec>& buffers, uint64_t len);
 
 private:
 
