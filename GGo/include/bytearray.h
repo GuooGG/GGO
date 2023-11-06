@@ -10,7 +10,9 @@
 #pragma once
 #include<memory>
 #include<stdint.h>
-
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<vector>
 
 namespace GGo{
 
@@ -84,19 +86,110 @@ public:
     ///         if(m_position > m_size) m_size = m_position
     void writeFixedint64(int64_t value);
 
-    /// @brief 写入固定长度的iint64_t类型数据
+    /// @brief 写入固定长度的uint64_t类型数据
     /// @post m_position += sizeof(value)
     ///         if(m_position > m_size) m_size = m_position
     void writeFixeduint64(uint64_t value);
 
+    /// @brief 写入float类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeFloat(float value);
+
+    /// @brief 写入固定长度的double类型数据
+    /// @post m_position += sizeof(value)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeDouble(double value);
+
+    /// @brief 写入无固定长度有符号的int32_t类型数据
+    /// @post m_position += 实际占用内存(1 ~ 5)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeInt32(int32_t value);
+    /// @brief 写入无固定长度无符号的uint32_t类型数据
+    /// @post m_position += 实际占用内存(1 ~ 5)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeUint32(uint32_t value);
+
+    /// @brief 写入无固定长度有符号的int64_t类型数据
+    /// @post m_position += 实际占用内存(1 ~ 10)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeInt64(int64_t value);
+
+    /// @brief 写入无固定长度无符号的uint64_t类型数据
+    /// @post m_position += 实际占用内存(1 ~ 10)
+    ///         if(m_position > m_size) m_size = m_position
+    void writeUint64(uint64_t value);
+
+    /// @brief 写入std::string类型的数据，长度为uint16_t
+    /// @post m_position += 2 + value.size()
+    ///       if(m_position > m_size) m_size = m_position
+    void writeStringFixed16(const std::string& value);
+    
+    /// @brief 写入std::string类型的数据，长度为uint32_t
+    /// @post m_position += 4 + value.size()
+    ///       if(m_position > m_size) m_size = m_position
+    void writeStringFixed32(const std::string& value);
+
+    /// @brief 写入std::string类型的数据，长度为uint64_t
+    /// @post m_position += 8 + value.size()
+    ///       if(m_position > m_size) m_size = m_position
+    void writeStringFixed64(const std::string& value);
+
+    /// @brief 写入std::string类型的数据，无长度
+    /// @post m_position += value.size();
+    ///        if(m_position > m_size) m_size = m_position
+    void writeStringWithoutLength(const std::string& value);
+
+    void writeStringVarint(const std::string& value);
+
+    /// @brief 读固定长度的int8_t类型数据
+    /// @pre getReadableSize() >= sizeof(int8_t)
+    /// @post m_position += sizeof(int8_t)
+    /// @exception if(getReadableSize() < sizeof(int8_t)) std::out_of_range
     int8_t readFixedint8();
+
+    /// @brief 读固定长度的uint8_t类型数据
+    /// @pre getReadableSize() >= sizeof(uint8_t)
+    /// @post m_position += sizeof(uint8_t)
+    /// @exception if(getReadableSize() < sizeof(uint8_t)) std::out_of_range
     uint8_t readFixeduint8();
+
+    /// @brief 读固定长度的int16_t类型数据
+    /// @pre getReadableSize() >= sizeof(int16_t)
+    /// @post m_position += sizeof(int16_t)
+    /// @exception if(getReadableSize() < sizeof(int16_t)) std::out_of_range
     int16_t readFixedint16();
+
+    /// @brief 读固定长度的uint16_t类型数据
+    /// @pre getReadableSize() >= sizeof(uint16_t)
+    /// @post m_position += sizeof(uint16_t)
+    /// @exception if(getReadableSize() < sizeof(uint16_t)) std::out_of_range
     uint16_t readFixeduint16();
+
+    /// @brief 读固定长度的int32_t类型数据
+    /// @pre getReadableSize() >= sizeof(int32_t)
+    /// @post m_position += sizeof(int32_t)
+    /// @exception if(getReadableSize() < sizeof(int32_t)) std::out_of_range
     int32_t readFixedint32();
+
+    /// @brief 读固定长度的uint32_t类型数据
+    /// @pre getReadableSize() >= sizeof(uint32_t)
+    /// @post m_position += sizeof(uint32_t)
+    /// @exception if(getReadableSize() < sizeof(uint32_t)) std::out_of_range
     uint32_t readFixeduint32();
+
+    /// @brief 读固定长度的int64_t类型数据
+    /// @pre getReadableSize() >= sizeof(int64_t)
+    /// @post m_position += sizeof(int64_t)
+    /// @exception if(getReadableSize() < sizeof(int64_t)) std::out_of_range
     int64_t readFixedint64();
+
+    /// @brief 读固定长度的uint64_t类型数据
+    /// @pre getReadableSize() >= sizeof(uint64_t)
+    /// @post m_position += sizeof(uint64_t)
+    /// @exception if(getReadableSize() < sizeof(uint64_t)) std::out_of_range
     uint64_t readFixeduint64();
+
 
     /// @brief 写入size长度的数据
     /// @param buf 写入内容
@@ -112,7 +205,7 @@ public:
     /// @param buf 数据存放地址
     /// @param size 数据长度
     /// @param position 开始读取位置
-    void read(const void* buf, size_t size, size_t position);
+    void read(const void* buf, size_t size, size_t position) const;
 
     /// @brief 清空字节数组
     void clear();
@@ -140,6 +233,12 @@ public:
 
     /// @brief 是否设置为小端
     void setLittleEndian(bool val);
+
+    /// @brief 将ByteArray内数据序列化成std::string
+    std::string toString() const;
+
+    /// @brief 将ByteArray内数据序列化成16进制显示的std::string 
+    std::string toHexString() const;
 
 private:
 

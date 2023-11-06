@@ -116,6 +116,43 @@ void ByteArray::writeFixeduint64(uint64_t value)
     write(&value, sizeof(value));
 }
 
+void ByteArray::writeFloat(float value)
+{
+    uint32_t container;
+    memcpy(&container, &value, sizeof(value));
+    writeFixeduint32(container);
+}
+
+void ByteArray::writeDouble(double value)
+{
+    uint64_t container;
+    memcpy(&container, &value, sizeof(value));
+    writeFixeduint64(container);
+}
+
+void ByteArray::writeStringFixed16(const std::string &value)
+{
+    writeFixeduint16(value.size());
+    write(value.c_str(), value.size());
+}
+
+void ByteArray::writeStringFixed32(const std::string &value)
+{
+    writeFixeduint32(value.size());
+    write(value.c_str(), value.size());
+}
+
+void ByteArray::writeStringFixed64(const std::string &value)
+{
+    writeFixeduint64(value.size());
+    write(value.c_str(), value.size());
+}
+
+void ByteArray::writeStringWithoutLength(const std::string &value)
+{
+    write(value.c_str(), value.size());
+}
+
 int8_t ByteArray::readFixedint8()
 {
     int8_t value;
@@ -267,7 +304,6 @@ void ByteArray::read(const void *buf, size_t size)
         if (ncap >= size)
         {
             memcpy((char*)buf + bpos, m_curBlock->ptr + npos, size);
-            size = 0;
             // 已经写满，移动到下一个块
             if(m_curBlock->size == (npos + size)){
                 m_curBlock = m_curBlock->next;
@@ -290,31 +326,36 @@ void ByteArray::read(const void *buf, size_t size)
 }
 
 /// TODO:: 好像postion并没有起到作用？是不是因为块都很大，在测试时候没有出现分块所以没有出现错误？
-void ByteArray::read(const void *buf, size_t size, size_t position)
+void ByteArray::read(const void *buf, size_t size, size_t position) const
 {
     if(size >= (m_size - position)){
         std::out_of_range("not enough bytes len");
     }
+    
+    ByteNode *cur = m_rootBlock;
+    while (position > cur->size)
+    {
+        position -= cur->size;
+        cur = cur->next;
+        if (!cur)
+        {
+            throw std::out_of_range("position out of range");
+        }
+    }
+    if (position == cur->size)
+    {
+        cur = cur->next;
+        position = 0;
+    }
 
-    // // Find the block and the position within the block
-    // ByteNode *cur = m_rootBlock;
-    // while (position >= cur->size)
-    // {
-    //     position -= cur->size;
-    //     cur = cur->next;
-    //     if (!cur)
-    //     {
-    //         throw std::out_of_range("position out of range");
-    //     }
-    // }
 
-    size_t npos = position % m_blockSize;
-    size_t ncap = m_curBlock->size - npos;
+    size_t npos = position & m_blockSize;
+    size_t ncap = m_blockSize - npos;
     size_t bpos = 0;
-    ByteNode* cur = m_curBlock; 
+
     while(size){
         if(ncap >= size){
-            memcpy((char*)buf + npos, cur->ptr + npos, size);
+            memcpy((char*)buf + bpos, cur->ptr + npos, size);
             if(cur->size == (npos + size)){
                 cur = cur->next;
             }
@@ -322,7 +363,7 @@ void ByteArray::read(const void *buf, size_t size, size_t position)
             bpos += size;
             size = 0;
         }else{
-            memcpy((char*)buf + npos, cur->ptr +npos, ncap);
+            memcpy((char*)buf + bpos, cur->ptr +npos, ncap);
             position += ncap;
             bpos += ncap;
             size -= ncap;
@@ -379,6 +420,32 @@ void ByteArray::setLittleEndian(bool val)
     }else{
         m_endian = GGO_BIG_ENDIAN;
     }
+}
+
+std::string ByteArray::toString() const
+{
+    std::string str;
+    str.resize(getReadableSize());
+    if(str.empty()){
+        return str;
+    }
+    read(&str[0], str.size(), m_position);
+    return str;
+}
+
+std::string ByteArray::toHexString() const
+{
+    std::string str = toString();
+    std::stringstream ss;
+
+    for(size_t i = 0; i < str.size(); i++){
+        if(i > 0 && i % 16 == 0){
+            ss << std::endl;
+        }
+        ss << std::setw(2) << std::setfill('0')
+            << std::hex << (int)(uint8_t)str[i] << " ";
+    }
+    return ss.str();
 }
 
 void ByteArray::addCapacity(size_t size)
