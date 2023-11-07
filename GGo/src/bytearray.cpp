@@ -130,6 +130,22 @@ void ByteArray::writeDouble(double value)
     writeFixeduint64(container);
 }
 
+void ByteArray::writeInt32(int32_t value)
+{
+}
+
+void ByteArray::writeUint32(uint32_t value)
+{
+}
+
+void ByteArray::writeInt64(int64_t value)
+{
+}
+
+void ByteArray::writeUint64(uint64_t value)
+{
+}
+
 void ByteArray::writeStringFixed16(const std::string &value)
 {
     writeFixeduint16(value.size());

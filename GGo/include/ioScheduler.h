@@ -9,12 +9,13 @@
  */
 #pragma once
 #include"scheduler.h"
+#include"timer.h"
 
 
 namespace GGo{
 
 
-class IOScheduler : public Scheduler{
+class IOScheduler : public Scheduler, public TimerManager{
 public:
     // 智能指针
     using ptr = std::shared_ptr<IOScheduler>;

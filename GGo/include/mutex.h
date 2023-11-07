@@ -104,7 +104,7 @@ public:
         unlock();
     }
 
-private:
+
     
     /// @brief 上读锁
     void lock(){
@@ -122,6 +122,7 @@ private:
         }
     }
 
+private:
     /// @brief 锁
     T& m_mutex;
     /// @brief 是否上锁
@@ -147,7 +148,6 @@ public:
     ~ScopedWriteLock(){
         unlock();
     }
-private:
 
     /// @brief 上写锁
     void lock(){
@@ -164,7 +164,7 @@ private:
             m_locked = false;
         }
     }
-
+private:
     /// @brief 读写锁
     T& m_mutex;
     /// @brief 是否上锁

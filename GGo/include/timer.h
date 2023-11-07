@@ -50,7 +50,7 @@ private:
     bool m_reloop = false;
     // 执行周期
     uint64_t m_ms;
-    // 精确的执行时间
+    // 执行时间戳
     uint64_t m_next;
     // 回调函数
     std::function<void()> m_cb;
@@ -75,10 +75,32 @@ public:
     /// @brief 析构函数
     virtual ~TimerManager();
 
+    /// @brief 添加计时器
+    /// @param ms 执行间隔时间
+    /// @param cb 定时器回调函数
+    /// @param reloop 是否循环
+    Timer::ptr addTimer(uint64_t ms, std::function<void()> cb, bool reloop = false);
 
-    
+    /// @brief 添加条件定时器
+    /// @param ms 执行间隔时间
+    /// @param cb 定时器回调函数
+    /// @param weak_cond 条件
+    /// @param reloop 是否循环
+    Timer::ptr addConditionTimer(uint64_t ms, std::function<void()> cb,
+                                std::weak_ptr<void> weak_cond
+                                ,bool reloop = false);
+
+    /// @brief 获取到下一个最近的定时器执行时间间隔(ms)
+    uint64_t getNextTimer();
+
+    /// @brief 返回所有需要执行的回调函数列表   
+    void listExpriedCb(std::vector<std::function<void()>> & cbs);
+
     /// @brief 是否有定时器
     bool hasTimer();
+private:
+    /// @brief 检测服务器时间是否回滚并重置
+    bool detectClockRollover(uint64_t now_ms);
 protected:
     /// @brief 当有新的定时器加入到容器首部，执行该函数
     virtual void onTimerInsertedAtFront() = 0;
