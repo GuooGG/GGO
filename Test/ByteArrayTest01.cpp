@@ -68,16 +68,17 @@ void test_basic(){
     for(int i = 0; i < DATA_COUNT; i++){
         vec.push_back(ba.readFixedint32());
     }
-    for(int i = 0; i <= DATA_COUNT * 4; i++){
-        ba.setPosition(i);
-        LOG << "READABLE SIZE= " << ba.getReadableSize() << std::endl;
-        LOG << std::endl
-            << ba.toHexString();
-    }
+    ba.setPosition(0);
+    LOG << "READABLE SIZE= " << ba.getReadableSize() << std::endl;
+    LOG << std::endl
+        << ba.toHexString();
 
 }
 
 int main(){
+    test_strings();
+    test_float();
     test_double();
+    test_basic();
     return 0;
 }
