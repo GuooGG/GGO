@@ -5,10 +5,30 @@
 #define LOG GGO_LOG_INFO(GGO_LOG_ROOT())
 
 #define DATA_COUNT 128
+#define BLOCK_SIZE 4096
+
+void test_strings(){
+    LOG << "test strings start";
+    std::string hello = "hello";
+    std::string world = "world";
+    GGo::ByteArray ba(BLOCK_SIZE);
+    ba.writeStringVarint(hello);
+    ba.writeStringVarint(world);
+    ba.setPosition(0);
+    LOG << "string with varint size : " << ba.getSize();
+    LOG << ba.readStringVarint() << ba.readStringVarint();
+    ba.clear();
+    ba.writeStringFixed32(hello);
+    ba.writeStringFixed32(world);
+    ba.setPosition(0);
+    LOG << "string with uint32_t size : " << ba.getSize();
+    LOG << ba.readStringVarint() << ba.readStringVarint();
+    LOG << "test strings end";
+}
 
 void test_basic(){
     LOG << "basic test begin";
-    GGo::ByteArray ba(16);
+    GGo::ByteArray ba(BLOCK_SIZE);
     for(int i = 0; i < DATA_COUNT; i++){
         ba.writeFixeduint32(i + 1);
     }
@@ -27,6 +47,6 @@ void test_basic(){
 }
 
 int main(){
-    test_basic();
+    test_strings();
     return 0;
 }

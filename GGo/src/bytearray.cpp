@@ -146,12 +146,12 @@ static uint64_t encodeZigzag64(const int64_t value){
     }
 }
 
-static int32_t decodeZigzag32(const uint32_t){
-    return (v >> 1) ^ -(v & 1);
+static int32_t decodeZigzag32(const uint32_t value){
+    return (value >> 1) ^ -(value & 1);
 }
 
-static int64_t decodeZigzag64(const uint64_t){
-    return (v >> 1) ^ -(v & 1);
+static int64_t decodeZigzag64(const uint64_t value){
+    return (value >> 1) ^ -(value & 1);
 }
 
 void ByteArray::writeInt32(int32_t value)
@@ -169,7 +169,7 @@ void ByteArray::writeUint32(uint32_t value)
         buffer[len++] = (value & 0x7F) | 0x80;
         value >>= 7;
     }       
-    tmp[len++] = value;
+    buffer[len++] = value;
     write(buffer, len);
 }
 
@@ -379,7 +379,7 @@ std::string ByteArray::readStringFixed16()
 {
     uint16_t size = readFixeduint16();
     std::string buffer;
-    buff.resize(size);
+    buffer.resize(size);
     read(&buffer[0], size);
     return buffer;
 }
@@ -388,7 +388,7 @@ std::string ByteArray::readStringFixed32()
 {
     uint32_t size = readFixeduint32();
     std::string buffer;
-    buff.resize(size);
+    buffer.resize(size);
     read(&buffer[0], size);
     return buffer;
 }
@@ -397,7 +397,7 @@ std::string ByteArray::readStringFixed64()
 {
     uint64_t size = readFixeduint64();
     std::string buffer;
-    buff.resize(size);
+    buffer.resize(size);
     read(&buffer[0], size);
     return buffer;
 }
