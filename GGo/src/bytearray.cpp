@@ -130,20 +130,65 @@ void ByteArray::writeDouble(double value)
     writeFixeduint64(container);
 }
 
+static uint32_t encodeZigzag32(const int32_t value){
+    if(value < 0){
+        return ((uint32_t)(-value)) * 2 - 1; 
+    }else{  
+        return value * 2;
+    }
+}
+
+static uint64_t encodeZigzag64(const int64_t value){
+    if(value < 0){
+        return ((uint64_t)(-value)) * 2 - 1;
+    }else{
+        return value * 2;
+    }
+}
+
+static int32_t decodeZigzag32(const uint32_t){
+    return (v >> 1) ^ -(v & 1);
+}
+
+static int64_t decodeZigzag64(const uint64_t){
+    return (v >> 1) ^ -(v & 1);
+}
+
 void ByteArray::writeInt32(int32_t value)
 {
+    writeUint32(encodeZigzag32(value));
 }
 
 void ByteArray::writeUint32(uint32_t value)
 {
+    //Varint编码三十二位数据最大占用五字节空间
+    uint8_t buffer[5];
+    uint8_t len = 0;
+    while(value >= 0x80){
+        //最高位为1，表示下一字节仍然是数据字节
+        buffer[len++] = (value & 0x7F) | 0x80;
+        value >>= 7;
+    }       
+    tmp[len++] = value;
+    write(buffer, len);
 }
 
 void ByteArray::writeInt64(int64_t value)
 {
+    writeUint64(encodeZigzag64(value));
 }
 
 void ByteArray::writeUint64(uint64_t value)
 {
+    uint8_t buffer[10];
+    uint8_t len = 0;
+    while (value >= 0x80)
+    {
+        buffer[len++] = (value & 0x7F) | 0x80;
+        value >>= 7;
+    }
+    buffer[len++] = value;
+    write(buffer, len);
 }
 
 void ByteArray::writeStringFixed16(const std::string &value)
@@ -166,6 +211,12 @@ void ByteArray::writeStringFixed64(const std::string &value)
 
 void ByteArray::writeStringWithoutLength(const std::string &value)
 {
+    write(value.c_str(), value.size());
+}
+
+void ByteArray::writeStringVarint(const std::string &value)
+{
+    writeUint64(value.size());
     write(value.c_str(), value.size());
 }
 
@@ -262,6 +313,102 @@ uint64_t ByteArray::readFixeduint64()
     {
         return byteswap(value);
     }
+}
+
+int32_t ByteArray::readInt32()
+{
+    return decodeZigzag32(readUint32());
+}
+
+uint32_t ByteArray::readUint32()
+{
+    uint32_t result = 0x0;
+    for(int i = 0; i < 32; i += 7){
+        uint8_t bits = readFixedint8();
+        if(bits < 0x80){
+            result |= ((uint32_t)bits) << i;
+            break;
+        }else{
+            result |= ((uint32_t)(bits & 0x7F) << i);
+        }
+    }
+    return result;
+}
+
+int64_t ByteArray::readInt64()
+{
+    return decodeZigzag64(readUint64());
+}
+
+uint64_t ByteArray::readUint64()
+{
+    uint64_t result = 0x0;
+    for (int i = 0; i < 32; i += 7)
+    {
+        uint8_t bits = readFixedint8();
+        if (bits < 0x80)
+        {
+            result |= ((uint64_t)bits) << i;
+            break;
+        }
+        else
+        {
+            result |= ((uint64_t)(bits & 0x7F) << i);
+        }
+    }
+    return result;
+}
+
+float ByteArray::readFloat()
+{
+    uint32_t bits = readFixeduint32();
+    float value;
+    memcpy(&value, &bits, sizeof(float));
+    return value;
+}
+
+double ByteArray::readDouble()
+{
+    uint64_t bits = readFixeduint64();
+    double value;
+    memcpy(&value, &bits, sizeof(double));
+    return value;
+}
+
+std::string ByteArray::readStringFixed16()
+{
+    uint16_t size = readFixeduint16();
+    std::string buffer;
+    buff.resize(size);
+    read(&buffer[0], size);
+    return buffer;
+}
+
+std::string ByteArray::readStringFixed32()
+{
+    uint32_t size = readFixeduint32();
+    std::string buffer;
+    buff.resize(size);
+    read(&buffer[0], size);
+    return buffer;
+}
+
+std::string ByteArray::readStringFixed64()
+{
+    uint64_t size = readFixeduint64();
+    std::string buffer;
+    buff.resize(size);
+    read(&buffer[0], size);
+    return buffer;
+}
+
+std::string ByteArray::readStringVarint()
+{
+    uint64_t size = readUint64();
+    std::string buffer;
+    buffer.resize(size);
+    read(&buffer[0], size);
+    return buffer;
 }
 
 void ByteArray::write(const void *buf, size_t size)
