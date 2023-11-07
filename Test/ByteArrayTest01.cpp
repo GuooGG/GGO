@@ -22,8 +22,39 @@ void test_strings(){
     ba.writeStringFixed32(world);
     ba.setPosition(0);
     LOG << "string with uint32_t size : " << ba.getSize();
-    LOG << ba.readStringVarint() << ba.readStringVarint();
+    LOG << ba.readStringVarint()  << " " << ba.readStringVarint();
     LOG << "test strings end";
+}
+ 
+void test_float(){
+    LOG << "test float start";
+    GGo::ByteArray ba(BLOCK_SIZE);
+    float f1 = 3.1;
+    float f2 = 3.14;
+    float f3 = 3.141;
+    ba.writeFloat(f1);
+    ba.writeFloat(f2);
+    ba.writeFloat(f3);
+    LOG << "ba size : " << ba.getSize();
+    ba.setPosition(0);
+    LOG << ba.readFloat() << "  " << ba.readFloat() << "  " << ba.readFloat();
+    LOG << "test float end";
+}
+
+void test_double()
+{
+    LOG << "test double start";
+    GGo::ByteArray ba(BLOCK_SIZE);
+    double f1 = 3.141592653;
+    double f2 = 3.1417453453;
+    double f3 = 3.141543453;
+    ba.writeDouble(f1);
+    ba.writeDouble(f2);
+    ba.writeDouble(f3);
+    LOG << "ba size : " << ba.getSize();
+    ba.setPosition(0);
+    LOG << ba.readDouble() << "  " << ba.readDouble() << "  " << ba.readDouble();
+    LOG << "test double end";
 }
 
 void test_basic(){
@@ -47,6 +78,6 @@ void test_basic(){
 }
 
 int main(){
-    test_strings();
+    test_double();
     return 0;
 }
