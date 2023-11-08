@@ -116,7 +116,7 @@ private:
     // epoll 文件句柄
     int m_epollFd = 0;
     /// pipe 文件句柄
-    int tickleFds[2];
+    int m_tickleFds[2];
     // 当前等待执行的任务数量
     std::atomic<size_t> m_pendingEventCount = {0};
     // 读写锁
