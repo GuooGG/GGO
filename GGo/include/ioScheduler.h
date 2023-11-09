@@ -24,16 +24,18 @@ public:
 
     // TODO:: 写事件为什么是4
     /// @brief IO事件
-    enum class Event{
+    enum Event
+    {
         // 无事件
         NONE = 0x0,
         // 读事件 epoll_in
-        READ = 0X1,
+        READ = 0x1,
         // 写事件 epoll_out
-        WRITE = 0X4,
+        WRITE = 0x4,
     };
+
 private:
-    /// @brief Socket事件上下文
+    /// @brief 文件句柄上下文
     struct FdContext
     {
         // 互斥量
@@ -70,7 +72,7 @@ private:
         // 文件句柄
         int fd = 0;
         // 当前的事件
-        Event event_now = Event::NONE;
+        Event events = Event::NONE;
         // 互斥量
         mutexType m_mutex;
         
@@ -93,6 +95,23 @@ public:
     /// @return 成功返回0，失败返回-1
     int addEvent(int fd, Event event, std::function<void()> cb = nullptr);
 
+    /// @brief 删除事件
+    /// @param fd scoket句柄
+    /// @param event 事件类型
+    /// @attention 不触发事件并将其从队列中移除
+    bool delEvent(int fd, Event event);
+
+    /// @brief 触发事件并删除
+    /// @param fd socket句柄
+    /// @param event 事件类型
+    /// @attention 如果事件存在则触发事件
+    bool cancelEvent(int fd, Event event);
+
+    /// @brief 触发所有事件并删除
+    /// @param fd socket文件句柄
+    /// @attention 将句柄下的所有事件触发并删除
+    bool cancelAll(int fd);
+
     static IOScheduler* getThis();
 protected:
     /// @brief 通知有新任务
@@ -107,8 +126,10 @@ protected:
     /// @brief 判断是否可以停止
     bool canStopNow() override;
 
+    void onTimerInsertedAtFront() override;
+
     /// @brief 判断是否可以停止
-    /// @param timeout 最近要触发的定时器事件间隔
+    /// @post timeout = 最近要触发的定时器事件间隔
     /// @return 是否可以停止
     bool canStopNow(uint64_t& timeout);
 
