@@ -2,19 +2,9 @@
 
 namespace GGo{
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int Address::getFamily() const
+{
+    return 0;
 }
 
+}
