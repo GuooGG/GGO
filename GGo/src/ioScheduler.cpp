@@ -32,7 +32,7 @@ void IOScheduler::FdContext::resetContext(EventContext &ctx)
 void IOScheduler::FdContext::tiggerEvent(IOScheduler::Event event)
 {
     GGO_ASSERT(events & event);
-    events = (Event)(events & event);
+    events = (Event)(events & ~event);
     EventContext& ctx = getContext(event);
     if(ctx.cb){
         ctx.scheduler->schedule(&ctx.cb);
@@ -63,6 +63,7 @@ inline IOScheduler::Event& operator&=(IOScheduler::Event &lhs, IOScheduler::Even
     return lhs;
 }
 
+// TODO:: ?????
 IOScheduler::IOScheduler(size_t thread_pool_size, bool use_caller, const std::string &name)
     : Scheduler(thread_pool_size, use_caller, name)
 {
@@ -70,7 +71,7 @@ IOScheduler::IOScheduler(size_t thread_pool_size, bool use_caller, const std::st
     GGO_ASSERT( m_epollFd > 0);
 
     int rt = pipe(m_tickleFds);
-    GGO_ASSERT(rt > 0);
+    GGO_ASSERT(!rt);
 
     epoll_event event;
     memset(&event, 0, sizeof(epoll_event));
@@ -78,10 +79,10 @@ IOScheduler::IOScheduler(size_t thread_pool_size, bool use_caller, const std::st
     event.data.fd = m_tickleFds[0];
     
     rt = fcntl(m_tickleFds[0], F_SETFL, O_NONBLOCK);
-    GGO_ASSERT(rt);
+    GGO_ASSERT(!rt);
 
     rt = epoll_ctl(m_epollFd, EPOLL_CTL_ADD, m_tickleFds[0], &event);
-    GGO_ASSERT(rt);
+    GGO_ASSERT(!rt);
 
     contextResize(32);
     //创建完毕直接启动
@@ -282,27 +283,28 @@ void IOScheduler::idle()
     std::shared_ptr<epoll_event> shared_event(events,[](epoll_event* ptr){
         delete[] ptr;
     });
-
+    GGO_LOG_INFO(g_logger) << "name= " << IOScheduler::getName()
+                           << " idling";
     while(true){
         //无限循环idling………
         uint64_t next_timeout = 0;
-        if(canStopNow(next_timeout)){
+        if(GGO_UNLIKELY(canStopNow(next_timeout))){
             // 可以结束，退出待机协程
             GGO_LOG_INFO(g_logger) << "name= " << IOScheduler::getName()
-                                    << "idle ended and exit idle fiber";
+                                    << " idle ended and exit idle fiber";
             break;
         }
-
         int rt = 0;
         do{
             //不停尝试获取任务
             static const int MAX_TIMEOUT = 3000;
             if(next_timeout != ~0ull){
-                next_timeout = next_timeout > MAX_TIMEOUT ? MAX_TIMEOUT : next_timeout;
+                next_timeout = (int)next_timeout > MAX_TIMEOUT ? MAX_TIMEOUT : next_timeout;
             }else{
                 //没有定时器任务
                 next_timeout = MAX_TIMEOUT;
             }
+
             rt = epoll_wait(m_epollFd, events,MAX_EVENTS,next_timeout);
             if(rt < 0 && errno == EINTR){
                     // 调用被中断，再次尝试即可
@@ -311,23 +313,20 @@ void IOScheduler::idle()
             }
 
         }while(true);
-
         //获取到事件
         std::vector<std::function<void()>>cbs;
         listExpriedCb(cbs);
         if(!cbs.empty()){
             schedule(cbs.begin(),cbs.end());
             cbs.clear();
-        }   
-
+        }
         for(int i = 0; i < rt; i++){
             epoll_event& event = events[i];
             if(event.data.fd == m_tickleFds[0]){
                 // TODO::这段是在做什么
                 uint8_t dummy[256];
-                while(read(m_tickleFds[0],dummy,sizeof(dummy)) > 0){
-                    continue;
-                }
+                while(read(m_tickleFds[0],dummy,sizeof(dummy)) > 0);
+                continue;
             }
 
             FdContext* fd_ctx = (FdContext*)event.data.ptr;
@@ -350,7 +349,6 @@ void IOScheduler::idle()
             int left_events = fd_ctx->events & ~real_events;
             int op = left_events ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
             event.events = EPOLLET | left_events;
-
             int rt2 = epoll_ctl(m_epollFd, op, fd_ctx->fd, &event);
             if(rt2){
                 GGO_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epollFd << ", "
@@ -373,7 +371,6 @@ void IOScheduler::idle()
 
         Fiber::ptr cur_fiber = Fiber::getThis();
         auto raw_ptr = cur_fiber.get();
-
         cur_fiber.reset();
         raw_ptr->swapOut();
     }
@@ -404,7 +401,7 @@ void IOScheduler::onTimerInsertedAtFront()
 bool IOScheduler::canStopNow(uint64_t &timeout)
 {
     timeout = getNextTimer();
-    return (timeout = ~0ull && m_pendingEventCount == 0 && Scheduler::canStopNow());
+    return (timeout == ~0ull && m_pendingEventCount == 0 && Scheduler::canStopNow());
 }
 
 

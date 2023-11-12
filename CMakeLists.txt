@@ -73,3 +73,6 @@ target_link_libraries(EndianTest01 ${LIBS})
 # 字节数组模块测试
 add_executable(ByteArrayTest01 Test/ByteArrayTest01.cpp)
 target_link_libraries(ByteArrayTest01 ${LIBS})
+# IO协程调度器数组模块测试
+add_executable(IOSchedulerTest01 Test/IOSchedulerTest01.cpp)
+target_link_libraries(IOSchedulerTest01 ${LIBS})

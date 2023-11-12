@@ -11,7 +11,7 @@ void printcount(){
     for(int i = 0; i < 10; i++){
         count++;
         GGO_LOG_INFO(g_logger) << "now count= " << count;
-        GGo::Fiber::yieldToReady();
+        // GGo::Fiber::yieldToReady();
     }
 }
 void test_scheduler(bool use_caller){
@@ -54,6 +54,6 @@ int main(){
     YAML::Node node = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/log.yml");
     GGo::Config::loadFromYaml(node);
 
-    test_scheduler(false);
+    test_scheduler(true);
     return 0;
 }

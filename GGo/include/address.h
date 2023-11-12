@@ -59,7 +59,7 @@ public:
     /// @brief 不等号比较
     bool operator!=(const Address& rhs) const;
 
-}
+};
 
 /// @brief IP地址基类
 class IPAddress : public Address{
@@ -94,7 +94,7 @@ public:
     virtual uint32_t getPort() const = 0;
     
     
-}
+};
 
 class IPv4Address : public IPAddress{
 public:
@@ -111,15 +111,15 @@ public:
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
 
-    IPv4Address::ptr boradcastAdress(uint32_t prefix_len) override;
-    IPv4Address::ptr newwordAdress(uint32_t prefix_len) override;
-    IPv4Address::ptr subnetMask(int32_t prefix_len) override;
+    IPAddress::ptr boradcastAdress(uint32_t prefix_len) override;
+    IPAddress::ptr newwordAdress(uint32_t prefix_len) override;
+    IPAddress::ptr subnetMask(uint32_t prefix_len) override;
     uint32_t getPort() const override;
     void setPort(uint16_t port) override; 
 
 private:
     sockaddr_in m_addr;
-}
+};
 
 class IPv6Address : public IPAddress{
 public:
@@ -131,7 +131,7 @@ public:
 
     IPv6Address(const sockaddr_in6& address);
 
-    IPv6Address(const uint8 address[16], uint16_t port = 0);
+    IPv6Address(const uint8_t address[16], uint16_t port = 0);
 
 
     const sockaddr* getAddr() const override;
@@ -146,7 +146,7 @@ public:
     void setPort(uint16_t port) override;
 private: 
     sockaddr_in6 m_addr;
-}
+};
 
 class UnixAddress  : public Address{
 public:
@@ -166,7 +166,7 @@ public:
 private:
     sockaddr_un m_addr;
     socklen_t m_length;
-}
+};
 
 class UnKnownAddress : public Address{
 public:
@@ -176,13 +176,13 @@ public:
     UnKnownAddress(const sockaddr& addr);
     const sockaddr* getAddr() const override;
     sockaddr* getAddr() override;
-    socklen_t getAddrLen() override;
+    socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
 
 private:
     sockaddr m_addr;
 
-}
+};
 
 
 }
