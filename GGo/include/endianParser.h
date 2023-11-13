@@ -73,7 +73,7 @@ template <class T>
     /// @brief 只在小端机器上执行byteswap, 在大端机器上什么都不做
     T byteSwapOnLitteEndian(T value)
     {
-        return bytswap(value);
+        return byteswap(value);
     }
     /// @brief 只在大端机器上执行byteswap, 在小端机器上什么都不做
     template <class T>

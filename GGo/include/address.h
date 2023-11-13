@@ -29,6 +29,44 @@ class Address{
 public:
     using ptr = std::shared_ptr<Address>;
 
+    /// @brief 通过sockaddr创建Adress
+    /// @param addr sockaddr指针
+    /// @param addrlen sockaddr长度
+    /// @return 失败返回nullptr
+    static Address::ptr Create(const sockaddr* addr, socklen_t addrlen);
+
+    /// @brief 通过host地址返回对应条件的所有Address
+    /// @param results 所有符合条件的Address数组
+    /// @param host 域名，服务器名
+    /// @param family 协议族
+    /// @param type socket类型(SOCK_STREAM,SOCK_DGRAM)
+    /// @param protocol 协议，IPPROTO_TCP/IPPROTO_UDP
+    /// @return 是否转换成功
+    static bool Lookup(std::vector<Address::ptr> &results, const std::string &host, int family = AF_INET, int type = 0, int protocol = 0);
+
+    /// @brief 通过host地址返回任意符合条件的Address
+    /// @param host 域名，服务器名
+    /// @param family 协议族
+    /// @param type socket类型
+    /// @param protocal 协议
+    /// @return 满足条件的Address智能指针
+    static Address::ptr LookupAny(const std::string &host, int family = AF_INET, int type = 0, int protocal = 0);
+
+    /// @brief 通过host地址返回任意符合条件的IPAddress
+    /// @param host 域名，服务器名
+    /// @param family 协议族
+    /// @param type socket类型
+    /// @param protocol 协议
+    /// @return 满足条件的IPAddress智能指针
+    static std::shared_ptr<IPAddress> LookupAnyIPAddress(const std::string &host, int family = AF_INET, int type = 0, int protocol = 0);
+
+    /// @brief 获取指定网卡的地址和子网掩码位数
+    /// @param result 指定网卡的所有地址
+    /// @param  interface 网卡名
+    /// @param family 协议族
+    /// @return 是否获取成功
+    static bool GetInterfaceAddress(std::multimap<std::string, std::pair<Address::ptr, uint32_t>> &result, const std::string &interface, int family = AF_INET);
+
     /// @brief 基类析构函数
     virtual ~Address(){}
 
@@ -85,7 +123,7 @@ public:
     /// @brief 获取该地址的网段
     /// @param prefix_lem 子网掩码位数
     /// @return 调用成功返回IPAdress,失败返回nullptr
-    virtual IPAddress::ptr newwordAdress(uint32_t prefix_len) = 0;
+    virtual IPAddress::ptr networdAdress(uint32_t prefix_len) = 0;
 
     /// @brief 设置端口号
     virtual void setPort(uint16_t port) = 0;
@@ -100,19 +138,29 @@ class IPv4Address : public IPAddress{
 public:
     using ptr = std::shared_ptr<IPv4Address>;
 
+    /// @brief 使用点分十进制地址创建IPv4Address
+    /// @param address 点分十进制地址
+    /// @param port 端口号
     static IPv4Address::ptr Create(const char* address, uint16_t port = 0);
     
-    IPv4Address(const sockaddr_in* address);
+    /// @brief 通过sockaddr_in构造IPv4Address
+    /// @param address sockaddr_in结构体
+    IPv4Address(const sockaddr_in& address);
 
-    IPv4Address(uint32_t address = INADDR_ANY, uint16_t prot = 0);
-
+    /// @brief 通过二进制地址构造IPv4Address
+    /// @param address 二进制地址
+    /// @param port 端口号
+    IPv4Address(uint32_t address = INADDR_ANY, uint16_t port = 0);
+    
+    
+    /// @brief 接口
     const sockaddr* getAddr() const override;
     sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
 
     IPAddress::ptr boradcastAdress(uint32_t prefix_len) override;
-    IPAddress::ptr newwordAdress(uint32_t prefix_len) override;
+    IPAddress::ptr networdAdress(uint32_t prefix_len) override;
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
     uint32_t getPort() const override;
     void setPort(uint16_t port) override; 
@@ -140,7 +188,7 @@ public:
     std::ostream& insert(std::ostream& os) const override;
 
     IPAddress::ptr boradcastAdress(uint32_t prefix_len) override;
-    IPAddress::ptr newwordAdress(uint32_t prefix_len) override;
+    IPAddress::ptr networdAdress(uint32_t prefix_len) override;
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
     uint32_t getPort() const override;
     void setPort(uint16_t port) override;
