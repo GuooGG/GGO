@@ -73,6 +73,7 @@ public:
     /// @brief 返回协议簇
     int getFamily() const;
 
+    //TODO::只读只写怎么实现的
     /// @brief 返回socket指针，只读
     virtual const sockaddr* getAddr() const = 0;
 
@@ -152,7 +153,7 @@ public:
     /// @param port 端口号
     IPv4Address(uint32_t address = INADDR_ANY, uint16_t port = 0);
     
-    
+
     /// @brief 接口
     const sockaddr* getAddr() const override;
     sockaddr* getAddr() override;

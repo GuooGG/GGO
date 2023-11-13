@@ -8,6 +8,13 @@ namespace GGo{
 
 static GGo::Logger::ptr g_logger = GGO_LOG_NAME("system");
 
+template<class T>
+static T CreateMask(uint32_t bits){
+    return (1 << (sizeof(T) * 8 - bits)) - 1;
+}
+
+
+
 Address::ptr Address::Create(const sockaddr *addr, socklen_t addrlen)
 {
     if(addr == nullptr){
@@ -121,6 +128,32 @@ std::ostream &IPv4Address::insert(std::ostream &os) const
     return os;
 
 }
+IPAddress::ptr IPv4Address::boradcastAdress(uint32_t prefix_len)
+{
+    if(prefix_len > 32){
+        return nullptr;
+    }
+    sockaddr_in baddr(m_addr);
+    baddr.sin_addr.s_addr |= byteSwapOnLitteEndian(CreateMask<uint32_t>(prefix_len));
+    return IPv4Address::ptr(new IPv4Address(baddr));
+}
+IPAddress::ptr IPv4Address::networdAdress(uint32_t prefix_len)
+{
+    if(prefix_len > 32){
+        return nullptr;
+    }
+    sockaddr_in baddr(m_addr);
+    baddr.sin_addr.s_addr &= ~byteSwapOnLitteEndian(CreateMask<uint32_t>(prefix_len));
+    return IPv4Address::ptr(new IPv4Address(baddr));
+}
+IPAddress::ptr IPv4Address::subnetMask(uint32_t prefix_len)
+{
+    sockaddr_in subnet;
+    memset(&subnet, 0, sizeof(subnet));
+    subnet.sin_family = AF_INET;
+    subnet.sin_addr.s_addr = ~byteSwapOnLitteEndian(CreateMask<uint32_t>(prefix_len));
+    return IPv4Address::ptr(new IPv4Address(subnet));
+}
 uint32_t IPv4Address::getPort() const
 {
     return byteSwapOnLitteEndian(m_addr.sin_port);
@@ -162,6 +195,17 @@ IPAddress::ptr IPAddress::Create(const char *address, uint16_t port)
     
 }
 
+UnKnownAddress::UnKnownAddress(int family)
+{
+    memset(&m_addr, 0, sizeof(m_addr));
+    m_addr.sa_family = family;
+}
+
+UnKnownAddress::UnKnownAddress(const sockaddr &addr)
+{
+    m_addr = addr;
+}
+
 const sockaddr *UnKnownAddress::getAddr() const
 {
     return (sockaddr*)&m_addr;
@@ -169,7 +213,7 @@ const sockaddr *UnKnownAddress::getAddr() const
 
 sockaddr *UnKnownAddress::getAddr()
 {
-    return &m_addr;
+    return (sockaddr *)&m_addr;
 }
 
 socklen_t UnKnownAddress::getAddrLen() const
@@ -194,7 +238,23 @@ void IPv6Address::setPort(uint16_t port)
 }
 const sockaddr *IPv6Address::getAddr() const
 {
-    return (sockaddr *)&m_addr;
+    return (sockaddr*)&m_addr;
+}
+IPv6Address::IPv6Address()
+{
+    memset(&m_addr, 0, sizeof(m_addr));
+    m_addr.sin6_family = AF_INET6;
+}
+IPv6Address::IPv6Address(const sockaddr_in6 &address)
+{
+    m_addr = address;
+}
+IPv6Address::IPv6Address(const uint8_t address[16], uint16_t port)
+{
+    memset(&m_addr, 0, sizeof(m_addr));
+    m_addr.sin6_family = AF_INET6;
+    m_addr.sin6_port = byteSwapOnLitteEndian(port);
+    memcpy(m_addr.sin6_addr.s6_addr, address, 16);
 }
 sockaddr *IPv6Address::getAddr()
 {
@@ -229,5 +289,84 @@ std::ostream &IPv6Address::insert(std::ostream &os) const
     os << "]:" << byteSwapOnLitteEndian(m_addr.sin6_port);
     return os;
 
+}
+//TODO::对IPV6地址的基本操作
+IPAddress::ptr IPv6Address::boradcastAdress(uint32_t prefix_len)
+{
+    sockaddr_in6 baddr(m_addr);
+    baddr.sin6_addr.s6_addr[prefix_len / 8] |= CreateMask<uint8_t>(prefix_len % 8);
+    for(int i = prefix_len / 8 + 1; i < 16; i++){
+        baddr.sin6_addr.s6_addr[i] = 0xff;
+    }
+    return IPv6Address::ptr(new IPv6Address(baddr));
+}
+IPAddress::ptr IPv6Address::networdAdress(uint32_t prefix_len)
+{
+    sockaddr_in6 baddr(m_addr);
+    baddr.sin6_addr.s6_addr[prefix_len / 8] &= ~CreateMask<uint8_t>(prefix_len % 8);
+    for(int i = prefix_len / 8 + 1; i < 16; i++){
+        baddr.sin6_addr.s6_addr[i] = 0x00;
+    }
+    return IPv6Address::ptr(new IPv6Address(baddr));
+}
+IPAddress::ptr IPv6Address::subnetMask(uint32_t prefix_len)
+{
+    sockaddr_in6 subnet;
+    memset(&subnet, 0, sizeof(subnet));
+    subnet.sin6_family = AF_INET6;
+    subnet.sin6_addr.s6_addr[prefix_len / 8] = ~CreateMask<uint8_t>(prefix_len % 8);
+    for(uint32_t i = 0; i < prefix_len / 8; i++){
+        subnet.sin6_addr.s6_addr[i] = 0xff;
+    }
+    return IPv6Address::ptr(new IPv6Address(subnet));
+}
+
+static const size_t MAX_PATH_LEN = sizeof(((sockaddr_un *)0)->sun_path) - 1;
+
+UnixAddress::UnixAddress()
+{
+    memset(&m_addr, 0, sizeof(m_addr));
+    m_addr.sun_family = AF_UNIX;
+    m_length = offsetof(sockaddr_un, sun_path) + MAX_PATH_LEN;
+}
+
+UnixAddress::UnixAddress(const std::string &path)
+{
+    memset(&m_addr, 0, sizeof(m_addr));
+    m_addr.sun_family = AF_UNIX;
+    m_length = path.size() + 1;
+    if(!path.empty() && path[0] == '\0'){
+        --m_length;
+    }
+
+    if(m_length > sizeof(m_addr.sun_path)){
+        throw std::logic_error("path too long");
+    }
+
+    memcpy(m_addr.sun_path, path.c_str(), m_length);
+    m_length += offsetof(sockaddr_un, sun_path);
+}
+const sockaddr *UnixAddress::getAddr() const
+{
+    return (sockaddr*)&m_addr;
+}
+sockaddr *UnixAddress::getAddr()
+{
+    return (sockaddr*)&m_addr;
+}
+socklen_t UnixAddress::getAddrLen() const
+{
+    return m_length;
+}
+void UnixAddress::setAddrLen(uint32_t len)
+{
+}
+std::string UnixAddress::getPath() const
+{
+    return std::string();
+}
+std::ostream &UnixAddress::insert(std::ostream &os) const
+{
+    return os;
 }
 }
