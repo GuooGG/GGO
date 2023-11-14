@@ -76,3 +76,6 @@ target_link_libraries(ByteArrayTest01 ${LIBS})
 # IO协程调度器数组模块测试
 add_executable(IOSchedulerTest01 Test/IOSchedulerTest01.cpp)
 target_link_libraries(IOSchedulerTest01 ${LIBS})
+# 网络地址模块测试
+add_executable(AddressTest01 Test/AddressTest01.cpp)
+target_link_libraries(AddressTest01 ${LIBS})

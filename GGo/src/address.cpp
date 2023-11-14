@@ -240,6 +240,20 @@ const sockaddr *IPv6Address::getAddr() const
 {
     return (sockaddr*)&m_addr;
 }
+IPv6Address::ptr IPv6Address::Create(const char *address, uint16_t port)
+{
+    IPv6Address::ptr rt(new IPv6Address);
+    rt->m_addr.sin6_port = byteSwapOnLitteEndian(port);
+    int result = inet_pton(AF_INET6, address, &rt->m_addr.sin6_addr);
+    if(result < 0){
+        GGO_LOG_DEBUG(g_logger) << "IPv6Address::Create(" << address << ", "
+                                << port << ", " << ") rt = " << result 
+                                << "errno = " << errno << "errstr="
+                                << strerror(errno);
+        return nullptr;
+    }
+    return rt;
+}
 IPv6Address::IPv6Address()
 {
     memset(&m_addr, 0, sizeof(m_addr));
@@ -360,13 +374,23 @@ socklen_t UnixAddress::getAddrLen() const
 }
 void UnixAddress::setAddrLen(uint32_t len)
 {
+    m_length = len;
 }
 std::string UnixAddress::getPath() const
 {
-    return std::string();
+    std::stringstream ss;
+    if(m_length > offsetof(sockaddr_un, sun_path) && m_addr.sun_path[0] == '\0'){
+        ss << "\\0" << std::string(m_addr.sun_path + 1, m_length - offsetof(sockaddr_un, sun_path) - 1);
+    }else{
+        ss << m_addr.sun_path;
+    }
+    return ss.str();
 }
 std::ostream &UnixAddress::insert(std::ostream &os) const
 {
-    return os;
+    if(m_length > offsetof(sockaddr_un, sun_path) && m_addr.sun_path[0] == '\0'){
+        return os << "\\0" << std::string(m_addr.sun_path + 1, m_length - offsetof(sockaddr_un, sun_path) - 1);
+    }
+    return os << m_addr.sun_path;
 }
 }
