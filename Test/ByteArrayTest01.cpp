@@ -71,14 +71,42 @@ void test_basic(){
     ba.setPosition(0);
     LOG << "READABLE SIZE= " << ba.getReadableSize() << std::endl;
     LOG << std::endl
-        << ba.toHexString();
+        << ba.toString();
 
 }
 
+void test_file(){
+    LOG << "test file start";
+    GGo::ByteArray ba(BLOCK_SIZE);
+    for (int i = 0; i < DATA_COUNT; i++)
+    {
+        ba.writeUint32(i + 1);
+    }
+    ba.setPosition(0);
+    ba.writeToFile("../Test/tmp/ByteArrayTest01");
+    LOG << "test file end";
+}
+
+void test_iovec(){
+    LOG << "test iovec begin";
+    GGo::ByteArray ba(BLOCK_SIZE);
+    std::vector<iovec> iovecs;
+    ba.getWriteBuffers(iovecs, 1024);
+    LOG << iovecs.size();
+    readv(STDOUT_FILENO, &iovecs[0], iovecs.size());
+    // LOG << ba.getSize();
+    // ba.setPosition(0);
+    // ba.writeToFile("../Test/tmp/ByteArrayTest01.txt");
+    LOG << "test iovec end";
+}
+
+
 int main(){
-    test_strings();
-    test_float();
-    test_double();
-    test_basic();
+    // test_strings();
+    // test_float();
+    // test_double();
+    // test_basic();
+    // test_file();
+    // test_iovec();
     return 0;
 }
