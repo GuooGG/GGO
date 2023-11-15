@@ -1,7 +1,5 @@
 #include<iostream>
-#include"logSystem.h"
-#include"config.h"
-#include"fiber.h"
+#include "GGo.h"
 
 GGo::Logger::ptr g_logger = GGO_LOG_ROOT();
 

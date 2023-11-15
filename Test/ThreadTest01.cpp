@@ -1,10 +1,9 @@
 #include<thread.h>
 #include<iostream>
-#include"config.h"
 #include<logSystem.h>
 #include<yaml-cpp/yaml.h>
 #include<vector>
-#include"util.h"
+#include "GGo.h"
 using std::cout;
 using std::endl;
 

@@ -1,8 +1,4 @@
-#include"scheduler.h"
-#include"fiber.h"
-#include"thread.h"
-#include"config.h"
-#include"logSystem.h"
+#include "GGo.h"
 
 GGo::Logger::ptr g_logger = GGO_LOG_NAME("system");
 static uint64_t count = 0;

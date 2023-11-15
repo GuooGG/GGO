@@ -1,5 +1,5 @@
 #include<iostream>
-#include"endianParser.h"
+#include "GGo.h"
 using namespace std;
 int main(){
     float value = 3.14159f;

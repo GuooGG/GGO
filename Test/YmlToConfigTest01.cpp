@@ -1,5 +1,4 @@
-#include"config.h"
-#include"logSystem.h"
+#include "GGo.h"
 #include<iostream>
 #include<yaml-cpp/yaml.h>
 #include<fstream>

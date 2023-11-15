@@ -1,5 +1,4 @@
-#include"bytearray.h"
-#include"logSystem.h"
+#include"GGo.h"
 #include<vector>
 #include<malloc.h>
 #define LOG GGO_LOG_INFO(GGO_LOG_ROOT())

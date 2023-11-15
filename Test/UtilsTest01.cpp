@@ -10,10 +10,7 @@
 
 #include<iostream>
 #include<yaml-cpp/yaml.h>
-#include "util.h"
-#include "logSystem.h"
-#include"config.h"
-#include"macro.h"
+#include "GGo.h"
 using std::cout;
 using std::endl;
 

@@ -1,5 +1,4 @@
-#include"address.h"
-#include"logSystem.h"
+#include"GGo.h"
 
 #define LOG GGO_LOG_DEBUG(GGO_LOG_ROOT())
 

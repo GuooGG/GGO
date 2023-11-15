@@ -1,8 +1,7 @@
 #include<yaml-cpp/yaml.h>
-#include<logSystem.h>
-#include<config.h>
 #include<iostream>
 #include<fstream>
+#include "GGo.h"
 
 //日志输出遍历yml
 void printyml(YAML::Node node,int level){
