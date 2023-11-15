@@ -9,6 +9,8 @@
  * 
  */
 
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace GGo{
 
@@ -21,4 +23,18 @@ namespace GGo{
     void set_hook_enable(bool flag);
 
 
+}
+extern "C"
+{
+    // sleep
+    typedef unsigned int (*sleep_fun)(unsigned int seconds);
+    extern sleep_fun sleep_f;
+
+    // usleep
+    typedef int (*usleep_fun)(useconds_t usec);
+    extern usleep_fun usleep_f;
+
+    typedef int (*nanosleep_fun)(const struct timespec *req, struct timespec *rem);
+    extern nanosleep_fun nanosleep_f;
+    
 }

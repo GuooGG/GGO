@@ -488,7 +488,6 @@ void ByteArray::read(const void *buf, size_t size)
     }
 }
 
-/// TODO:: 好像postion并没有起到作用？是不是因为块都很大，在测试时候没有出现分块所以没有出现错误？
 void ByteArray::read(const void *buf, size_t size, size_t position) const
 {
     if(size >= (m_size - position)){
@@ -609,6 +608,163 @@ std::string ByteArray::toHexString() const
             << std::hex << (int)(uint8_t)str[i] << " ";
     }
     return ss.str();
+}
+
+bool ByteArray::readFromFile(const std::string &filename)
+{
+    std::ifstream ifs;
+    ifs.open(filename, std::ios::binary);
+    if(!ifs){
+        GGO_LOG_ERROR(g_logger) << "readFromFile name=" << filename
+                            << " error, errno=" << errno
+                            << " errstr=" << strerror(errno);
+        return false;
+    }
+    std::shared_ptr<char> buffer(new char[m_blockSize],[](char* ptr){
+        delete[] ptr;
+    });
+    while(!ifs.eof()){
+        ifs.read(buffer.get(), m_blockSize);
+        write(buffer.get(), ifs.gcount());
+    }
+    return true;
+}
+
+bool ByteArray::writeToFile(const std::string &filename)
+{
+    std::ofstream ofs;
+    ofs.open(filename, std::ios::trunc | std::ios::binary);
+    if(!ofs){
+        GGO_LOG_ERROR(g_logger) << "writeToFile name=" << filename
+                            << " error , errno =" << errno
+                            << "errstr" << strerror(errno);
+        return false;
+    }  
+    int64_t readable_size = getReadableSize();
+    int64_t position = m_position;
+    ByteNode* cur = m_curBlock;
+    int64_t len = -1;
+
+    while(readable_size){
+        int npos = position % m_blockSize;
+        if(readable_size > (int64_t)m_blockSize){
+            len = m_blockSize - npos;
+        }else{
+            len = readable_size - npos;
+        }
+        ofs.write(cur->ptr + npos, len);
+        cur = cur->next;
+        position += len;
+        readable_size -= len;
+    }   
+    return true;
+}
+
+uint64_t ByteArray::getReadBuffers(std::vector<iovec> &buffers, uint64_t len) const
+{
+    len = len > getReadableSize() ? getReadableSize() : len;
+    if(len == 0){
+        buffers.clear();
+        return 0;
+    }
+
+    uint64_t size_to_read = len;
+    size_t npos = m_position % m_blockSize;
+    size_t nacp = m_curBlock->size - npos;
+    struct iovec iov;
+    ByteNode* cur = m_curBlock;
+
+    while (size_to_read)
+    {
+        if(nacp >= size_to_read){
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = size_to_read;
+            size_to_read = 0;
+        }else{  
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = nacp;
+            size_to_read -= nacp;
+            cur = cur->next;
+            npos = 0;
+            nacp = cur->size;
+        }   
+        buffers.push_back(iov);
+    }
+    
+    return len;
+}
+
+uint64_t ByteArray::getReadBuffers(std::vector<iovec> &buffers, uint64_t len, uint64_t position) const
+{
+    len = len > getReadableSize() ? getReadableSize() : len;
+    if(len == 0){
+        buffers.clear();
+        return 0;
+    }
+
+
+    size_t blocks_count = position / m_blockSize;
+    ByteNode* cur = m_rootBlock;
+    while(blocks_count){
+        cur = cur->next;
+        blocks_count--;
+    }
+
+    uint64_t size_to_read = len;
+    size_t npos = position % m_blockSize;
+    size_t ncap = cur->size - npos;
+    struct iovec iov;
+
+    while(size_to_read){
+        if(ncap >= size_to_read){
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = size_to_read;
+            size_to_read = 0;
+        }else{
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = ncap;
+            size_to_read -= ncap;
+            npos = 0;
+            cur = cur->next;
+            ncap = cur->size;
+        }
+        buffers.push_back(iov);
+    }
+    return len;
+
+}
+
+uint64_t ByteArray::getWriteBuffers(std::vector<iovec> &buffers, uint64_t len)
+{
+    if(len == 0){
+        buffers.clear();
+        return 0;
+    }
+    addCapacity(len);
+
+    uint64_t size_to_write = len;
+
+    size_t npos = m_position % m_blockSize;
+    size_t ncap = m_curBlock->size - npos;
+    struct iovec iov;
+    ByteNode* cur = m_curBlock;
+
+    while(size_to_write){
+        if(ncap >= size_to_write){
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = size_to_write;
+            size_to_write = 0;
+        }else{
+            iov.iov_base = cur->ptr + npos;
+            iov.iov_len = ncap;
+            size_to_write -= ncap;
+            cur = cur->next;
+            npos = 0;
+            ncap = cur->size;
+        }
+        buffers.push_back(iov);
+    }
+    return len;
 }
 
 void ByteArray::addCapacity(size_t size)

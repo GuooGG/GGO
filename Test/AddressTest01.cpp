@@ -17,6 +17,8 @@ void test_basic(){
     LOG << ipv6addr->boradcastAdress(64)->toString();
     LOG << ipv6addr->networdAdress(64)->toString();
     LOG << ipv6addr->getAddrLen();
+    ipv6addr->setPort(88);
+    LOG << ipv6addr->toString();
     LOG << "============ipv6 test end=================";
 }
 

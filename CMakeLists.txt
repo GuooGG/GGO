@@ -13,8 +13,6 @@ set(CMAKE_CXX_STANDARD 20)
 #设置可执行文件输出路径
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
-#链接<pthread.h>
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 #启用全部警告
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
@@ -35,6 +33,8 @@ add_library(GGO_LIB SHARED ${GGO_LIB_SRC})
 
 set(LIBS 
         GGO_LIB
+        dl
+        pthread
         yaml-cpp
 )
 

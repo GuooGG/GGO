@@ -9,6 +9,7 @@
  */
 #pragma once
 #include<memory>
+#include<string>
 #include<stdint.h>
 #include<sys/types.h>
 #include<sys/socket.h>
