@@ -40,19 +40,19 @@ set(LIBS
 
 message(STATUS ${PROJECT_BINARY_DIR})
 
-#生成日志测试 01
+#生成日志测试
 add_executable(LogTest01 Test/LogTest01.cpp)
 target_link_libraries(LogTest01 ${LIBS})
-#生成日志测试 02 测试日志系统完整框架功能
+#生成日志系统完整框架功能测试
 add_executable(LogTest02 Test/LogTest02.cpp)
 target_link_libraries(LogTest02 ${LIBS})
-#生成配置测试 01
+#生成配置测试
 add_executable(ConfigTest01 Test/ConfigTest01.cpp)
 target_link_libraries(ConfigTest01 ${LIBS})
-#生成Yaml-cpp测试 01
+#生成Yaml-cpp测试
 add_executable(YmlTest01 Test/YmlTest01.cpp)
 target_link_libraries(YmlTest01 ${LIBS})
-#生成YML文件转配置信息测试 01
+#生成YML文件转配置信息测试
 add_executable(YmlToConfigTest01 Test/YmlToConfigTest01.cpp)
 target_link_libraries(YmlToConfigTest01 ${LIBS})
 # 线程模块测试
