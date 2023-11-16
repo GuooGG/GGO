@@ -16,6 +16,7 @@ void hook_init()
     {
         return;
     }
+    sleep_f = (sleep_fun)dlsym(RTLD_NEXT, "sleep");
 }
 
 struct __HookIniter
@@ -39,4 +40,14 @@ void set_hook_enable(bool flag)
 }
 
 
+}
+
+extern "C"{
+    sleep_fun sleep_f = nullptr;
+
+    unsigned int sleep(unsigned int seconds){
+        sleep_f(10);
+        GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "sleep hooked!";
+        return 114514;
+    }
 }
