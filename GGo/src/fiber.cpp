@@ -46,7 +46,6 @@ Fiber::Fiber()
 
     s_fiber_count++;
 
-    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "Fiber::Fiber main " << m_id;
 }
 
 Fiber::Fiber(mission cb, size_t stacksize, bool use_scheduler)
@@ -171,7 +170,6 @@ Fiber::ptr Fiber::getThis()
     }
     //没有正在执行的协程，创建一个主协程
     Fiber::ptr main_fiber(new Fiber);
-    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "main fiber id= " << main_fiber->m_id;
     GGO_ASSERT(t_fiber == main_fiber.get());
     t_threadFiber = main_fiber;
     return t_fiber->shared_from_this();

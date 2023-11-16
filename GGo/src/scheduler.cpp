@@ -1,6 +1,7 @@
 #include"scheduler.h"
 #include"logSystem.h"
 #include"macro.h"
+#include "hook.h"
 
 namespace GGo{
 
@@ -119,7 +120,7 @@ void Scheduler::tickle()
 }
 void Scheduler::run()
 {
-    GGO_LOG_INFO(g_logger) << m_name << " run";
+    set_hook_enable(true);
     // 为当前线程设置调度器
     Scheduler::setThis();
     //为每个线程新建一个主调度协程

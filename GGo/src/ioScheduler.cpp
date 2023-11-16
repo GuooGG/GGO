@@ -283,8 +283,7 @@ void IOScheduler::idle()
     std::shared_ptr<epoll_event> shared_event(events,[](epoll_event* ptr){
         delete[] ptr;
     });
-    GGO_LOG_INFO(g_logger) << "name= " << IOScheduler::getName()
-                           << " idling";
+
     while(true){
         //无限循环idling………
         uint64_t next_timeout = 0;

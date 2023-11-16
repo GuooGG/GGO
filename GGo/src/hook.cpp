@@ -1,5 +1,7 @@
 #include"hook.h"
 #include"logSystem.h"
+#include"fiber.h"
+#include"ioScheduler.h"
 #include<dlfcn.h>
 
 namespace GGo{
@@ -43,11 +45,23 @@ void set_hook_enable(bool flag)
 }
 
 extern "C"{
-    sleep_fun sleep_f = nullptr;
 
-    unsigned int sleep(unsigned int seconds){
-        sleep_f(10);
-        GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "sleep hooked!";
-        return 114514;
+sleep_fun sleep_f = nullptr;
+
+unsigned int sleep(unsigned int seconds){
+    if(!GGo::t_hook_enable){
+        return sleep_f(seconds);
     }
+
+    GGo::Fiber::ptr fiber = GGo::Fiber::getThis();
+    GGo::IOScheduler* ioscheduler = GGo::IOScheduler::getThis();
+
+    ioscheduler->addTimer(seconds * 1000, std::bind((void(GGo::Scheduler::*)(GGo::Fiber::ptr, int))&GGo::IOScheduler::schedule,
+                                                ioscheduler,
+                                                fiber,
+                                                -1));
+    GGo::Fiber::yieldToHold();
+    return seconds;
+}
+
 }
