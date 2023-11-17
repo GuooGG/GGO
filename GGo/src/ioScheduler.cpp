@@ -289,8 +289,8 @@ void IOScheduler::idle()
         uint64_t next_timeout = 0;
         if(GGO_UNLIKELY(canStopNow(next_timeout))){
             // 可以结束，退出待机协程
-            GGO_LOG_INFO(g_logger) << "name= " << IOScheduler::getName()
-                                    << " idle ended and exit idle fiber";
+            // GGO_LOG_INFO(g_logger) << "name= " << IOScheduler::getName()
+            //                         << " idle ended and exit idle fiber";
             break;
         }
         int rt = 0;

@@ -23,7 +23,6 @@ Scheduler::Scheduler(size_t thread_pool_size, bool use_caller, const std::string
         // 在当前线程新建一个主协程作为调度协程
 
         GGo::Fiber::getThis();
-        GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "main fiber id= " << Fiber::getThis()->m_id;
         // 断言当前线程没有其他调度器
         GGO_ASSERT(Scheduler::getThis() == nullptr);
         t_scheduler = this;
@@ -77,7 +76,6 @@ void Scheduler::stop()
             && m_threadCount == 0
             && (m_rootFiber->getState() == Fiber::State::TERM
             || m_rootFiber->getState() == Fiber::State::INIT)){
-        GGO_LOG_INFO(g_logger) << m_name << " stopped";
         m_isStopping = true;
 
         if(canStopNow()){

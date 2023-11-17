@@ -91,8 +91,8 @@ Fiber::~Fiber()
             setThis(nullptr);
         }
     }
-    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "Fiber::~Fiber() id= " << m_id
-                            << " total=" << s_fiber_count;
+    // GGO_LOG_DEBUG(GGO_LOG_ROOT()) << "Fiber::~Fiber() id= " << m_id
+    //                         << " total=" << s_fiber_count;
 }
 
 void Fiber::call()
