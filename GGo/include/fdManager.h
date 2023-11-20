@@ -90,6 +90,18 @@ public:
     // 读写锁类型
     using RWMutexType = RWMutex;
 
+    /// @brief 无参构造函数
+    FdManager();
+
+    /// @brief 获取文件句柄的上下文对象指针
+    /// @param fd 文件句柄
+    /// @param auto_create 是否自动创建
+    FdCtx::ptr get(int fd, bool auto_create = false);
+
+    /// @brief 删除文件句柄
+    /// @param fd 文件句柄
+    void del(int fd);
+
 private:
     // 读写锁
     RWMutexType m_mutex;

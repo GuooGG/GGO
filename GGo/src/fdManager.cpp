@@ -21,6 +21,27 @@ FdCtx::FdCtx(int fd)
 
 FdCtx::~FdCtx(){}
 
+void FdCtx::setTimeout(int type, uint64_t timeout)
+{
+    if(type == SO_RCVTIMEO){
+        m_recvTimeout = timeout;
+    }else{
+        m_sendTimeout = timeout;
+    }
+}
+
+uint64_t FdCtx::getTimeout(int type)
+{
+    if (type == SO_RCVTIMEO)
+    {
+        return m_recvTimeout;
+    }
+    else
+    {
+        return m_sendTimeout;
+    }
+}
+//TODO::没看懂
 bool FdCtx::init()
 {
     if(m_isInited){
@@ -39,7 +60,10 @@ bool FdCtx::init()
     }
 
     if(m_isSocket){
-        //TODO:: 等待完善
+        int flags = fcntl(m_fd, F_GETFL, 0);
+        if(!(flags & O_NONBLOCK)){
+            fcntl(m_fd, F_SETFL, flags | O_NONBLOCK);
+        }
         m_sysNonblock = true;
     }else{
         m_sysNonblock = false;
@@ -49,5 +73,44 @@ bool FdCtx::init()
     m_isClosed = false;
     return m_isInited;
 
+}
+FdManager::FdManager()
+{
+    m_fds.resize(64);
+}
+FdCtx::ptr FdManager::get(int fd, bool auto_create)
+{
+    if(fd == -1){
+        return nullptr;
+    }
+    RWMutexType::readLock lock(m_mutex);
+    if(fd >= (int)m_fds.size()){
+        if(auto_create == false){
+            return nullptr;
+        }
+    }else{
+        if(m_fds[fd] || !auto_create){
+            return m_fds[fd];
+        }
+    }
+    lock.unlock();
+    
+    RWMutexType::writeLock lock2(m_mutex);
+    FdCtx::ptr ctx(new FdCtx(fd));
+    if(fd >= (int)m_fds.size()){
+        m_fds.resize(fd * 2);
+    }
+    m_fds[fd] = ctx;
+    return ctx;
+
+
+}
+void FdManager::del(int fd)
+{
+    RWMutexType::writeLock lock(m_mutex);
+    if(fd >= (int)m_fds.size()){
+        return;
+    }
+    m_fds[fd].reset();
 }
 }
