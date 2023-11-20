@@ -98,7 +98,7 @@ public:
     /// @param auto_create 是否自动创建
     FdCtx::ptr get(int fd, bool auto_create = false);
 
-    /// @brief 删除文件句柄
+    /// @brief 删除文件句柄上下文
     /// @param fd 文件句柄
     void del(int fd);
 
