@@ -46,8 +46,6 @@ std::string Address::toString() const
     std::stringstream ss;
     insert(ss);
     return ss.str();
-
-
 }
 
 bool Address::operator<(const Address &rhs) const
@@ -123,7 +121,7 @@ std::ostream &IPv4Address::insert(std::ostream &os) const
     os << ((bin_addr >> 24) & 0xff) << "."
         << ((bin_addr >> 16) & 0xff) << "."
         << ((bin_addr >> 8) & 0xff) << "."
-        << (bin_addr & 0xff) << "."
+        << (bin_addr & 0xff)
         << ":" << byteSwapOnLitteEndian(m_addr.sin_port);
     return os;
 

@@ -6,14 +6,15 @@
 #include"fdManager.h"
 #include<dlfcn.h>
 
+static GGo::Logger::ptr g_logger = GGO_LOG_NAME("system");
 
 namespace GGo{
 
 static thread_local bool t_hook_enable = false;
-static GGo::Logger::ptr g_logger = GGO_LOG_NAME("system");
-static GGo::ConfigVar<int>::ptr g_tcp_connect_timeout_config = 
-        GGo::Config::Lookup("tcp.connect.timeout", 5000, "tcp connect timeout (/ms)");
+static GGo::ConfigVar<int>::ptr g_tcp_connect_timeout_config =
+    GGo::Config::Lookup("tcp.connect.timeout", 5000, "tcp connect timeout (/ms)");
 static int s_connect_timeout = -1;
+
 // hook模块初始化
 void hook_init()
 {
@@ -225,4 +226,33 @@ int nanosleep(const struct timespec *req, struct timespec *rem){
     GGo::Fiber::yieldToHold();
     return 0;
 }
+
+int socket(int domain, int type, int protocol){
+    if(!GGo::t_hook_enable){
+        GGO_LOG_DEBUG(g_logger) << "original socket";
+        return socket_f(domain, type, protocol);
+    }
+    GGO_LOG_INFO(g_logger) << "hooked socket";
+    return socket_f(domain, type, protocol);
+}
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen){
+    if(!GGo::t_hook_enable){
+        GGO_LOG_DEBUG(g_logger) << "original connect";
+        return connect_f(sockfd, addr, addrlen);
+    }
+    GGO_LOG_DEBUG(g_logger) << "hooked connect";
+    return connect_f(sockfd, addr, addrlen);
+}
+
+int accept(int s, struct sockaddr *addr, socklen_t *addrlen){
+    if(!GGo::t_hook_enable){
+        GGO_LOG_DEBUG(g_logger) << "original accept";
+        return accept_f(s, addr, addrlen);
+    }
+    GGO_LOG_DEBUG(g_logger) << "hooked accept";
+    return accept_f(s, addr, addrlen);
+}
+
+
 }
