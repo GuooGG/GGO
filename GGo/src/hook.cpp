@@ -87,6 +87,7 @@ static int64_t do_io(int fd, Func fun, const char* fun_name, uint32_t event, int
     }
 
     //下面处理socket_io的情况
+    //TODO:: io核心方法
     uint64_t timeout = fdctx->getTimeout(timeout_type);
     std::shared_ptr<timer_condition> t_cond(new timer_condition);
     int64_t rt = -1;
@@ -103,7 +104,32 @@ static int64_t do_io(int fd, Func fun, const char* fun_name, uint32_t event, int
             GGo::Timer::ptr timer;
             std::weak_ptr<timer_condition> w_cond(t_cond);
 
+            if(timeout != (uint64_t)-1){
+                // 设定的超时时间不为-1
+                timer = ioscheduler->addConditionTimer(timeout, [w_cond, fd, ioscheduler, event](){
+                    std::shared_ptr<timer_condition> t = w_cond.lock();
+                    if(!t || t->cancelled){
+                        return;
+                    }
+                    // 超时时间到，但是事件还没执行，设置错状态，触发事件
+                    t->cancelled = ETIMEDOUT;
+                    ioscheduler->cancelEvent(fd, (GGo::IOScheduler::Event)event);
+                }, w_cond);
+            }
 
+            rt = ioscheduler->addEvent(fd, (GGo::IOScheduler::Event)event);
+            if(rt){
+
+            }else{
+                GGo::Fiber::yieldToHold();
+                if(timer){
+                    timer->cancel();
+                    if(t_cond->cancelled){
+                        errno = t_cond->cancelled;
+                        return -1;
+                    }
+                }
+            }
         }
 
     } while (rt == -1);
