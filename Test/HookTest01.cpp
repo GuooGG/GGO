@@ -93,8 +93,8 @@ int main(){
     // test_sleep();
     // test_usleep();
     // test_nanosleep();
-    // test_socket_init();
-    test_socket_accept();
+    test_socket_init();
+    // test_socket_accept();
 
     LOG << "main end";
     return 0;

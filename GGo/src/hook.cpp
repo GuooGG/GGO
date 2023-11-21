@@ -81,7 +81,7 @@ struct timer_condition
 };
 
 template<typename Func, typename... Args>
-static int64_t do_io(int fd, Func fun, const char* fun_name, uint32_t event, int timeout_type, Args&&... args)
+static ssize_t do_io(int fd, Func fun, const char* fun_name, uint32_t event, int timeout_type, Args&&... args)
 {
     if(!GGo::t_hook_enable){
         return fun(fd, std::forward<Args>(args)...);
@@ -229,11 +229,14 @@ int nanosleep(const struct timespec *req, struct timespec *rem){
 
 int socket(int domain, int type, int protocol){
     if(!GGo::t_hook_enable){
-        GGO_LOG_DEBUG(g_logger) << "original socket";
         return socket_f(domain, type, protocol);
     }
-    GGO_LOG_INFO(g_logger) << "hooked socket";
-    return socket_f(domain, type, protocol);
+    int fd = socket_f(domain, type, protocol);
+    if(fd == -1){
+        return -1;
+    }
+    GGo::FdMgr::GetInstance()->get(fd, true);
+    return fd;
 }
 
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen){
@@ -246,13 +249,72 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen){
 }
 
 int accept(int s, struct sockaddr *addr, socklen_t *addrlen){
-    if(!GGo::t_hook_enable){
-        GGO_LOG_DEBUG(g_logger) << "original accept";
-        return accept_f(s, addr, addrlen);
+    int fd = do_io(s, accept_f, "accept", GGo::IOScheduler::Event::READ, SO_RCVTIMEO, addr, addrlen);
+    if(fd >= 0){
+        GGo::FdMgr::GetInstance()->get(fd, true);
     }
-    GGO_LOG_DEBUG(g_logger) << "hooked accept";
-    return accept_f(s, addr, addrlen);
+    return fd;
 }
+
+ssize_t read(int fd, void *buf, size_t count){
+    return do_io(fd, read_f, "read", GGo::IOScheduler::Event::READ, SO_RCVTIMEO, buf, count);
+}
+
+ssize_t readv(int fd, const struct iovec *iov, int iovcnt){
+    return do_io(fd, readv_f, "readv", GGo::IOScheduler::Event::READ, SO_RCVTIMEO, iov, iovcnt);
+}
+
+ssize_t recv(int sockfd, void *buf, size_t len, int flags){
+    return do_io(sockfd, recv_f, "recv", GGo::IOScheduler::Event::READ, SO_RCVTIMEO, buf, len, flags);
+}
+
+ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen){
+    return do_io(sockfd, recvfrom_f, "recvfrom", GGo::IOScheduler::Event::READ, SO_RCVTIMEO, buf, len, flags, src_addr, addrlen);
+}
+
+ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags){
+    return do_io(sockfd, recvmsg_f, "recvmsg", GGo::IOScheduler::Event::READ, SO_RCVTIMEO, msg, flags);
+}
+
+// write
+ssize_t write(int fd, const void *buf, size_t count){
+    return do_io(fd, write_f, "write", GGo::IOScheduler::Event::WRITE, SO_SNDTIMEO, buf, count);
+}
+
+ssize_t writev(int fd, const struct iovec *iov, int iovcnt){
+    return do_io(fd, writev_f, "writev", GGo::IOScheduler::Event::WRITE, SO_SNDTIMEO, iov, iovcnt);
+}
+
+ssize_t send(int s, const void *msg, size_t len, int flags){
+    return do_io(s, send_f, "send", GGo::IOScheduler::Event::WRITE, SO_SNDTIMEO, msg, len, flags);
+}
+
+ssize_t sendto(int s, const void *msg, size_t len, int flags, const struct sockaddr *to, socklen_t tolen){
+    return do_io(s, sendto_f, "sendto", GGo::IOScheduler::Event::WRITE, SO_SNDTIMEO, msg, len, flags, to, tolen);
+}
+
+ssize_t sendmsg(int s, const struct msghdr *msg, int flags){
+    return do_io(s, sendmsg_f, "sendmsg", GGo::IOScheduler::Event::WRITE, SO_SNDTIMEO, msg, flags);
+}
+
+// io_control
+int close(int fd){
+    if(!GGo::t_hook_enable){
+        return close_f(fd);
+    }
+
+    GGo::FdCtx::ptr fdctx = GGo::FdMgr::GetInstance()->get(fd);
+    if(fdctx){
+        auto ios = GGo::IOScheduler::getThis();
+        if(ios){
+            ios->cancelAll(fd);
+        }
+        GGo::FdMgr::GetInstance()->del(fd);
+    }
+    return close_f(fd);
+}
+
+
 
 
 }
