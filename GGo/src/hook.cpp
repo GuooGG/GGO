@@ -15,7 +15,6 @@ static thread_local bool t_hook_enable = false;
 static GGo::ConfigVar<int>::ptr g_tcp_connect_timeout_config =
     GGo::Config::Lookup("tcp.connect.timeout", 5000, "tcp connect timeout (/ms)");
 static int s_connect_timeout = -1;
-
 // hook模块初始化
 void hook_init()
 {
@@ -240,13 +239,78 @@ int socket(int domain, int type, int protocol){
     return fd;
 }
 
-int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen){
+int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen, uint64_t timeout_ms){
     if(!GGo::t_hook_enable){
-        GGO_LOG_DEBUG(g_logger) << "original connect";
-        return connect_f(sockfd, addr, addrlen);
+        return connect_f(fd, addr, addrlen);
     }
-    GGO_LOG_DEBUG(g_logger) << "hooked connect";
-    return connect_f(sockfd, addr, addrlen);
+    GGo::FdCtx::ptr fdctx = GGo::FdMgr::GetInstance()->get(fd);
+    if(!fdctx || fdctx->isClose()){
+        errno = EBADF;
+        return -1;
+    }
+    if(!fdctx->isSocket()){
+        return connect_f(fd, addr, addrlen);
+    }
+
+    if(fdctx->getUsrNonblock()){
+        return connect_f(fd, addr, addrlen);
+    }
+
+    int rt = connect_f(fd, addr, addrlen);
+    if(rt == 0){
+        return 0;
+    }else if(rt != -1 || errno != EINTR){
+        return rt;
+    }
+
+    GGo::IOScheduler* iosc = GGo::IOScheduler::getThis();
+    GGo::Timer::ptr timer;
+    std::shared_ptr<timer_condition> t_cond(new timer_condition);
+    std::weak_ptr<timer_condition> w_cond(t_cond);
+
+    if(timeout_ms != (uint64_t)-1){
+        timer = iosc->addConditionTimer(timeout_ms, [w_cond, fd, iosc](){
+            auto t = w_cond.lock();
+            if(!t || t->cancelled){
+                return;
+            }
+            t->cancelled = ETIMEDOUT;
+            iosc->cancelEvent(fd, GGo::IOScheduler::Event::WRITE);
+        }, w_cond);
+    }
+
+    rt = iosc->addEvent(fd, GGo::IOScheduler::Event::WRITE);
+    if(rt == 0){
+        GGo::Fiber::yieldToHold();
+        if(timer){
+            timer->cancel();
+        }
+        if(t_cond->cancelled){
+            errno = t_cond->cancelled;
+            return -1;
+        }
+    }else{
+        if(timer){
+            timer->cancel();
+        }
+        GGO_LOG_ERROR(g_logger) << "connect addEvent(" << fd << ", WRITE) error";
+    }
+
+    int error = 0;
+    socklen_t len = sizeof(int);
+    if(getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) == -1){
+        return -1;
+    }
+    if(!error){
+        return 0;
+    }else{
+        errno = error;
+        return -1;
+    }
+}
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen){
+    return connect_with_timeout(sockfd, addr, addrlen, GGo::s_connect_timeout);
 }
 
 int accept(int s, struct sockaddr *addr, socklen_t *addrlen){
@@ -377,7 +441,7 @@ int fcntl(int fd, int cmd, .../* arg */){
         case F_GETSIG:
         case F_GETLEASE:
 #ifdef F_SETPIPE_SZ
-        case F_SETPIPE_SZ:
+        case F_GETPIPE_SZ:
 #endif
         {
             va_end(va);
@@ -397,14 +461,14 @@ int fcntl(int fd, int cmd, .../* arg */){
         case F_GETOWN_EX:
         case F_SETOWN_EX:
         {
-            struct f_onwer_exlock* arg = va_arg(va, struct f_owner_exlock*);
+            struct f_owner_exlock *arg = va_arg(va, struct f_owner_exlock *);
             va_end(va);
             return fcntl_f(fd, cmd, arg);
         }
         break;
         default:
             va_end(va);
-            return fcntl_f(fd, cmd)l
+            return fcntl_f(fd, cmd);
         }
 }
 
@@ -430,7 +494,7 @@ int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optl
     return getsockopt_f(sockfd, level, optname, optval, optlen);
 }
 
-int setsockopt_fun(int sockfd, int level, int optname, const void *optval, socklen_t optlen){
+int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen){
     if(!GGo::t_hook_enable){
         return setsockopt_f(sockfd, level, optname, optval, optlen);
     }
