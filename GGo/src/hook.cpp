@@ -4,6 +4,7 @@
 #include"ioScheduler.h"
 #include"config.h"
 #include"fdManager.h"
+#include<sys/ioctl.h>
 #include<dlfcn.h>
 
 static GGo::Logger::ptr g_logger = GGO_LOG_NAME("system");
@@ -314,7 +315,136 @@ int close(int fd){
     return close_f(fd);
 }
 
+int fcntl(int fd, int cmd, .../* arg */){
+    va_list va;
+    va_start(va, cmd);
+    switch (cmd)
+    {
+        case F_SETFL:
+        {
+            int arg = va_arg(va, int);
+            va_end(va);
+            GGo::FdCtx::ptr fdctx = GGo::FdMgr::GetInstance()->get(fd);
+            if (!fdctx || fdctx->isClose() || !fdctx->isSocket())
+            {
+                return fcntl_f(fd, cmd, arg);
+            }
+            fdctx->setUsrNonblock(arg & O_NONBLOCK);
+            if (fdctx->getUsrNonblock())
+            {
+                arg |= O_NONBLOCK;
+            }
+            else
+            {
+                arg &= ~O_NONBLOCK;
+            }
+            return fcntl_f(fd, cmd, arg);
+        }
+        break;
+        case F_GETFL:
+        {
+            va_end(va);
+            int arg = fcntl_f(fd, cmd);
+            GGo::FdCtx::ptr fdctx = GGo::FdMgr::GetInstance()->get(fd);
+            if(!fdctx || fdctx->isClose() || !fdctx->isSocket()){
+                return arg;
+            }
+            if(fdctx->getUsrNonblock()){
+                return arg | O_NONBLOCK;
+            }else{
+                return arg & ~O_NONBLOCK;
+            }
+        }
+        break;
+        case F_DUPFD:
+        case F_DUPFD_CLOEXEC:
+        case F_SETFD:
+        case F_SETOWN:
+        case F_SETSIG:
+        case F_SETLEASE:
+        case F_NOTIFY:
+#ifdef F_SETPIPE_SZ
+        case F_SETPIPE_SZ:
+#endif
+        {
+            int arg = va_arg(va, int);
+            va_end(va);
+            return fcntl(fd, cmd, arg);
+        }
+        break;
+        case F_GETFD:
+        case F_GETOWN:
+        case F_GETSIG:
+        case F_GETLEASE:
+#ifdef F_SETPIPE_SZ
+        case F_SETPIPE_SZ:
+#endif
+        {
+            va_end(va);
+            return fcntl_f(fd, cmd);
+        }
+        break;
+        case F_SETLK:
+        case F_SETLKW:
+        case F_GETLK:
+        {
+            struct flock* arg = va_arg(va, struct flock*);
+            va_end(va);
+            return fcntl_f(fd, cmd, arg);
 
+        }
+        break;
+        case F_GETOWN_EX:
+        case F_SETOWN_EX:
+        {
+            struct f_onwer_exlock* arg = va_arg(va, struct f_owner_exlock*);
+            va_end(va);
+            return fcntl_f(fd, cmd, arg);
+        }
+        break;
+        default:
+            va_end(va);
+            return fcntl_f(fd, cmd)l
+        }
+}
+
+int ioctl(int d, unsigned long int request, ...){
+    va_list va;
+    va_start(va, request);
+    void* arg = va_arg(va, void*);
+    va_end(va);
+
+    if(request == FIONBIO){
+        bool usr_nonblock = !!*(int*)arg;
+        GGo::FdCtx::ptr fdctx = GGo::FdMgr::GetInstance()->get(d);
+        if(!fdctx || fdctx->isClose() || !fdctx->isSocket()){
+            return ioctl_f(d, request, arg);
+        }
+        fdctx->setSysNonblock(usr_nonblock);                                         
+    }
+    return ioctl_f(d, request, arg);
+}
+
+// socket_operator
+int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen){
+    return getsockopt_f(sockfd, level, optname, optval, optlen);
+}
+
+int setsockopt_fun(int sockfd, int level, int optname, const void *optval, socklen_t optlen){
+    if(!GGo::t_hook_enable){
+        return setsockopt_f(sockfd, level, optname, optval, optlen);
+    }
+    if(level == SOL_SOCKET){
+        if(optname == SO_RCVTIMEO || optname == SO_SNDTIMEO){
+            GGo::FdCtx::ptr fdctx = GGo::FdMgr::GetInstance()->get(sockfd);
+            if(fdctx){
+                const timeval* tv = (const timeval*)optval;
+                fdctx->setTimeout(optname, tv->tv_sec * 1000 + tv->tv_usec / 1000);
+            }
+        }
+    }
+    return setsockopt_f(sockfd, level, optname, optval, optlen);
+}
 
 
 }
