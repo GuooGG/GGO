@@ -231,7 +231,7 @@ int socket(int domain, int type, int protocol){
     if(!GGo::t_hook_enable){
         return socket_f(domain, type, protocol);
     }
-    int fd = soc0000000ket_f(domain, type, protocol);
+    int fd = socket_f(domain, type, protocol);
     if(fd == -1){
         return -1;
     }
