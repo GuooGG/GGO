@@ -13,7 +13,7 @@ namespace GGo{
 
 static thread_local bool t_hook_enable = false;
 static GGo::ConfigVar<int>::ptr g_tcp_connect_timeout_config =
-    GGo::Config::Lookup("tcp.connect.timeout", 5000, "tcp connect timeout (/ms)");
+    GGo::Config::Lookup("tcp.connect.timeout", 1000, "tcp connect timeout (/ms)");
 static int s_connect_timeout = -1;
 // hook模块初始化
 void hook_init()
@@ -27,7 +27,7 @@ void hook_init()
     usleep_f = (usleep_fun)dlsym(RTLD_NEXT, "usleep");
     nanosleep_f = (nanosleep_fun)dlsym(RTLD_NEXT, "nanosleep");
     socket_f = (socket_fun)dlsym(RTLD_NEXT, "socket");
-    connect_f = (connect_fun)dlsym(RTLD_NEXT, "connext");
+    connect_f = (connect_fun)dlsym(RTLD_NEXT, "connect");
     accept_f = (accept_fun)dlsym(RTLD_NEXT, "accept");
     read_f = (read_fun)dlsym(RTLD_NEXT, "read");
     readv_f = (readv_fun)dlsym(RTLD_NEXT, "readv");

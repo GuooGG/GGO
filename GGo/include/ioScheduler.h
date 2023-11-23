@@ -22,7 +22,6 @@ public:
     // 读写锁
     using RWMutexType = RWMutex;
 
-    // TODO:: 写事件为什么是4
     /// @brief IO事件
     enum Event
     {
