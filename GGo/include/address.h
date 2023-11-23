@@ -159,7 +159,6 @@ public:
     sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
-
     IPAddress::ptr boradcastAdress(uint32_t prefix_len) override;
     IPAddress::ptr networdAdress(uint32_t prefix_len) override;
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
@@ -167,44 +166,59 @@ public:
     void setPort(uint16_t port) override; 
 
 private:
+    // 地址信息
     sockaddr_in m_addr;
 };
 
 class IPv6Address : public IPAddress{
 public:
     using ptr = std::shared_ptr<IPv6Address>;
-    
+
+    /// @brief 使用字符串地址创建Ipv6Adress
+    /// @param address 地址信息字符串
+    /// @param port 端口号
     static IPv6Address::ptr Create(const char* address, uint16_t port = 0);
 
+    /// @brief 无参构造函数
     IPv6Address();
 
+    /// @brief 通过 sockaddr_in6构造IPv6Address
+    /// @param address sockaddr_in6结构体
     IPv6Address(const sockaddr_in6& address);
 
+    /// @brief 通过二进制地址构造IPv6address
+    /// @param address 二进制地址
+    /// @param port 端口号
     IPv6Address(const uint8_t address[16], uint16_t port = 0);
 
-
+    /// @brief 接口
     const sockaddr* getAddr() const override;
     sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
-
     IPAddress::ptr boradcastAdress(uint32_t prefix_len) override;
     IPAddress::ptr networdAdress(uint32_t prefix_len) override;
     IPAddress::ptr subnetMask(uint32_t prefix_len) override;
     uint32_t getPort() const override;
     void setPort(uint16_t port) override;
 private: 
+    // 地址信息
     sockaddr_in6 m_addr;
 };
 
+/// @brief Unix地址类
 class UnixAddress  : public Address{
 public:
     using ptr = std::shared_ptr<UnixAddress>;
 
+    /// @brief 无参构造函数
     UnixAddress();
 
+    /// @brief 通过路径字符串构造UnixAddress
+    /// @param path UnixSocket路径
     UnixAddress(const std::string& path);
 
+    /// @brief 接口
     const sockaddr* getAddr() const override;
     sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
@@ -213,22 +227,33 @@ public:
     std::ostream& insert(std::ostream& os) const override;
 
 private:
+    // 地址信息
     sockaddr_un m_addr;
+    // 路径长度
     socklen_t m_length;
 };
 
+/// @brief 未知类型地址
 class UnKnownAddress : public Address{
 public:
     using ptr = std::shared_ptr<UnKnownAddress>;
 
+    /// @brief 通过协议族构造UnKnownAddress
+    /// @param family 协议族
     UnKnownAddress(int family);
+
+    /// @brief 通过sockaddr构造UnKnownAddress
+    /// @param addr sockaddr结构体
     UnKnownAddress(const sockaddr& addr);
+
+    /// @brief 接口 
     const sockaddr* getAddr() const override;
     sockaddr* getAddr() override;
     socklen_t getAddrLen() const override;
     std::ostream& insert(std::ostream& os) const override;
 
 private:
+    // 地址信息
     sockaddr m_addr;
 
 };

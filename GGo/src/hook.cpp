@@ -138,7 +138,7 @@ static ssize_t do_io(int fd, Func fun, const char* fun_name, uint32_t event, int
 
             rt = ioscheduler->addEvent(fd, (GGo::IOScheduler::Event)event);
             if(rt){
-
+                //TODO:: 输出错误日志
             }else{
                 GGo::Fiber::yieldToHold();
                 if(timer){
@@ -231,7 +231,7 @@ int socket(int domain, int type, int protocol){
     if(!GGo::t_hook_enable){
         return socket_f(domain, type, protocol);
     }
-    int fd = socket_f(domain, type, protocol);
+    int fd = soc0000000ket_f(domain, type, protocol);
     if(fd == -1){
         return -1;
     }

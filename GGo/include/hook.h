@@ -18,11 +18,10 @@
 namespace GGo{
 
     /// @brief 查询当前线程是否hook
-    /// @return 
     bool is_hook_enbale();
 
     /// @brief 设置当前线程的hook状态
-    /// @param flag q
+    /// @param flag 是否hook
     void set_hook_enable(bool flag);
 
 
