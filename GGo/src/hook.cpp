@@ -137,8 +137,8 @@ static ssize_t do_io(int fd, Func fun, const char* fun_name, uint32_t event, int
                 }, w_cond);
             }
 
-            rt = ioscheduler->addEvent(fd, (GGo::IOScheduler::Event)event);
-            if(GGO_UNLIKELY(rt)){
+            int rta = ioscheduler->addEvent(fd, (GGo::IOScheduler::Event)event);
+            if(GGO_UNLIKELY(rta)){
                 GGO_LOG_ERROR(g_logger) << fun_name << " addEvent(" << fd << ", " << event << ")";
                 if(timer){
                     timer->cancel();

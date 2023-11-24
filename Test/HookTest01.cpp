@@ -95,7 +95,7 @@ void test_socket(){
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(80);
-    inet_pton(AF_INET, "192.168.23.128", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "180.101.49.188", &addr.sin_addr.s_addr);
     LOG << "connect begin";
 
 
@@ -138,7 +138,7 @@ int main(){
     // test_socket_init();
     // test_socket_accept();
     // test_socket();
-    GGo::IOScheduler::ptr iosc(new GGo::IOScheduler(1,false, "test hook"));
+    GGo::IOScheduler::ptr iosc(new GGo::IOScheduler(5,false, "test hook"));
     iosc->schedule(test_socket);
     LOG << "main end";
     return 0;
