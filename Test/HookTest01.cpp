@@ -105,7 +105,7 @@ void test_socket(){
     if(rt){
         return;
     }
-    LOG << "addr= " << addr.sin_addr.s_addr;
+
     const char data[] = "GET / HTTP/1.0\r\n\r\n";
     rt = send(sock, data, sizeof(data), 0);
     LOG << "send rt=" << rt << " errno=" << errno;
@@ -115,7 +115,7 @@ void test_socket(){
     }
 
     std::string buffer;
-    buffer.resize(2129402);
+    buffer.resize(4096);
 
     rt = recv(sock, &buffer[0], buffer.size(), 0);
     LOG << "recv rt=" << rt << " errno=" << errno;
@@ -124,6 +124,7 @@ void test_socket(){
     }
 
     buffer.resize(rt);
+
     LOG << buffer;
 
 }
@@ -136,9 +137,9 @@ int main(){
     // test_nanosleep();
     // test_socket_init();
     // test_socket_accept();
-    test_socket();
-    // static GGo::IOScheduler iosc(1, false, "hook tester");
-    // iosc.schedule(&test_socket);
+    // test_socket();
+    GGo::IOScheduler::ptr iosc(new GGo::IOScheduler(1,false, "test hook"));
+    iosc->schedule(test_socket);
     LOG << "main end";
     return 0;
 }

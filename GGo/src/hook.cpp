@@ -3,6 +3,7 @@
 #include"fiber.h"
 #include"ioScheduler.h"
 #include"config.h"
+#include"macro.h"
 #include"fdManager.h"
 #include<sys/ioctl.h>
 #include<dlfcn.h>
@@ -13,7 +14,7 @@ namespace GGo{
 
 static thread_local bool t_hook_enable = false;
 static GGo::ConfigVar<int>::ptr g_tcp_connect_timeout_config =
-    GGo::Config::Lookup("tcp.connect.timeout", 1000, "tcp connect timeout (/ms)");
+    GGo::Config::Lookup("tcp.connect.timeout", 5000, "tcp connect timeout (/ms)");
 static int s_connect_timeout = -1;
 // hook模块初始化
 void hook_init()
@@ -137,16 +138,21 @@ static ssize_t do_io(int fd, Func fun, const char* fun_name, uint32_t event, int
             }
 
             rt = ioscheduler->addEvent(fd, (GGo::IOScheduler::Event)event);
-            if(rt){
-                //TODO:: 输出错误日志
+            if(GGO_UNLIKELY(rt)){
+                GGO_LOG_ERROR(g_logger) << fun_name << " addEvent(" << fd << ", " << event << ")";
+                if(timer){
+                    timer->cancel();
+                }
+                return -1;
             }else{
                 GGo::Fiber::yieldToHold();
                 if(timer){
                     timer->cancel();
-                    if(t_cond->cancelled){
-                        errno = t_cond->cancelled;
-                        return -1;
-                    }
+                }
+                if (t_cond->cancelled)
+                {
+                    errno = t_cond->cancelled;
+                    return -1;
                 }
             }
         }
@@ -243,6 +249,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     if(!GGo::t_hook_enable){
         return connect_f(fd, addr, addrlen);
     }
+
     GGo::FdCtx::ptr fdctx = GGo::FdMgr::GetInstance()->get(fd);
     if(!fdctx || fdctx->isClose()){
         errno = EBADF;
@@ -259,7 +266,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
     int rt = connect_f(fd, addr, addrlen);
     if(rt == 0){
         return 0;
-    }else if(rt != -1 || errno != EINTR){
+    }else if(rt != -1 || errno != EINPROGRESS){
         return rt;
     }
 
@@ -278,7 +285,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
             iosc->cancelEvent(fd, GGo::IOScheduler::Event::WRITE);
         }, w_cond);
     }
-
+    
     rt = iosc->addEvent(fd, GGo::IOScheduler::Event::WRITE);
     if(rt == 0){
         GGo::Fiber::yieldToHold();
@@ -307,6 +314,7 @@ int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
         errno = error;
         return -1;
     }
+
 }
 
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen){
