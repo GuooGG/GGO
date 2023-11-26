@@ -61,11 +61,17 @@ public:
     static std::shared_ptr<IPAddress> LookupAnyIPAddress(const std::string &host, int family = AF_INET, int type = 0, int protocol = 0);
 
     /// @brief 获取指定网卡的地址和子网掩码位数
-    /// @param result 指定网卡的所有地址
-    /// @param  interface 网卡名
-    /// @param family 协议族
+    /// @param results 保存结果 <地址， 子网源码位数>
+    /// @param  interface 网卡名称
+    /// @param family 协议簇
     /// @return 是否获取成功
-    static bool GetInterfaceAddress(std::multimap<std::string, std::pair<Address::ptr, uint32_t>> &result, const std::string &interface, int family = AF_INET);
+    static bool GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t>>& results, const std::string& interface, int family = AF_INET);
+
+    /// @brief 获取本机所有网卡的地址与子网掩码位数
+    /// @param result 保存结果 [网卡名 ： <地址， 子网掩码位数>]
+    /// @param family 协议簇
+    /// @return 是否获取成功
+    static bool GetInterfaceAddressed(std::multimap<std::string, std::pair<Address::ptr, uint32_t>>& result, int family);
 
     /// @brief 基类析构函数
     virtual ~Address(){}
@@ -73,7 +79,6 @@ public:
     /// @brief 返回协议簇
     int getFamily() const;
 
-    //TODO::只读只写怎么实现的
     /// @brief 返回socket指针，只读
     virtual const sockaddr* getAddr() const = 0;
 
@@ -144,6 +149,9 @@ public:
     /// @param port 端口号
     static IPv4Address::ptr Create(const char* address, uint16_t port = 0);
     
+    /// @brief 无参构造函数
+    IPv4Address();
+
     /// @brief 通过sockaddr_in构造IPv4Address
     /// @param address sockaddr_in结构体
     IPv4Address(const sockaddr_in& address);

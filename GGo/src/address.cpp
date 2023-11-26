@@ -36,6 +36,33 @@ Address::ptr Address::Create(const sockaddr *addr, socklen_t addrlen)
     return rt;
 }
 
+bool Address::Lookup(std::vector<Address::ptr> &results, const std::string &host, int family, int type, int protocol)
+{
+    addrinfo hints,*results;
+    std::string node;
+    hints.ai_flags = 0;
+    hints.ai_family = family;
+    hints.ai_socktype = type;
+    hints.ai_protocol = protocol;
+    hints.ai_addrlen = 0;
+    hints.ai_canonname = nullptr;
+    hints.ai_addr = nullptr;
+    hints.ai_next = nullptr;
+
+    if(!host.empty() && host[0] == '['){
+
+    }
+
+    if(node.empty()){
+
+    }
+    
+    if (node.empty()){
+        node = host;    
+    }
+    
+}
+
 int Address::getFamily() const
 {
     return getAddr()->sa_family;
@@ -86,6 +113,12 @@ IPv4Address::ptr IPv4Address::Create(const char *address, uint16_t port)
     }
     return rt;
 
+}
+
+IPv4Address::IPv4Address()
+{
+    memset(&m_addr, 0, sizeof(m_addr));
+    m_addr.sin_family = AF_INET;
 }
 
 IPv4Address::IPv4Address(const sockaddr_in &address)
@@ -173,7 +206,7 @@ IPAddress::ptr IPAddress::Create(const char *address, uint16_t port)
     if(error){
         GGO_LOG_DEBUG(g_logger) << "IPAddress::Create(" << address << ", "
                                 << port << ", " << ") error = " << error
-                                << "errno = " << errno << "errstr= " << strerror(errno);
+                                << "errno = " << errno << "errstr= " << strerror  (errno);
         return nullptr;
     }
     try
@@ -300,9 +333,8 @@ std::ostream &IPv6Address::insert(std::ostream &os) const
     }
     os << "]:" << byteSwapOnLitteEndian(m_addr.sin6_port);
     return os;
-
 }
-//TODO::对IPV6地址的基本操作
+
 IPAddress::ptr IPv6Address::boradcastAdress(uint32_t prefix_len)
 {
     sockaddr_in6 baddr(m_addr);
