@@ -36,11 +36,28 @@ void test_dns(){
     }
 }
 
+void test_catch_interface(){
+    std::multimap<std::string, std::pair<GGo::Address::ptr, uint32_t>> res;
+    std::vector<std::pair<GGo::Address::ptr, uint32_t>> res2;
+    GGo::Address::GetInterfaceAddresses(res, AF_UNSPEC);
+    GGo::Address::GetInterfaceAddresses(res2, "lo");
+    for(auto& addr : res){
+        LOG << addr.first << "\t" << addr.second.first->toString() << "\\" << addr.second.second;
+    }
+    LOG << "======================";
+    for(auto& addr : res2){
+        LOG << addr.first->toString() << "\\" << addr.second;
+    }
+
+
+}
+
 int main(){
-    YAML::Node cfg = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/addr.yml");
-    GGo::Config::loadFromYaml(cfg);
+    // YAML::Node cfg = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/addr.yml");
+    // GGo::Config::loadFromYaml(cfg);
     // test_basic();
-    test_dns();
+    // test_dns();
+    test_catch_interface();
 
     return 0;
 }

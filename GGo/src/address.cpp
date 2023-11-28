@@ -3,6 +3,8 @@
 #include "endianParser.h"
 #include <sstream>
 #include <netdb.h>
+#include <ifaddrs.h>
+#include <stdio.h>
 
 namespace GGo
 {
@@ -14,6 +16,17 @@ namespace GGo
     {
         return (1 << (sizeof(T) * 8 - bits)) - 1;
     }
+
+    template<class T>
+    static uint32_t CountBits(T value){
+        uint32_t res = 0;
+        while(value){
+            value &= value - 1;
+            res++;
+        }
+        return res;
+    }
+
 
     Address::ptr Address::Create(const sockaddr *addr, socklen_t addrlen)
     {
@@ -129,6 +142,84 @@ namespace GGo
             }
         }
         return nullptr;
+    }
+
+    bool Address::GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t>> &result, const std::string &interface, int family)
+    {
+        if(interface.empty() || interface == "*"){
+            if(family == AF_INET || family == AF_UNSPEC){
+                result.push_back(std::make_pair(Address::ptr(new IPv4Address()),0));
+            }
+            if(family == AF_INET6 || family == AF_UNSPEC){
+                result.push_back(std::make_pair(Address::ptr(new IPv6Address()),0));
+            }
+        }
+        std::multimap<std::string, std::pair<Address::ptr, uint32_t>> results;
+        if(!GetInterfaceAddresses(results, family));
+
+        auto its = results.equal_range(interface);
+        while(its.first != its.second){
+            result.push_back(its.first->second);
+            its.first++;
+        }
+
+        return !result.empty();
+    }
+
+    bool Address::GetInterfaceAddresses(std::multimap<std::string, std::pair<Address::ptr, uint32_t>> &result, int family)
+    {
+        struct ifaddrs *results,*traveller;
+        if(getifaddrs(&results))
+        {
+            GGO_LOG_WARN(g_logger) << "Address:GetInterfaceAddress getifaddrs error"
+                    << "\n" << "errno=" << errno << " errstr=" << strerror(errno);
+            return false; 
+        }
+        try
+        {
+            traveller = results;
+            while(traveller != nullptr){
+                Address::ptr addr;
+                uint32_t subnet_len = UINT32_MAX;
+                if(family != AF_UNSPEC && family != traveller->ifa_addr->sa_family){
+                    continue;
+                }
+                switch(traveller->ifa_addr->sa_family){
+                    case AF_INET:
+                    {
+                        addr = Address::Create(traveller->ifa_addr, sizeof(sockaddr_in));
+                        uint32_t subnet_mask = ((sockaddr_in*)traveller->ifa_netmask)->sin_addr.s_addr;
+                        subnet_len = CountBits(subnet_mask);
+                    }
+                    break;
+                    case AF_INET6:
+                    {
+                        addr = Address::Create(traveller->ifa_addr, sizeof(sockaddr_in6));
+                        in6_addr& subnet_mask = ((sockaddr_in6*)traveller->ifa_netmask)->sin6_addr;
+                        subnet_len = 0;
+                        for(int i = 0; i < 16; i++){
+                            subnet_len += CountBits(subnet_mask.s6_addr[i]);
+                        }
+                    }
+                    break;
+                    default:
+                    break;
+                }
+                if(addr){
+                    result.insert(std::make_pair(traveller->ifa_name ,
+                            std::make_pair(addr, subnet_len)));
+                }
+                traveller = traveller->ifa_next;
+            }
+
+        } catch( ... )
+        {
+            GGO_LOG_ERROR(g_logger) << "Address:GetInterfaceAddresses exception";
+            freeifaddrs(results);
+            return false;
+        }
+        freeifaddrs(results);
+        return !result.empty();
     }
 
     int Address::getFamily() const

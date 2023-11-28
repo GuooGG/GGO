@@ -65,13 +65,13 @@ public:
     /// @param  interface 网卡名称
     /// @param family 协议簇
     /// @return 是否获取成功
-    static bool GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t>>& results, const std::string& interface, int family = AF_INET);
+    static bool GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t>>& result, const std::string& interface, int family = AF_UNSPEC);
 
     /// @brief 获取本机所有网卡的地址与子网掩码位数
     /// @param result 保存结果 [网卡名 ： <地址， 子网掩码位数>]
     /// @param family 协议簇
     /// @return 是否获取成功
-    static bool GetInterfaceAddressed(std::multimap<std::string, std::pair<Address::ptr, uint32_t>>& result, int family);
+    static bool GetInterfaceAddresses(std::multimap<std::string, std::pair<Address::ptr, uint32_t>>& result, int family = AF_UNSPEC);
 
     /// @brief 基类析构函数
     virtual ~Address(){}
