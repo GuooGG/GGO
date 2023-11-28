@@ -61,7 +61,7 @@ public:
     static std::shared_ptr<IPAddress> LookupAnyIPAddress(const std::string &host, int family = AF_INET, int type = 0, int protocol = 0);
 
     /// @brief 获取指定网卡的地址和子网掩码位数
-    /// @param results 保存结果 <地址， 子网源码位数>
+    /// @param results 保存结果 <地址， 子网掩码位数>
     /// @param  interface 网卡名称
     /// @param family 协议簇
     /// @return 是否获取成功
