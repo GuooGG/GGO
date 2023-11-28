@@ -1,6 +1,10 @@
-#include"GGo.h"
+#include"logSystem.h"
+#include"config.h"
+#include"address.h"
+#include<vector>
 
 #define LOG GGO_LOG_DEBUG(GGO_LOG_ROOT())
+GGo::ConfigVar<std::string>::ptr g_hostname_config = GGo::Config::Lookup("dns_test.host", std::string("localhost"), "host for dns test");
 
 void test_basic(){
     LOG << "============ipv4 test begin===============";
@@ -21,10 +25,22 @@ void test_basic(){
     LOG << "============ipv6 test end=================";
 }
 
+void test_dns(){
+    std::vector<GGo::Address::ptr> addrs;
+    bool v = GGo::Address::Lookup(addrs, g_hostname_config->getValue());
+    if(!v){
+        LOG << "lookup fail";
+    }
+    for(auto addr : addrs){
+        LOG << addr->toString();
+    }
+}
 
 int main(){
-
-    test_basic();
+    YAML::Node cfg = YAML::LoadFile("/root/workspace/GGoSeverFrame/Test/conf/addr.yml");
+    GGo::Config::loadFromYaml(cfg);
+    // test_basic();
+    test_dns();
 
     return 0;
 }

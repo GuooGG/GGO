@@ -36,10 +36,9 @@ Address::ptr Address::Create(const sockaddr *addr, socklen_t addrlen)
     return rt;
 }
 
-bool Address::Lookup(std::vector<Address::ptr> &results, const std::string &host, int family, int type, int protocol)
+bool Address::Lookup(std::vector<Address::ptr> &result, const std::string &host, int family, int type, int protocol)
 {
-    addrinfo hints,*results;
-    std::string node;
+    addrinfo hints, *results, *traveller;
     hints.ai_flags = 0;
     hints.ai_family = family;
     hints.ai_socktype = type;
@@ -49,18 +48,51 @@ bool Address::Lookup(std::vector<Address::ptr> &results, const std::string &host
     hints.ai_addr = nullptr;
     hints.ai_next = nullptr;
 
+    std::string node;
+    const char* service = NULL;
+
+    //IPv6 service
+    //TODO:: check out_of_range
     if(!host.empty() && host[0] == '['){
+        const char* endipv6 = (const char*)memchr(host.c_str() + 1 , ']', host.size() - 1);
+        if(endipv6){
+            if(*(endipv6 + 1) == ':'){
+                service = endipv6 + 2;
+            }
+            node = host.substr(1, endipv6 - host.c_str() - 1);
+        }
 
     }
-
-    if(node.empty()){
-
-    }
-    
+    //IPv4 service
     if (node.empty()){
-        node = host;    
+        service = (const char *)memchr(host.c_str(), ':', host.size());
+        if (service){
+            if (!memchr(service + 1, ':', host.c_str() + host.size() - service - 1)){
+                node = host.substr(0, service - host.c_str());
+                ++service;
+            }
+        }
+    }
+
+    if (node.empty()){
+        node = host;
     }
     
+    //dns
+    int rt = getaddrinfo(node.c_str(), service, &hints, &results);
+    if(rt){
+        GGO_LOG_WARN(g_logger) << "Address::Lookup getaddrinfo(" << host
+                            << ", " << family << ", " << type << ") error=" << rt
+                            << " errstr=" << gai_strerror(rt); 
+        return false;
+    }
+    traveller = results;
+    while(traveller){
+        result.push_back(Address::Create(traveller->ai_addr, traveller->ai_addrlen));
+        traveller = traveller->ai_next;
+    }
+    freeaddrinfo(results);
+    return !result.empty();
 }
 
 int Address::getFamily() const
@@ -113,12 +145,6 @@ IPv4Address::ptr IPv4Address::Create(const char *address, uint16_t port)
     }
     return rt;
 
-}
-
-IPv4Address::IPv4Address()
-{
-    memset(&m_addr, 0, sizeof(m_addr));
-    m_addr.sin_family = AF_INET;
 }
 
 IPv4Address::IPv4Address(const sockaddr_in &address)

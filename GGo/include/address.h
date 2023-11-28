@@ -42,7 +42,7 @@ public:
     /// @param type socket类型(SOCK_STREAM,SOCK_DGRAM)
     /// @param protocol 协议，IPPROTO_TCP/IPPROTO_UDP
     /// @return 是否转换成功
-    static bool Lookup(std::vector<Address::ptr> &results, const std::string &host, int family = AF_INET, int type = 0, int protocol = 0);
+    static bool Lookup(std::vector<Address::ptr> &result, const std::string &host, int family = AF_INET, int type = 0, int protocol = 0);
 
     /// @brief 通过host地址返回任意符合条件的Address
     /// @param host 域名，服务器名
@@ -149,9 +149,6 @@ public:
     /// @param port 端口号
     static IPv4Address::ptr Create(const char* address, uint16_t port = 0);
     
-    /// @brief 无参构造函数
-    IPv4Address();
-
     /// @brief 通过sockaddr_in构造IPv4Address
     /// @param address sockaddr_in结构体
     IPv4Address(const sockaddr_in& address);
