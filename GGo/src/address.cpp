@@ -155,7 +155,9 @@ namespace GGo
             }
         }
         std::multimap<std::string, std::pair<Address::ptr, uint32_t>> results;
-        if(!GetInterfaceAddresses(results, family));
+        if(!GetInterfaceAddresses(results, family)){
+            return false;
+        }
 
         auto its = results.equal_range(interface);
         while(its.first != its.second){
