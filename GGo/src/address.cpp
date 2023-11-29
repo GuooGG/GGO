@@ -66,13 +66,13 @@ namespace GGo
         const char *service = NULL;
 
         // IPv6 service
-        // TODO:: check out_of_range
         if (!host.empty() && host[0] == '[')
         {
             const char *endipv6 = (const char *)memchr(host.c_str() + 1, ']', host.size() - 1);
             if (endipv6)
             {
-                if (*(endipv6 + 1) == ':')
+
+                if ((uint32_t)(endipv6 - host.c_str() + 2) < host.size() && *(endipv6 + 1) == ':')
                 {
                     service = endipv6 + 2;
                 }
