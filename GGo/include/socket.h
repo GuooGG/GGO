@@ -10,6 +10,7 @@
 #pragma once
 
 #include<memory>
+#include<ostream>
 #include<sys/socket.h>
 #include<sys/types.h>
 #include"address.h"
@@ -41,12 +42,40 @@ public:
         Unix = AF_UNIX,
     };
 
+    /// @brief 创建TCP socket
+    /// @param address 地址
+    static Socket::ptr CreateTCP(Address::ptr address);
+
+    /// @brief 创建UDP socket
+    /// @param address 地址
+    static Socket::ptr CreateUDP(Address::ptr address);
+
+    /// @brief 创建IPv4的TCP socket
+    static Socket::ptr Create4TCPSocket();
+
+    /// @brief 创建IPv4的UDP socket
+    static Socket::ptr Create4UDPSocket();
+
+    /// @brief 创建IPv6的TCP socket
+    static Socket::ptr Create6TCPSocket();
+
+    /// @brief 创建IPv6的UDP socket
+    static Socket::ptr Create6UDPSocket();
+
+    /// @brief 创建TCP Unix socket
+    static Socket::ptr CreateUnixTCPSocket();
+
+    /// @brief 创建UDP Unix socket 
+    static Socket::ptr CreateUnixUDPSocket();
 
     /// @brief Socket构造函数
     /// @param family 协议簇 
     /// @param type 类型
     /// @param protocol 协议
     Socket(int family, int type, int protocol = 0);
+
+    /// @brief 析构函数
+    virtual ~Socket();
 
     /// @brief 获取发送超时时间 （毫秒）
     int64_t getSendTimeout();
@@ -60,6 +89,173 @@ public:
     /// @brief 设置接收超时时间（毫秒）
     void setRecvTimeout(uint64_t timeout);
 
+    /// @brief 关闭socket
+    virtual bool closeSocket();
+
+    /// @brief 取消读
+    bool cancelRead();
+
+    /// @brief 取消写
+    bool cancelWrite();
+
+    /// @brief 取消accept 
+    bool cancelAccept();    
+
+    /// @brief 取消所有事件
+    bool cancelAll();
+
+public:
+
+    /// @brief 绑定地址
+    /// @param addr 地址
+    /// @return 受否绑定成功
+    virtual bool bind(const Address::ptr addr);
+
+    /// @brief 监听socket
+    /// @param backlog 未完成连接队列的最大长度 
+    /// @return 返回监听是否成功
+    /// @pre 必须bind成功
+    virtual bool listen(int backlog = SOMAXCONN);
+
+    /// @brief 接收connect连接
+    /// @return 成功则返回新连接的socket，失败返回空指针
+    /// @pre 必须 bind, listen成功
+    virtual Socket::ptr acceot();
+
+    /// @brief 连接地址
+    /// @param addr 目标地址
+    /// @param timeout 超时时间
+    virtual bool connect(const Address::ptr addr, uint64_t timeout = -1);
+
+    /// @brief 重新连接
+    /// @param timeout 超时时间
+    virtual bool reconnect(uint64_t timeout = -1);
+
+    /// @brief 向socket发送指定长度的数据
+    /// @param buffer 待发送数据内存指针
+    /// @param len 待发送数据长度
+    /// @param flags 标志字
+    /// @return 
+    ///        @retval > 0 成功发送的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int send(const void* buffer, size_t len, int flags = 0);
+
+    /// @brief 向socket发送指定长度的数据
+    /// @param buffers 待发送的io向量指针
+    /// @param len 待发送的io向量数量
+    /// @param flags 标志字
+    /// @return
+    ///        @retval > 0 成功发送的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int send(const iovec* buffers, size_t len, int flags = 0);
+
+    /// @brief 向指定地址发送指定长度的数据
+    /// @param buffer 待发送的数据内存指针
+    /// @param len 待发送的数据长度
+    /// @param dst 数据的目标地址
+    /// @param flag 标志字
+    /// @return
+    ///        @retval > 0 成功发送的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int sendTo(const void* buffer, size_t len, const Address::ptr dst, int flag = 0);
+
+    /// @brief 向指定地址发送指定长度的数据
+    /// @param buffer 待发送数据的io向量指针
+    /// @param len 待发送的io向量数量
+    /// @param dst 数据的目标地址
+    /// @param flag 标志字
+    /// @return
+    ///        @retval > 0 成功发送的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int sendTo(const iovec* buffer, size_t len, const Address::ptr dst, int flag = 0);
+
+    /// @brief 从socket接收数据
+    /// @param buffer 数据缓冲区
+    /// @param len 缓冲区长度
+    /// @param flag 标志字
+    /// @return
+    ///        @retval > 0 成功接收的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int recv(void buffer, size_t len, int flag = 0);
+
+    /// @brief 从socket接收数据
+    /// @param buffer 数据缓冲区io向量指针
+    /// @param len 缓冲区长度
+    /// @param flag 标志字
+    /// @return
+    ///        @retval > 0 成功接收的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int recv(iovec* buffer, size_t len, int flag = 0);
+
+    /// @brief 从指定地址接收数据
+    /// @param buffer 数据缓冲区
+    /// @param len 缓冲区长度
+    /// @param src 数据来源地址
+    /// @param flag 标志字
+    /// @return
+    ///        @retval > 0 成功接收的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int recvFrom(void* buffer, size_t len, Address::ptr src, int flag = 0);
+
+    /// @brief 从指定地址接收数据
+    /// @param buffer 数据缓冲区io向量指针
+    /// @param len 缓冲区长度
+    /// @param src 数据来源地址
+    /// @param flag 标志字
+    /// @return
+    ///        @retval > 0 成功接收的数据长度
+    ///        @retval = 0 socket被关闭
+    ///        @retval < 0 socket出错
+    virtual int recvFrom(iovec* buffer, size_t len, Address::ptr src, int flag = 0);
+protected:
+
+    /// @brief 初始化sock
+    virtual bool init(int sock);
+
+    /// @brief 闯进socket
+    void newSock();
+
+    /// @brief 初始化socket
+    void initSock();
+
+public:
+    /// @brief 获取协议簇
+    int getFamily() const { return m_family; }
+
+    /// @brief 获取socket类型
+    int getType() const { return m_type; }
+
+    /// @brief 获取协议类型
+    int getProtocol() const { return m_protocol; }
+
+    /// @brief 返回是否连接
+    bool isConnected() const { return m_isConnected; }
+
+    /// @brief 获取本地地址
+    Address::ptr getLocalAddress();
+
+    /// @brief 获取远端地址
+    Address::ptr getRemoteAddress();
+
+    /// @brief 返回是否为有效socket
+    bool isValid() const;
+
+    /// @brief 返回socket错误
+    int getError();
+
+    /// @brief 将socket信息输出到os流中
+    /// @param os 目标输出流
+    std::ostream& dump(std::ostream& os) const;
+
+    /// @brief 将socket信息序列化为字符串
+    virtual std::string toString() const;
 protected:
     // socket句柄
     int m_socket;
