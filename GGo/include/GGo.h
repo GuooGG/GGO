@@ -20,6 +20,7 @@
 #include"mutex.h"
 #include"nonCopyable.h"
 #include"scheduler.h"
+#include"socket.h"
 #include"singleton.h"
 #include"thread.h"
 #include"timer.h"

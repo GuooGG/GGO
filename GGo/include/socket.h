@@ -13,6 +13,7 @@
 #include<ostream>
 #include<sys/socket.h>
 #include<sys/types.h>
+#include<netinet/tcp.h>
 #include"address.h"
 #include"nonCopyable.h"
 
@@ -26,14 +27,14 @@ public:
     using weak_ptr = std::weak_ptr<Socket>;
 
     /// @brief socket类型
-    enum class Type{
+    enum Type{
         /// @brief 流格式
         TCP = SOCK_STREAM,
         /// @brief 帧格式
         UDP = SOCK_DGRAM
     };
 
-    enum class Family{
+    enum Family{
         /// @brief IPv4t套接字
         IPv4 = AF_INET,
         /// @brief IPv6套接字
@@ -90,7 +91,7 @@ public:
     void setRecvTimeout(uint64_t timeout);
 
     /// @brief 关闭socket
-    virtual bool closeSocket();
+    virtual bool close();
 
     /// @brief 取消读
     bool cancelRead();
@@ -104,6 +105,25 @@ public:
     /// @brief 取消所有事件
     bool cancelAll();
 
+    /// @brief 获取sockopt
+    bool getOption(int level, int option, void* result, socklen_t* len);
+
+    /// @brief 模板获取sockopt
+    template<class T>
+    bool getOption(int level, int option, T& result){
+        socklen_t len = sizeof(T);
+        return getOption(level, option, &result, &len);
+    }
+
+    /// @brief 设置sockopt
+    bool setOption(int level, int option, const void* result, socklen_t len);
+
+    /// @brief 模板设置sockopt
+    template<class T>
+    bool setOption(int level, int option, const T& value){
+        return setOption(level, option, &value, sizeof(T));
+    }
+
 public:
 
     /// @brief 绑定地址
@@ -111,6 +131,7 @@ public:
     /// @return 受否绑定成功
     virtual bool bind(const Address::ptr addr);
 
+    // TODO::若队列长度不为1，程序的运行逻辑是什么样子的
     /// @brief 监听socket
     /// @param backlog 未完成连接队列的最大长度 
     /// @return 返回监听是否成功
@@ -160,7 +181,7 @@ public:
     ///        @retval > 0 成功发送的数据长度
     ///        @retval = 0 socket被关闭
     ///        @retval < 0 socket出错
-    virtual int sendTo(const void* buffer, size_t len, const Address::ptr dst, int flag = 0);
+    virtual int sendTo(const void* buffer, size_t len, const Address::ptr dst, int flags = 0);
 
     /// @brief 向指定地址发送指定长度的数据
     /// @param buffer 待发送数据的io向量指针
@@ -171,7 +192,7 @@ public:
     ///        @retval > 0 成功发送的数据长度
     ///        @retval = 0 socket被关闭
     ///        @retval < 0 socket出错
-    virtual int sendTo(const iovec* buffer, size_t len, const Address::ptr dst, int flag = 0);
+    virtual int sendTo(const iovec* buffer, size_t len, const Address::ptr dst, int flags = 0);
 
     /// @brief 从socket接收数据
     /// @param buffer 数据缓冲区
@@ -181,7 +202,7 @@ public:
     ///        @retval > 0 成功接收的数据长度
     ///        @retval = 0 socket被关闭
     ///        @retval < 0 socket出错
-    virtual int recv(void buffer, size_t len, int flag = 0);
+    virtual int recv(void* buffer, size_t len, int flags = 0);
 
     /// @brief 从socket接收数据
     /// @param buffer 数据缓冲区io向量指针
@@ -191,7 +212,7 @@ public:
     ///        @retval > 0 成功接收的数据长度
     ///        @retval = 0 socket被关闭
     ///        @retval < 0 socket出错
-    virtual int recv(iovec* buffer, size_t len, int flag = 0);
+    virtual int recv(iovec* buffer, size_t len, int flags = 0);
 
     /// @brief 从指定地址接收数据
     /// @param buffer 数据缓冲区
@@ -202,7 +223,7 @@ public:
     ///        @retval > 0 成功接收的数据长度
     ///        @retval = 0 socket被关闭
     ///        @retval < 0 socket出错
-    virtual int recvFrom(void* buffer, size_t len, Address::ptr src, int flag = 0);
+    virtual int recvFrom(void* buffer, size_t len, Address::ptr src, int flags = 0);
 
     /// @brief 从指定地址接收数据
     /// @param buffer 数据缓冲区io向量指针
@@ -213,13 +234,13 @@ public:
     ///        @retval > 0 成功接收的数据长度
     ///        @retval = 0 socket被关闭
     ///        @retval < 0 socket出错
-    virtual int recvFrom(iovec* buffer, size_t len, Address::ptr src, int flag = 0);
+    virtual int recvFrom(iovec* buffer, size_t len, Address::ptr src, int flags = 0);
 protected:
 
     /// @brief 初始化sock
     virtual bool init(int sock);
 
-    /// @brief 闯进socket
+    /// @brief 创建socket
     void newSock();
 
     /// @brief 初始化socket
@@ -273,8 +294,8 @@ protected:
     Address::ptr m_remoteAddress;
 };
 
-class SSLSocket : public Socket{
+// class SSLSocket : public Socket{
 
-};
+// };
 
 }
