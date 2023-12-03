@@ -125,6 +125,41 @@ namespace HTTP{
   XX(510, NOT_EXTENDED,                    Not Extended)                    \
   XX(511, NETWORK_AUTHENTICATION_REQUIRED, Network Authentication Required) \
 
+/// @brief HTTP请求方法枚举
+enum class HTTPMethod{
+#define XX(num, name, string) name = num,
+    HTTP_METHOD_MAP(XX)
+#undef XX
+    INVALID_METHOD
+};
+
+/// @brief HTTP状态枚举
+enum class HTTPStatus{
+#define XX(code, name, desc) name = code,
+    HTTP_STATUS_MAP(XX)
+#undef XX
+};
+
+/// @brief 将字符串转为HTTP方法枚举类
+/// @param str HTTP方法字符串
+/// @return HTTP方法枚举
+HTTPMethod StringToHTTPMethod(const std::string& str);
+
+/// @brief 将C风格的字符串转为HTTP方法枚举类型
+/// @param str HTTP方法字符串
+/// @return HTTP方法枚举
+HTTPMethod StringToHTTPMethod(const char* str);
+
+/// @brief 将HTTP方法枚举类型转为字符串
+/// @param method HTTP方法枚举
+/// @return HTTP方法字符串
+const char* HTTPMethodToString(const HTTPMethod& method);
+
+/// @brief 将HTTP状态码枚举转为字符串
+/// @param status HTTP状态码
+/// @return HTTP状态码字符串
+const char* HTTPStatusToString(const HTTPStatus& status);
+
 
 }
 }

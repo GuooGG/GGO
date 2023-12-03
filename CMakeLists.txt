@@ -17,7 +17,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 #头文件包含路径
-include_directories(GGo/src)
 include_directories(GGo/include)
 
 #链接库路径
@@ -27,7 +26,7 @@ link_directories(${PROJECT_SOURCE_DIR}/lib)
 find_library(yaml-cpp /usr/local/lib64/libyaml-cpp.so)
 
 #源码文件
-aux_source_directory(./GGo/src GGO_LIB_SRC)
+file(GLOB_RECURSE GGO_LIB_SRC ./GGo/src/*.cpp)
 #制作GGo动态库
 add_library(GGO_LIB SHARED ${GGO_LIB_SRC})
 
@@ -85,3 +84,6 @@ target_link_libraries(HookTest01 ${LIBS})
 # socket模块测试
 add_executable(SocketTest01 Test/SocketTest01.cpp)
 target_link_libraries(SocketTest01 ${LIBS})
+# http模块测试
+add_executable(HTTPTest01 Test/HTTPTest01.cpp)
+target_link_libraries(HTTPTest01 ${LIBS})
