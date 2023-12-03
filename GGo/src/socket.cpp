@@ -511,42 +511,42 @@ std::string Socket::toString() const
     dump(ss);
     return ss.str();
 }
-SSLSocket::ptr SSLSocket::CreateTCP(Address::ptr addr)
-{
-    SSLSocket::ptr sock(new SSLSocket(addr->getFamily(), Type::TCP, 0));
-    return sock;
-}
-SSLSocket::ptr SSLSocket::Create4TCPSocket()
-{
-    SSLSocket::ptr sock(new SSLSocket(
-        Family::IPv4, Type::TCP, 0));
-    return sock;
-}
-SSLSocket::ptr SSLSocket::Create6TCPSocket()
-{
-    SSLSocket::ptr sock(new SSLSocket(Family::IPv6, Type::TCP, 0));
-    return sock;
-}
-SSLSocket::SSLSocket(int family, int type, int protocol)
-    : Socket(family, type, protocol)
-{
-}
+// SSLSocket::ptr SSLSocket::CreateTCP(Address::ptr addr)
+// {
+//     SSLSocket::ptr sock(new SSLSocket(addr->getFamily(), Type::TCP, 0));
+//     return sock;
+// }
+// SSLSocket::ptr SSLSocket::Create4TCPSocket()
+// {
+//     SSLSocket::ptr sock(new SSLSocket(
+//         Family::IPv4, Type::TCP, 0));
+//     return sock;
+// }
+// SSLSocket::ptr SSLSocket::Create6TCPSocket()
+// {
+//     SSLSocket::ptr sock(new SSLSocket(Family::IPv6, Type::TCP, 0));
+//     return sock;
+// }
+// SSLSocket::SSLSocket(int family, int type, int protocol)
+//     : Socket(family, type, protocol)
+// {
+// }
 
-std::ostream &SSLSocket::dump(std::ostream &os) const
-{
-    os << "[SSLSocket sock=" << m_socket
-        << " is_connected=" << m_isConnected
-        << " family=" << m_family
-        << " type=" << m_type
-        << " protocol=" << m_protocol;
-    if(m_localAddress){
-        os << " locolAddress=" << m_localAddress->toString();
-    }
-    if(m_remoteAddress){
-        os << " remoteAddress=" << m_remoteAddress->toString();
-    }
-    os << "]";
-    return os;
-}
+// std::ostream &SSLSocket::dump(std::ostream &os) const
+// {
+//     os << "[SSLSocket sock=" << m_socket
+//         << " is_connected=" << m_isConnected
+//         << " family=" << m_family
+//         << " type=" << m_type
+//         << " protocol=" << m_protocol;
+//     if(m_localAddress){
+//         os << " locolAddress=" << m_localAddress->toString();
+//     }
+//     if(m_remoteAddress){
+//         os << " remoteAddress=" << m_remoteAddress->toString();
+//     }
+//     os << "]";
+//     return os;
+// }
 
 }

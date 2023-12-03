@@ -82,3 +82,6 @@ target_link_libraries(AddressTest01 ${LIBS})
 # Hook模块测试
 add_executable(HookTest01 Test/HookTest01.cpp)
 target_link_libraries(HookTest01 ${LIBS})
+# socket模块测试
+add_executable(SocketTest01 Test/SocketTest01.cpp)
+target_link_libraries(SocketTest01 ${LIBS})

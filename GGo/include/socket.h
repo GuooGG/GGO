@@ -296,47 +296,47 @@ protected:
     Address::ptr m_remoteAddress;
 };
 
-/// @brief SSL socket类
-class SSLSocket : public Socket{
-public:
-    using ptr = std::shared_ptr<SSLSocket>;
+// /// @brief SSL socket类
+// class SSLSocket : public Socket{
+// public:
+//     using ptr = std::shared_ptr<SSLSocket>;
 
-     /// @brief 根据传入地址类型创建TCP SSL Socket
-     static SSLSocket::ptr CreateTCP(Address::ptr addr);
+//      /// @brief 根据传入地址类型创建TCP SSL Socket
+//      static SSLSocket::ptr CreateTCP(Address::ptr addr);
 
-     /// @brief 创建IPv4的TCP SSL Socket
-     static SSLSocket::ptr Create4TCPSocket();
+//      /// @brief 创建IPv4的TCP SSL Socket
+//      static SSLSocket::ptr Create4TCPSocket();
 
-     /// @brief 创建IPv6的TCP SSL Socket
-     static SSLSocket::ptr Create6TCPSocket();
+//      /// @brief 创建IPv6的TCP SSL Socket
+//      static SSLSocket::ptr Create6TCPSocket();
 
-     /// @brief 构造函数
-     /// @param family 协议簇
-     /// @param type socket类型
-     /// @param protocol 协议
-     SSLSocket(int family, int type, int protocol = 0);
+//      /// @brief 构造函数
+//      /// @param family 协议簇
+//      /// @param type socket类型
+//      /// @param protocol 协议
+//      SSLSocket(int family, int type, int protocol = 0);
    
-    virtual Socket::ptr accept() override;
-    virtual bool bind(const Address::ptr addr) override;
-    virtual bool connect(const Address::ptr addr, uint64_t timeout = -1) override;
-    virtual bool listen(int backlog = SOMAXCONN) override;
-    virtual bool close() override;
+//     virtual Socket::ptr accept() override;
+//     virtual bool bind(const Address::ptr addr) override;
+//     virtual bool connect(const Address::ptr addr, uint64_t timeout = -1) override;
+//     virtual bool listen(int backlog = SOMAXCONN) override;
+//     virtual bool close() override;
 
-    virtual int send(const void* buffer, size_t len, int flags = 0) override;
-    virtual int send(const iovec* buffer, size_t len, int flags = 0) override;
-    virtual int sendTo(const void* buffer, size_t len, const Address::ptr dst, int flags = 0) override;
-    virtual int sendTo(const iovec* buffer, size_t len, const Address::ptr dst, int flags = 0) override;
-    virtual int recv(void* buffer, size_t len, int flags = 0) override;
-    virtual int recv(iovec* buffer, size_t len, int flags = 0) override;
-    virtual int recvFrom(void* buffer, size_t len, Address::ptr src, int flags = 0) override;
-    virtual int recvFrom(iovec* buffer, size_t len, Address::ptr src, int flags = 0) override;
+//     virtual int send(const void* buffer, size_t len, int flags = 0) override;
+//     virtual int send(const iovec* buffer, size_t len, int flags = 0) override;
+//     virtual int sendTo(const void* buffer, size_t len, const Address::ptr dst, int flags = 0) override;
+//     virtual int sendTo(const iovec* buffer, size_t len, const Address::ptr dst, int flags = 0) override;
+//     virtual int recv(void* buffer, size_t len, int flags = 0) override;
+//     virtual int recv(iovec* buffer, size_t len, int flags = 0) override;
+//     virtual int recvFrom(void* buffer, size_t len, Address::ptr src, int flags = 0) override;
+//     virtual int recvFrom(iovec* buffer, size_t len, Address::ptr src, int flags = 0) override;
 
-    virtual std::ostream& dump(std::ostream& os) const override;
-protected:
-    virtual bool init(int sock) override;
-private:
-    std::shared_ptr<SSL_CTX> m_ctx;
-    std::shared_ptr<SSL> m_ssl;
-};
+//     virtual std::ostream& dump(std::ostream& os) const override;
+// protected:
+//     virtual bool init(int sock) override;
+// private:
+//     std::shared_ptr<SSL_CTX> m_ctx;
+//     std::shared_ptr<SSL> m_ssl;
+// };
 
 }
