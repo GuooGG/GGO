@@ -18,6 +18,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 #头文件包含路径
 include_directories(GGo/include)
+include_directories(GGo/include/http)
 
 #链接库路径
 link_directories(/usr/local/lib64)

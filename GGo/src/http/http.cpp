@@ -1,4 +1,4 @@
-#include "http/http.h"
+#include "http.h"
 
 namespace GGo{
 namespace HTTP{
@@ -22,7 +22,7 @@ HTTPMethod StringToHTTPMethod(const char *str)
         return HTTPMethod::name;                   \
     }
     HTTP_METHOD_MAP(XX);
-#undef XX
+#undef XXc
     return HTTPMethod::INVALID_METHOD;
 }
 
@@ -53,9 +53,21 @@ const char *HTTPStatusToString(const HTTPStatus &status)
             return "<unknown>";
     }
 }
-}
+
+bool StringComparator::operator()(const std::string &lhs, const std::string &rhs) const
+{
+    return strcasecmp(lhs.c_str(), rhs.c_str()) < 0;
 }
 
+HTTPRequest::HTTPRequest(uint8_t version, bool auto_close)
+    :m_method(HTTPMethod::GET)
+    ,m_version(version)
+    ,m_autoClose(auto_close)
+    ,m_isWebsocket(false)
+{
+}
+}
+}
 
 
 
