@@ -165,7 +165,49 @@ struct StringComparator{
     bool operator()(const std::string& lhs, const std::string& rhs) const;
 };
 
+/// @brief 获取Map中的Key对应Value的值，转换成正确的类型并返回是否转换成功
+/// @tparam MapType Map数据结构的类型
+/// @tparam ValueType 值的类型
+/// @param map Map数据结构
+/// @param key 键
+/// @param value 保存后的值
+/// @return 是否转换成功
+template<class MapType, class ValueType>
+bool getAsCheck(const MapType& map, const std::string& key, ValueType& value, const ValueType& def = ValueType()){
+    auto it = map.find(key);
+    if(it == map.end()){
+        value = def;
+        return false;
+    }
 
+    try{
+        value = boost::lexical_cast<ValueType>(it->second);
+        return true;
+    }catch( ... ){
+        value = def;
+    }
+    return false;
+}
+
+/// @brief 获取Map中的Key对应的Value值
+/// @tparam MapType Map数据结构类型
+/// @tparam ValueType 值的类型
+/// @param map Map数据结构
+/// @param key 键
+/// @param def 默认值
+/// @return 如果键值对存在则返回正确类型的值，否则返回默认值
+template<class MapType, class ValueType>
+ValueType getAs(const MapType& map, const std::string& key, const ValueType& def = ValueType()){
+    auto it = map.find(key);
+    if(it == map.end()){
+        return def;
+    }
+    try{
+        return boost::lexical_cast<ValueType>(it->second);
+    }catch( ... ){
+    }
+    return def;
+}
 
 class HTTPResponse;
 
@@ -189,7 +231,204 @@ public:
     /// @brief 获取HTTP版本
     uint8_t getVersion() const { return m_version; }
 
+    /// @brief 返回请求路径 
+    const std::string& getPath() const { return m_path; }
+
+    /// @brief 返回请求参数 
+    const std::string& getQuery() const { return m_query; }
+
+    /// @brief 返回请求消息体 
+    const std::string& getBody() const { return m_body; }
+
+    /// @brief 返回请求头部键值映射表 
+    const MapType& getHeaders() const { return m_headers; }
+
+    /// @brief 返回请求参数键值映射表 
+    const MapType& getParams() const { return m_params; }
+
+    /// @brief 返回Cookies的键值映射表 
+    const MapType& getCookies() const { return m_cookies; }
+
+    /// @brief 设置HTTP请求方法
+    void setMethod(HTTPMethod method) { m_method = method; }
+
+    /// @brief 设置HTTP请求版本 
+    void setVersion(uint8_t version) { m_version = version; }
+
+    /// @brief 设置HTTP请求路径 
+    void setPath(const std::string& path) { m_path = path; }
+
+    /// @brief 设置HTTP请求路径 
+    void setQuery(const std::string& query) { m_query = query; }
+
+    /// @brief 设置HTTP请求的fragment 
+    void setFrgment(const std::string& fragment) { m_fragment = fragment; }
+
+    /// @brief 设置HTTP请求的消息体 
+    void setBody(const std::string& body) { m_body = body; }
+
+    /// @brief 返回是否自动关闭 
+    bool isAutoClose() const { return m_autoClose;}
+
+    /// @brief 设置是否自动关闭 
+    void setAutoClose(bool autoClose) { m_autoClose = autoClose; }
+
+    /// @brief 返回是否是websocket
+    bool isWebsocket() const { return m_isWebsocket; }
     
+    /// @brief 设置是否是websocket 
+    void setWebsocket(bool isWebsocket) { m_isWebsocket = isWebsocket; } 
+
+    /// @brief 设置HTTP请求头部键值映射表 
+    void setHeaders(const MapType& headers) { m_headers = headers; }
+
+    /// @brief 设置HTTP请求参数键值映射表 
+    void setParams(const MapType& params) { m_params = params; }
+
+    /// @brief 设置HTTP请求Cookies的键值映射表
+    void setCookies(const MapType& cookies) { m_cookies = cookies; }
+
+    /// @brief 获取HTTP请求的头部参数
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 如果对应键存在则返回对应值，不存在则返回默认值
+    std::string getHeader(const std::string& key, const std::string& def = "") const;
+    
+    /// @brief 获取HTTP请求的请求参数
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 如果存在则返回默认值，不存在则返回默认值
+    std::string getParam(const std::string& key, const std::string& def = "");
+
+    /// @brief 获取HTTP请求的Cookies参数
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 如果存在则返回默认值，不存在则返回默认值
+    std::string getCookies(const std::string& key, const std::string& def = "");
+
+    /// @brief 设置HTTP请求的头部参数
+    /// @param key 键
+    /// @param value 值
+    void setHeader(const std::string& key, const std::string& value);
+
+    /// @brief 设置HTTP请求的请求参数
+    /// @param key 键
+    /// @param value 值
+    void setParam(const std::string& key, const std::string& value);
+
+    /// @brief 设置HTTP请求的Cookies参数
+    /// @param key 键
+    /// @param value 值
+    void setCookies(const std::string& key, const std::string& value);
+
+    /// @brief 删除HTTP请求的头部参数
+    /// @param key 键
+    void delHeader(const std::string& key);
+
+    /// @brief 删除HTTP请求的请求参数
+    /// @param key 键
+    void delParam(const std::string& key);
+
+    /// @brief 删除HTTP请求的Cookies参数
+    /// @param key 键
+    void delCookies(const std::string& key);
+
+    /// @brief 判断HTTP请求的头部参数是否存在
+    /// @param key 键
+    /// @param val 如果键存在，val非空
+    /// @return 是否存在
+    bool hasHeader(const std::string& key, std::string* val = nullptr);
+    
+    /// @brief 判断HTTP请求的请求参数是否存在
+    /// @param key 键
+    /// @param val 如果键存在,val非空
+    /// @return 是否存在
+    bool hasParam(const std::string& key, std::string* val = nullptr);
+
+    /// @brief 判断HTTP请求的Cookies参数是否存在
+    /// @param key 键
+    /// @param val 如果键存在，val非空
+    /// @return 是否存在
+    bool hasCookies(const std::string& key, std::string* val = nullptr);
+
+    /// @brief 检查并获取HTTP请求的头部参数
+    /// @tparam T 值具体类型
+    /// @param key 键
+    /// @param value 返回值
+    /// @param def 默认值
+    /// @return 如果键存在并且值转换成功则返回真
+    template<class T>
+    bool getHeaderAsCheck(const std::string& key, T& value, const T& def = T()){
+        return getAsCheck(m_headers, key, value, def);
+    }
+
+    /// @brief 获取HTTP请求的头部参数
+    /// @tparam T 值具体类型
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 如果键存在并且转换成功则返回真
+    template<class T>
+    T getHeaderAs(const std::string& key, const T& def = T()){
+        return getAs(m_headers, key, def);
+    }
+
+    /// @brief 检查并获取HTTP请求的请求参数
+    /// @tparam T 值具体类型
+    /// @param key 键
+    /// @param value 值
+    /// @param def 默认值
+    /// @return 如果键存在且转换为成功则返回真
+    template<class T>
+    bool getParamAsCheck(const std::string& key, T& value, const T& def = T()){
+        initQueryParam();
+        initBodyParam();
+        return getAsCheck(m_params, key, value, def);
+    }
+
+    /// @brief 获取HTTP请求的请求参数
+    /// @tparam T 值具体类型
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 如果键存在并且转换成功则返回真
+    template<class T>
+    T getParamAs(const std::string& key, const T& def = T()){
+        initQueryParam();
+        initBodyParam();
+        return getAs(m_params, key, def);
+    }
+
+    /// @brief 检查并获取HTTP请求的Cookies参数
+    /// @tparam T 值具体类型
+    /// @param key 键
+    /// @param val 值
+    /// @param def 默认值
+    /// @return 如果键存在并且转换成功则返回真
+    template<class T>
+    bool getCookiesAsCheck(const std::string& key, T& val, const T& def = T()){
+        initCookies();
+        return getAsCheck(m_cookies, key, val, def);
+    }
+
+    template<class T>
+    T getCookiesAs(const std::string& key, const T& def = T()){
+        initCookies();
+        return getAs(m_cookies, key, def);
+    }
+
+
+    /// @brief 将HTTP请求内容序列化输出到流中
+    /// @param os 目标输出流
+    /// @return 目标输出流
+    std::ostream& dump(std::ostream& os) const;
+
+    /// @brief 将HTTP请求内容转为字符串输出
+    std::string toString() const;
+
+    void init();
+    void initParam();
+    void initQueryParam();
+    void initBodyParam();
+    void initCookies();
 private:
     // HTTP方法
     HTTPMethod m_method;
@@ -201,6 +440,21 @@ private:
     bool m_isWebsocket;
 
 
+    uint8_t m_parserParamFlag;
+    // 请求路径
+    std::string m_path;
+    // 请求参数
+    std::string m_query;
+    // 请求fragment
+    std::string m_fragment;
+    // 请求消息体
+    std::string m_body;
+    // 请求头部Map
+    MapType m_headers;
+    // 请求参数Map
+    MapType m_params;
+    // 请求Cookies Map
+    MapType m_cookies;
 };
 
 /// @brief HTTP相应封装类

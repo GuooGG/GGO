@@ -66,6 +66,13 @@ HTTPRequest::HTTPRequest(uint8_t version, bool auto_close)
     ,m_isWebsocket(false)
 {
 }
+
+std::string HTTPRequest::getHeader(const std::string &key, const std::string &def) const
+{
+    auto it = m_headers.find(key);
+    return it == m_headers.end()? def : it->second;
+}
+
 }
 }
 
