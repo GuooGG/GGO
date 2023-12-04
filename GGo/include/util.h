@@ -52,10 +52,7 @@ uint64_t getCurrentMS();
 /// @brief 获取当前时间的微秒数
 uint64_t getCurrentUS();
 
-/**
- * @brief 常用文件API类
- *
- */
+///@brief 常用文件操作辅助工具
 class FSUtil{
 public:
 
@@ -158,6 +155,23 @@ public:
 
 
 };
+
+/// @brief 常用字符串操作辅助工具
+class StringUtil{
+    static std::string format(const char* fmt, ...);
+    static std::string formatVa(const char* fmt, va_list op);
+
+    static std::string urlEncode();
+    static std::string urlDecode();
+
+    static std::string trim(const std::string& str, const std::string& delimit = " \t\r\n");
+    static std::string trimLeft(const std::string& str, const std::string& delimit = " \t\r\n");
+    static std::string trimRight(const std::string& str, const std::string& delimit = " \t\r\n");
+
+    static std::string wstringToString(const std::wstring& wstring);
+    static std::wstring stringToWstring(const std::string& string);
+};
+
 
 /// @brief 将类型转为字符串
 /// @tparam T 类型名

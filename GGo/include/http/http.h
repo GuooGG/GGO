@@ -366,7 +366,7 @@ public:
     /// @tparam T 值具体类型
     /// @param key 键
     /// @param def 默认值
-    /// @return 如果键存在并且转换成功则返回真
+    /// @return 值
     template<class T>
     T getHeaderAs(const std::string& key, const T& def = T()){
         return getAs(m_headers, key, def);
@@ -389,7 +389,7 @@ public:
     /// @tparam T 值具体类型
     /// @param key 键
     /// @param def 默认值
-    /// @return 如果键存在并且转换成功则返回真
+    /// @return 值
     template<class T>
     T getParamAs(const std::string& key, const T& def = T()){
         initQueryParam();
@@ -409,6 +409,11 @@ public:
         return getAsCheck(m_cookies, key, val, def);
     }
 
+    /// @brief 获取HTTP请求的Cookies参数
+    /// @tparam T 值具体类型
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 值
     template<class T>
     T getCookiesAs(const std::string& key, const T& def = T()){
         initCookies();
@@ -462,10 +467,118 @@ class HTTPResponse{
 public:
     using ptr = std::shared_ptr<HTTPResponse>;
     using MapType = std::map<std::string, std::string, StringComparator>;
- 
-private:
 
-};
+    /// @brief 构造函数
+    /// @param version 版本
+    /// @param auto_close 是否自动关闭
+    HTTPResponse(uint8_t version = 0x11, bool auto_close = true);
+
+    /// @brief 获取响应状态
+    HTTPStatus getStatus() const { return m_status; }
+
+    /// @brief 获取版本 
+    uint8_t getVersion() const { return m_version; }
+    
+    /// @brief 获取响应消息体
+    const std::string& getBody() const { return m_body; }
+    
+    /// @brief 获取相应原因 
+    const std::string& getReasons() const { return m_reasons; }
+
+    /// @brief 获取响应体头部键值映射表 
+    const MapType& getHeaders() const { return m_headers; }
+
+    /// @brief 设置响应状态
+    void setStatus(HTTPStatus status) { m_status = status; }
+    
+    /// @brief 设置版本 
+    void setVersion(uint8_t version) { m_version = version; }
+    
+    /// @brief 设置响应消息体
+    void setBody(const std::string& body) { m_body = body; }
+
+    /// @brief 设置响应原因 
+    void setReasons(const std::string& reasons) { m_reasons = reasons; }
+
+    /// @brief 设置响应体头部键值映射表 
+    void setHeaders(const MapType& headers) { m_headers = headers; }
+
+    /// @brief 获取是否自动关闭 
+    bool isAutoClose() const { return m_autoClose; }
+
+    /// @brief 设置是否自动关闭 
+    void setAutoClose(bool auto_close) { m_autoClose = auto_close; } 
+
+    /// @brief 获取是否是websocket 
+    bool isWebsocket() const { return m_isWebsocket; }
+
+    /// @brief 设置是否是Websocket
+    void setWebsocket(bool is_websocket) { m_isWebsocket = is_websocket;}
+
+    /// @brief 获取响应体头部参数
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 返回值
+    std::string getHeader(const std::string& key, const std::string& def = "") const;
+
+    /// @brief 设置响应体头部参数
+    /// @param key 键
+    /// @param val 值
+    void setHeader(const std::string& key, const std::string& val);
+
+    /// @brief 删除响应体头部参数
+    /// @param key 键
+    void delHeader(const std::string& key);
+
+    /// @brief 检查并获取相应头部参数
+    /// @tparam T 值类型
+    /// @param key 键
+    /// @param val 值
+    /// @param def 默认值
+    /// @return 如果键存在并且转换成功则返回真
+    template<class T>
+    bool getHeaderAsCheck(const std::string& key, T& val, const T& def = T()){
+        return getAsCheck(m_headers, key, val, def);
+    }
+
+    /// @brief 获取响应体头部参数
+    /// @tparam T 值类型
+    /// @param key 键
+    /// @param def 默认值
+    /// @return 值
+    template<class T>
+    T getHeaderAs(const std::string& key, const T& def = T()){
+        return getAs(m_headers, key, def);
+    }
+
+
+    /// @brief 将响应体内容序列化输出到流
+    /// @param os 目标流
+    /// @return 目标流
+    std::ostream& dump(std::ostream& os) const;
+
+    /// @brief 将响应体内容转换成字符串
+    std::string toString() const;
+
+private:
+    // HTTP相应状态
+    HTTPStatus m_status;
+    // HTTP版本
+    uint8_t m_version;
+    // 是否自动关闭
+    bool m_autoClose;
+    // 是否是websocket
+    bool m_isWebsocket;
+
+    // 消息响应体
+    std::string m_body;
+    // 相应原因
+    std::string m_reasons;
+    // 相应头部
+    MapType m_headers;
+    // cookies
+    std::vector<std::string> m_cookies;
+};  
 
 }
 }

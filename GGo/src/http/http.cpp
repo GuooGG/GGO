@@ -73,6 +73,94 @@ std::string HTTPRequest::getHeader(const std::string &key, const std::string &de
     return it == m_headers.end()? def : it->second;
 }
 
+std::ostream &HTTPRequest::dump(std::ostream &os) const
+{
+    os << HTTPMethodToString(m_method) << " "
+        << m_path
+        << (m_query.empty() ? "" : "?")
+        << m_query
+        << (m_fragment.empty() ? "" : "#")
+        << m_fragment;
+    os << " HTTP/" << ((uint32_t)(m_version >> 4))
+        << "."
+        << ((uint32_t)(m_version & 0x0F))
+        << "\r\n";
+    if(!m_isWebsocket){
+        os << "connection: " << (m_autoClose ? "close" : "keep_alive") << "\r\n";
+    }
+    
+    for(auto& item : m_headers){
+        if(!m_isWebsocket && strcasecmp(item.first.c_str(), "connection") == 0){
+            continue;
+        }
+        os << item.first << ": " << item.second << "\r\n";
+    }
+    
+    if(!m_body.empty()){
+        os << "connection-length: " << m_body.size() << "\r\n\r\n"
+            << m_body;
+    }else{
+        os << "\r\n";
+    }
+    return os;
+
+}
+
+std::string HTTPRequest::toString() const
+{
+    std::stringstream ss;
+    dump(ss);
+    return ss.str();
+}
+void HTTPRequest::init()
+{
+    std::string connection = getHeader("connection");
+    if(!connection.empty()){
+        if(strcasecmp(connection.c_str(), "keep-alive") == 0){
+            m_autoClose = false;
+        }else{
+            m_autoClose = true;
+        }
+    }
+}
+void HTTPRequest::initParam()
+{
+    initQueryParam();
+    initBodyParam();
+    initCookies();
+}
+void HTTPRequest::initQueryParam()
+{
+    if(m_parserParamFlag & 0x1){
+        return;
+    }
+
+    size_t pos = 0;
+    do
+    {
+        pos = m_query.find('=', pos);
+        if(pos == std::string::npos){
+            break;
+        }
+        size_t key_pos = pos;
+        pos = m_query.find('&', pos);
+
+    } while (true);
+    
+
+}
+void HTTPRequest::initBodyParam()
+{
+    if(m_parserParamFlag& 0x2){
+        return;
+    }
+}
+void HTTPRequest::initCookies()
+{
+    if(m_parserParamFlag & 0x4){
+        return;
+    }
+}
 }
 }
 

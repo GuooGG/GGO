@@ -312,5 +312,24 @@ bool FSUtil::openForWrite(std::ofstream &ofs, const std::string &filename, std::
     return ofs.is_open();
 }
 
+std::string StringUtil::format(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    std::string str = formatVa(fmt, ap);
+    va_end(ap);
+    return str;
+}
 
+std::string StringUtil::formatVa(const char *fmt, va_list op)
+{
+    char* buffer = nullptr;
+    auto len = vasprintf(&buffer, fmt, op);
+    if(len == -1){
+        return "";
+    }
+    std::string str(buffer, len);
+    free(buffer);
+    return str;
+}
 }
