@@ -228,7 +228,7 @@ bool Socket::reconnect(uint64_t timeout)
     m_localAddress.reset();
     return connect(m_remoteAddress, timeout);
 }
-//TODO::为什么这两个send哟用了不一样的io函数
+
 int Socket::send(const void *buffer, size_t len, int flags)
 {
     if(isConnected()){

@@ -11,7 +11,6 @@
 #include<memory>
 namespace GGo{
 
-//TODO::匿名命名空间的作用
 namespace{
 
 template<class T,class X,int N>

@@ -18,7 +18,7 @@
 #include"thread.h"
 
 
-//TODO:: 协程模块有严重潜在危险 ，包括但不限于多线程，use_caller = true， 内存泄漏等问题待解决
+
 namespace GGo{
 
 /**

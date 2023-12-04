@@ -85,7 +85,6 @@ std::stringstream &LogEventWrap::getSS()
     return m_event->getSS();
 }
 
-//TODO::可变参数列表函数的处理方法
 void LogEvent::format(const char *fmt, ...)
 {
 	va_list al;
@@ -192,7 +191,6 @@ public:
 		}
 	}
 	void format(std::ostream& os, Logger::ptr logger, LogLevel level, LogEvent::ptr event) override{
-		//TODO::得到时间戳转换成本地时间并格式化输出
 		struct tm tm;
 		time_t time = event->getTime();
 		localtime_r(&time,&tm);

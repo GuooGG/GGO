@@ -22,7 +22,7 @@ HTTPMethod StringToHTTPMethod(const char *str)
         return HTTPMethod::name;                   \
     }
     HTTP_METHOD_MAP(XX);
-#undef XXc
+#undef XX
     return HTTPMethod::INVALID_METHOD;
 }
 

@@ -476,7 +476,6 @@ namespace GGo
     }
     std::ostream &IPv6Address::insert(std::ostream &os) const
     {
-        // TODO::IPV6地址字符串化流程
         os << "[";
         uint16_t *addr = (uint16_t *)m_addr.sin6_addr.s6_addr;
         bool used_zeros = false;

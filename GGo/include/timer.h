@@ -111,7 +111,6 @@ private:
     // 互斥量
     RWMutexType m_mutex;
     // 定时器容器
-    // TODO:: 多模板参数的std::set使用方法
     std::set<Timer::ptr, Timer::Comparator> m_timers;
     // 是否执行onTimerInsertedAtFront()
     bool m_tickled = false;
