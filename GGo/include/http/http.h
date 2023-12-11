@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <vector>
 #include <iostream>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
@@ -429,10 +430,19 @@ public:
     /// @brief 将HTTP请求内容转为字符串输出
     std::string toString() const;
 
+    /// @brief 初始化请求体
     void init();
+    
+    /// @brief 初始化参数
     void initParam();
+
+    /// @brief 初始化请求参数
     void initQueryParam();
+
+    /// @brief 初始化body参数
     void initBodyParam();
+
+    /// @brief 初始化cookies
     void initCookies();
 private:
     // HTTP方法
@@ -551,6 +561,8 @@ public:
         return getAs(m_headers, key, def);
     }
 
+    void setCookies(const std::string& key, const std::string& val, time_t expired = 0, const std::string& path = "", 
+    const std::string& domain = "", bool secure = false);
 
     /// @brief 将响应体内容序列化输出到流
     /// @param os 目标流
@@ -579,6 +591,19 @@ private:
     // cookies
     std::vector<std::string> m_cookies;
 };  
+
+/// @brief 流式输出HTTP请求内容
+/// @param os 目标输出流
+/// @param request HTTP请求体
+/// @return 目标输出流
+std::ostream& operator<<(std::ostream& os, const HTTPRequest& request);
+
+/// @brief 流式输出HTTP相应内容
+/// @param os 目标输出流
+/// @param response HTTP响应体
+/// @return 目标输出流
+std::ostream& operator<<(std::ostream& os, const HTTPResponse& response);
+
 
 }
 }

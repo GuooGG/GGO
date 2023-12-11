@@ -8,18 +8,19 @@
  * 
  */
 #pragma once
-#include<pthread.h>
-#include<fstream>
-#include<string>
-#include<vector>
-#include<sys/types.h>
-#include<stdint.h>
-#include<sys/syscall.h>
-#include<unistd.h>
-#include<sys/stat.h>
-#include<dirent.h>
-#include<string.h>
-#include<cxxabi.h>
+#include <cxxabi.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <yaml-cpp/yaml.h>
+#include <iostream>
+#include <boost/lexical_cast.hpp>
 
 
 
@@ -156,13 +157,15 @@ public:
 
 };
 
+// TODO:: 完善接口注释
 /// @brief 常用字符串操作辅助工具
 class StringUtil{
+public:
     static std::string format(const char* fmt, ...);
     static std::string formatVa(const char* fmt, va_list op);
 
-    static std::string urlEncode();
-    static std::string urlDecode();
+    static std::string urlEncode(const std::string& str, bool space_as_plus = true);
+    static std::string urlDecode(const std::string& str, bool sapce_as_plus = true);
 
     static std::string trim(const std::string& str, const std::string& delimit = " \t\r\n");
     static std::string trimLeft(const std::string& str, const std::string& delimit = " \t\r\n");
