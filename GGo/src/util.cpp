@@ -74,6 +74,25 @@ std::string backTraceToString(size_t size, int skip, const std::string &prefix)
     return ss.str();
 }
 
+std::string TimeToStr(time_t ts, const std::string &format)
+{
+    struct tm tm;
+    localtime_r(&ts, &tm);
+    char buf[64];
+    strftime(buf, sizeof(buf), format.c_str(), &tm);
+    return buf;
+}
+
+time_t StrToTime(const char *str, const char *format)
+{
+    struct tm tm;
+    memset(&tm, 0, sizeof(tm));
+    if(!strptime(str, format, &tm)){
+        return 0;
+    }
+    return mktime(&tm);
+}
+
 uint64_t getCurrentMS()
 {
     struct timeval tv;

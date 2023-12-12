@@ -332,6 +332,44 @@ HTTPResponse::HTTPResponse(uint8_t version, bool auto_close)
 {
     
 }
+std::string HTTPResponse::getHeader(const std::string &key, const std::string &def) const
+{
+    auto it = m_headers.find(key);
+    return it == m_headers.end() ? def : it->second;
+}
+void HTTPResponse::setHeader(const std::string &key, const std::string &val)
+{
+    m_headers[key] = val;
+}
+void HTTPResponse::delHeader(const std::string &key)
+{
+    m_headers.erase(key);
+}
+void HTTPResponse::setRedirect(const std::string &url)
+{
+    m_status = HTTPStatus::FOUND;
+    setHeader("location", url);
+}
+
+void HTTPResponse::setCookie(const std::string &key, const std::string &val, time_t expired, const std::string &path, const std::string &domain, bool secure)
+{
+    std::stringstream ss;
+    ss << key << "=" << val;
+    if(expired > 0) {
+        ss << ";expires=" << GGo::TimeToStr(expired, "%a, %d %b %Y %H:%M:%S") << " GMT";
+    }
+    if(!domain.empty()){
+        ss << ";domain=" << domain;
+    }
+    if(!path.empty()) {
+        ss << ";path=" << path;
+    }
+    if(secure) {
+        ss << ";secure";
+    }
+    m_cookies.push_back(ss.str());
+}
+
 std::ostream &HTTPResponse::dump(std::ostream &os) const
 {
     os << "HTTP/"

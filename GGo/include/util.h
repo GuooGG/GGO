@@ -45,7 +45,15 @@ void backTrace(std::vector<std::string>& bt, int size, int skip = 1);
 /// @param prefix 调用栈信息前缀
 std::string backTraceToString(size_t size = 100 ,int skip = 2, const std::string& prefix = "");
 
+/// @brief 将时间结构体转换为指定格式字符串
+/// @param ts 时间结构体
+/// @param format 格式
+std::string TimeToStr(time_t ts = time(0), const std::string& format = "%Y-%m-%d %H:%M:%S");
 
+/// @brief 将指定格式的时间字符串转换为结构体
+/// @param str 时间字符串
+/// @param format 格式
+time_t StrToTime(const char* str, const char* format = "%Y-%m-%d %H:%M:%S");
 
 /// @brief 返回当前时间的毫秒数
 uint64_t getCurrentMS();

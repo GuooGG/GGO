@@ -561,8 +561,19 @@ public:
         return getAs(m_headers, key, def);
     }
 
-    void setCookies(const std::string& key, const std::string& val, time_t expired = 0, const std::string& path = "", 
-    const std::string& domain = "", bool secure = false);
+    /// @brief 设置重定向
+    /// @param url 重定向URL
+    void setRedirect(const std::string& url);
+
+    /// @brief 设置cookie
+    /// @param key 
+    /// @param val 
+    /// @param expired 
+    /// @param path 
+    /// @param domain 
+    /// @param secure 
+    void setCookie(const std::string& key, const std::string& val, time_t expired = 0, const std::string& path = "", 
+                const std::string& domain = "", bool secure = false);
 
     /// @brief 将响应体内容序列化输出到流
     /// @param os 目标流
