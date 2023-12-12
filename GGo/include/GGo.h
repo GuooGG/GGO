@@ -12,6 +12,7 @@
 #include"bytearray.h"
 #include"config.h"
 #include"endianParser.h"
+#include"fdManager.h"
 #include"fiber.h"
 #include"hook.h"
 #include"ioScheduler.h"
@@ -27,3 +28,4 @@
 #include"util.h"
 
 #include "http/http.h"
+#include "http/httpParser.h"
