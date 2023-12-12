@@ -21,9 +21,29 @@ void test_status_to_string(){
     LOG << GGo::HTTP::HTTPStatusToString(status);
 }
 
+void test_request(){
+    GGo::HTTP::HTTPRequest::ptr req(new GGo::HTTP::HTTPRequest);
+    req->setHeader("host", "www.inkgocloud.cn");
+    req->setBody("hello ggo");
+    req->dump(std::cout) << std::endl;
+}
+
+void test_response(){
+    GGo::HTTP::HTTPResponse::ptr rsp(new GGo::HTTP::HTTPResponse);
+    rsp->setHeader("X-X", "ggo");
+    rsp->setBody("hello ggo");
+    rsp->setStatus((GGo::HTTP::HTTPStatus)400);
+    rsp->setAutoClose(false);
+    rsp->setCookie("12","34");
+
+    rsp->dump(std::cout) << std::endl;
+}
+
 int main(){
-    test_method_to_string();
-    test_string_to_method();
-    test_status_to_string();
+    // test_method_to_string();
+    // test_string_to_method();
+    // test_status_to_string();
+    // test_request();
+    test_response();
     return 0;
 }
