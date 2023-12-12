@@ -247,7 +247,7 @@ void HTTPRequest::initQueryParam()
         size_t key_pos = pos;
         pos = m_query.find('&', pos);
 
-        m_params.insert(std::make_pair(m_query.substr(last, key_pos - last), GGo::StringUtil::urlDecode(m_body.substr(key_pos + 1, pos - key_pos - 1))));
+        m_params.insert(std::make_pair(m_query.substr(last, key_pos - last), GGo::StringUtil::urlDecode(m_query.substr(key_pos + 1, pos - key_pos - 1))));
         if(pos == std::string::npos){
             break;
         }
@@ -268,19 +268,19 @@ void HTTPRequest::initBodyParam()
         m_parserParamFlag |= 0x2;
         return;
     }
-    //TODO:: fix this
+
     size_t pos = 0;
     do
     {
         size_t last = pos;
-        pos = m_query.find('=', pos);
+        pos = m_body.find('=', pos);
         if(pos == std::string::npos){
             break;
         }
         size_t key_pos = pos;
-        pos = m_query.find('&', pos);
+        pos = m_body.find('&', pos);
 
-        m_params.insert(std::make_pair(m_query.substr(last, key_pos - last), GGo::StringUtil::urlDecode(m_body.substr(key_pos + 1, pos - key_pos - 1))));
+        m_params.insert(std::make_pair(m_body.substr(last, key_pos - last), GGo::StringUtil::urlDecode(m_body.substr(key_pos + 1, pos - key_pos - 1))));
         if(pos == std::string::npos){
             break;
         }
@@ -297,24 +297,31 @@ void HTTPRequest::initCookies()
         return;
     }
 
-    //TODO:: fix this
+    std::string cookie = getHeader("cookie");
+    if(cookie.empty()){
+        m_parserParamFlag |= 0x4;
+        return;
+    }
+
     size_t pos = 0;
     do
     {
         size_t last = pos;
-        pos = m_query.find('=', pos);
+        pos = cookie.find('=', pos);
         if(pos == std::string::npos){
             break;
         }
         size_t key_pos = pos;
-        pos = m_query.find('&', pos);
+        pos = cookie.find(';', pos);
 
-        m_params.insert(std::make_pair(m_query.substr(last, key_pos - last), GGo::StringUtil::urlDecode(m_body.substr(key_pos + 1, pos - key_pos - 1))));
+        m_cookies.insert(std::make_pair(GGo::StringUtil::trim(cookie.substr(last, key_pos - last)), GGo::StringUtil::urlDecode(cookie.substr(key_pos + 1, pos - key_pos - 1))));
         if(pos == std::string::npos){
             break;
         }
         pos++;
     } while (true);
+    
+    m_parserParamFlag |= 0x4;
 
 }
 HTTPResponse::HTTPResponse(uint8_t version, bool auto_close)
