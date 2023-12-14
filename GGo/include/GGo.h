@@ -14,6 +14,7 @@
 #include"endianParser.h"
 #include"fdManager.h"
 #include"fiber.h"
+#include"TCPSever.h"
 #include"hook.h"
 #include"ioScheduler.h"
 #include"logSystem.h"

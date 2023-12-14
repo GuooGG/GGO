@@ -89,3 +89,6 @@ target_link_libraries(SocketTest01 ${LIBS})
 # http模块测试
 add_executable(HTTPTest01 Test/HTTPTest01.cpp)
 target_link_libraries(HTTPTest01 ${LIBS})
+# TCPSever模块测试
+add_executable(TCPSeverTest01 Test/TCPSeverTest01.cpp)
+target_link_libraries(TCPSeverTest01 ${LIBS})
