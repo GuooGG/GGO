@@ -314,4 +314,35 @@ public:
     void unlock(){}
 
 };
+
+/// @brief 原子锁
+class CASLock : nonCopyable{
+public:
+    using Lock = ScopedLock<CASLock>;
+
+    /// @brief 构造函数
+    CASLock(){
+        m_mutex.clear();
+    }
+
+    /// @brief 析构函数
+    ~CASLock(){
+
+    }
+
+    /// @brief 上锁
+    void lock(){
+        while(std::atomic_flag_test_and_set_explicit(&m_mutex, std::memory_order_acquire));
+    }
+
+    /// @brief 解锁
+    void unlock(){
+        std::atomic_flag_clear_explicit(&m_mutex, std::memory_order_relaxed);
+    }
+
+private:
+    // 原子状态
+    volatile std::atomic_flag m_mutex;
+};
+
 }

@@ -58,15 +58,15 @@ private:
 	/// @brief 线程执行
 	static void* run(void* arg);
 private:
-	/// @brief 线程id
+	// 线程id
 	pid_t m_id = -1;
-	/// @brief 线程
+	// 线程
 	pthread_t m_thread = 0;
-	/// @brief 线程工作内容
+	// 线程工作内容
 	std::function<void()> m_cb;
-	/// @brief 线程名称
+	// 线程名称
 	std::string m_name;
-	/// @brief 信号量
+	// 信号量
 	Semaphore m_semaphore;
 
 };

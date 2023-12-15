@@ -72,7 +72,7 @@ void* Thread::run(void* arg){
     thread->m_id = GGo::GetThreadID();
 
     pthread_setname_np(pthread_self(),thread->m_name.substr(0,15).c_str());
-
+    
     std::function<void()> cb;
     cb.swap(thread->m_cb);
 
