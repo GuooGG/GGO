@@ -23,6 +23,7 @@
 #include"nonCopyable.h"
 #include"scheduler.h"
 #include"socket.h"
+#include"TCPSever.h"
 #include"singleton.h"
 #include"thread.h"
 #include"timer.h"

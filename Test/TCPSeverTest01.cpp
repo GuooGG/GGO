@@ -21,13 +21,24 @@ void test_conf(){
     std::string str2;
     str2 = GGo::LexicalCast<GGo::TCPSeverConf, std::string>()(conf2);
     GGO_LOG_DEBUG(GGO_LOG_ROOT()) << std::endl << str2;
+    return;
+}
+
+void test_toString(){
+    auto addr = GGo::Address::LookupAny("0.0.0.0:114");
+    std::vector<GGo::Address::ptr> addrs;
+    addrs.push_back(addr);
+    GGo::TCPSever::ptr tcp_sever(new GGo::TCPSever());
+    std::vector<GGo::Address::ptr> fails;
+    tcp_sever->bind(addrs, fails);
+    GGO_LOG_DEBUG(GGO_LOG_ROOT()) << std::endl <<tcp_sever->toString("*");
+
 
 
 }
 
-
-
 int main(){
-    test_conf();
+    // test_conf();
+    test_toString();
     return 0;
 }

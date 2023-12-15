@@ -149,7 +149,7 @@ bool Socket::bind(const Address::ptr addr)
 
 bool Socket::listen(int backlog)
 {
-    if(isValid()){
+    if(!isValid()){
         GGO_LOG_ERROR(g_logger) << "listen error sock=-1";
         return false;
     }
@@ -548,5 +548,10 @@ std::string Socket::toString() const
 //     os << "]";
 //     return os;
 // }
+
+std::ostream &operator<<(std::ostream &os, const Socket &sock)
+{
+    return sock.dump(os);
+}
 
 }

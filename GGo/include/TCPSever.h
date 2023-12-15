@@ -130,13 +130,24 @@ public:
     virtual ~TCPSever();
 
 
+    /// @brief 绑定地址
+    /// @param addr 待绑定的地址
+    /// @param ssl 是否使用SSlSocket
+    /// @return 是否绑定成功
     virtual bool bind(GGo::Address::ptr addr, bool ssl = false);
 
 
+    /// @brief 批量绑定地址
+    /// @param addrs 待绑定的地址数组
+    /// @param fails 绑定失败的地址数组
+    /// @param ssl 是否使用SSLScocket
+    /// @return 是否绑定成功
     virtual bool bind(const std::vector<Address::ptr>& addrs
                     , std::vector<Address::ptr>& fails,
                     bool ssl = false);
 
+    /// @brief 启动服务
+    /// @pre 需要bind成功
     virtual bool start();
 
     virtual void stop();
@@ -159,6 +170,28 @@ public:
     /// @brief 获取被监听的socks数组 
     std::vector<Socket::ptr> getSocks() const { return m_socks; }
 
+    /// @brief 获取TCPSever配置项结构体 
+    TCPSeverConf::ptr getConf() const { return m_conf;}
+
+    /// @brief 设置TCPSever配置
+    /// @param conf 新配置项结构体
+    void setConf(TCPSeverConf::ptr conf) { m_conf = conf; }
+    void setConf(const TCPSeverConf& conf);
+
+    /// @brief 将TCPSever对象转换为字符串输出
+    /// @param prefix 输出前缀，默认为空
+    virtual std::string toString(const std::string& prefix = "");
+
+protected:
+    
+    /// @brief 处理客户端连接
+    /// @param cilent 客户端socket
+    virtual void handleCilent(Socket::ptr cilent);
+
+    /// @brief 开始接受连接
+    /// @param sock 
+    virtual void startAccept(Socket::ptr sock);
+
 private:
     // 被监听的sock数组
     std::vector<Socket::ptr> m_socks;
@@ -175,6 +208,9 @@ private:
     // 服务器是否停止
     bool m_isStop;
     bool m_ssl;
+
+    // TCPSever配置结构体
+    TCPSeverConf::ptr m_conf;
 };
 
 

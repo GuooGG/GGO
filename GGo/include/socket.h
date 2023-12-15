@@ -339,4 +339,10 @@ protected:
 //     std::shared_ptr<SSL> m_ssl;
 // };
 
+/// @brief 流式输出socket信息
+/// @param os 目标输出流
+/// @param sock socket对象
+/// @return 目标输出流
+std::ostream& operator<<(std::ostream& os, const Socket& sock);
+
 }
