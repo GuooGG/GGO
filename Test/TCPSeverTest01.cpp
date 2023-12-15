@@ -24,6 +24,7 @@ void test_conf(){
     return;
 }
 
+/// @brief 测试服务器基本连接功能
 void test_sever(){
     auto addr = GGo::Address::LookupAny("localhost:114");
     std::vector<GGo::Address::ptr> addrs;
