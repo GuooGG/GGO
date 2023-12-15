@@ -60,7 +60,7 @@ Fiber::Fiber(mission cb, size_t stacksize, bool use_scheduler)
     if(getcontext(&m_ctx)){
         GGO_ASSERT2(false,"getcontext");
     }
-    //使用了调度器就回到调度协程，没有使用调度器回到主协程
+
     m_ctx.uc_link = nullptr;
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;

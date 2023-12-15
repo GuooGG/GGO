@@ -14,6 +14,8 @@
 #include<ucontext.h>
 
 // TODO:: 协程ID没有做回收，可以用最小堆
+// TODO:: 协程的恢复可能有内存安全问题
+// TODO:: 第一个主协程的创建能不能不让用户完成
 namespace GGo{
 
 /// @brief  协程调度器
