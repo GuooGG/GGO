@@ -31,6 +31,7 @@
 
 #include "http/http.h"
 #include "http/httpParser.h"
+#include "http/httpSession.h"
 
 #include "streams/stream.h"
 #include "streams/socketStream.h"
