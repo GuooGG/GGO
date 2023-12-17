@@ -55,7 +55,7 @@ int type = 1;
 void run_echo_sever(){
     GGO_LOG_INFO(g_logger) << "sever type=" << type;
     EchoSever::ptr es(new EchoSever(type));
-    auto addr = GGo::Address::LookupAny("localhost:1145");
+    auto addr = GGo::Address::LookupAny("0.0.0.0:1145");
     while(!es->bind(addr)){
         sleep(1);
     }
