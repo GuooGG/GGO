@@ -46,7 +46,7 @@ public:
     ///        @retval >0 实际接收到的数据长度
     ///        @retval =0 被关闭
     ///        @retval <0 出现错误
-    virtual int readFixSize(void* buffer, size_t len) = 0;
+    virtual int readFixSize(void* buffer, size_t len);
 
     /// @brief 读固定长度的数据数据 
     /// @param ba 接收数据的字节数组
@@ -55,7 +55,7 @@ public:
     ///        @retval >0 实际接收到的数据长度
     ///        @retval =0 被关闭
     ///        @retval <0 出现错误
-    virtual int readFixSize(ByteArray::ptr ba, size_t len) = 0;
+    virtual int readFixSize(ByteArray::ptr ba, size_t len);
 
     /// @brief 写数据
     /// @param buffer 待写入数据的内存
@@ -82,7 +82,7 @@ public:
     ///        @retval >0 实际写入的数据长度
     ///        @retval =0 被关闭
     ///        @retval <0 出现错误
-    virtual int writeFixSize(const void* buffer, size_t len) = 0;
+    virtual int writeFixSize(const void* buffer, size_t len);
 
     /// @brief 写入固定长度的数据
     /// @param buffer 待写入数据的字节数组
@@ -91,10 +91,10 @@ public:
     ///        @retval >0 实际写入的数据长度
     ///        @retval =0 被关闭
     ///        @retval <0 出现错误
-    virtual int writeFixSize(ByteArray::ptr ba, size_t len) = 0;
+    virtual int writeFixSize(ByteArray::ptr ba, size_t len);
 
     /// @brief 关闭流
     virtual void close() = 0;
-}
+};
 
 }
