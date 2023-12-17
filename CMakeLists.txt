@@ -19,6 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 #头文件包含路径
 include_directories(GGo/include)
 include_directories(GGo/include/http)
+include_directories(GGo/include/streams)
 include_directories(mongrel)
 
 #链接库路径
