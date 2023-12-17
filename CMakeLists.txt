@@ -92,3 +92,9 @@ target_link_libraries(HTTPTest01 ${LIBS})
 # TCPSever模块测试
 add_executable(TCPSeverTest01 Test/TCPSeverTest01.cpp)
 target_link_libraries(TCPSeverTest01 ${LIBS})
+
+
+
+# echoTCP服务器样本
+add_executable(ECHOSever examples/ECHOSever.cpp)
+target_link_libraries(ECHOSever ${LIBS})
