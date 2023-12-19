@@ -44,8 +44,28 @@ HTTPRequest::ptr HTTPSession::recvRequest()
     
     int64_t content_length = parser->getContentLength();
     
-    //TODO:: 获取消息体
+    if(content_length > 0){
+        std::string body;
+        body.resize(content_length);
 
+        int len = 0;
+        if(len >= offset){
+            memcpy(&body[0], data, offset);
+            len = offset;
+        }else{
+            memcpy(&body[0], data, content_length);
+            len = content_length;
+        }
+        content_length -= offset;
+        if(content_length  > 0){
+            if(readFixSize(&body[len], content_length) <= 0){
+                close();
+                return nullptr;
+            }
+        }
+    }
+
+    parser->getData()->init();
     return parser->getData();
 
 }
