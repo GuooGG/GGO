@@ -41,7 +41,7 @@ uint64_t FdCtx::getTimeout(int type)
         return m_sendTimeout;
     }
 }
-//TODO::没看懂
+
 bool FdCtx::init()
 {
     if(m_isInited){

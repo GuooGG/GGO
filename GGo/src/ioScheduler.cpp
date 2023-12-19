@@ -322,7 +322,6 @@ void IOScheduler::idle()
         for(int i = 0; i < rt; i++){
             epoll_event& event = events[i];
             if(event.data.fd == m_tickleFds[0]){
-                // TODO::这段是在做什么
                 uint8_t dummy[256];
                 while(read(m_tickleFds[0],dummy,sizeof(dummy)) > 0);
                 continue;
