@@ -192,7 +192,7 @@ protected:
     /// @param sock 
     virtual void startAccept(Socket::ptr sock);
 
-private:
+protected:
     // 被监听的sock数组
     std::vector<Socket::ptr> m_socks;
     IOScheduler* m_worker;

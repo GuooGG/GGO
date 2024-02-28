@@ -1,7 +1,8 @@
 #include "http/httpSever.h"
 #include "logSystem.h"
 #include "httpSever.h"
-
+#include "http/servlets/configServlet.h"
+#include "http/servlets/statusServlet.h"
 namespace GGo{
 namespace HTTP{
 
@@ -17,7 +18,8 @@ HTTPSever::HTTPSever(bool keepalive,
     m_dispatch.reset(new ServletDispatch);
 
     m_type = "http";
-    // TODO::为分发器添加servlet
+     m_dispatch->addServlet("/_/config", servlet::ptr(new ConfigServlet));
+     m_dispatch->addServlet("/_/status", servlet::ptr(new statusServlet));
 }
 
 void HTTPSever::setName(const std::string &name)

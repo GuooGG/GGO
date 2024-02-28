@@ -36,5 +36,9 @@
 #include "http/servlet.h"
 #include "http/httpSever.h"
 
+#include "http/servlets/configServlet.h"
+#include "http/servlets/statusServlet.h"
+
+
 #include "streams/stream.h"
 #include "streams/socketStream.h"
