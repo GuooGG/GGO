@@ -99,3 +99,6 @@ target_link_libraries(TCPSeverTest01 ${LIBS})
 # echoTCP服务器样本
 add_executable(ECHOSever examples/ECHOSever.cpp)
 target_link_libraries(ECHOSever ${LIBS})
+# HTTP服务器demo
+add_executable(HTTPSever examples/HTTPSever.cpp)
+target_link_libraries(HTTPSever ${LIBS})

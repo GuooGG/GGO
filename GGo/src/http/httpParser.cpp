@@ -23,10 +23,10 @@ static GGo::ConfigVar<uint64_t>::ptr g_http_response_max_body_size =
             GGo::Config::Lookup("http.response.max_body_size",
                         (uint64_t)(64 * 1024 * 1024), "http response max body size");
 
-static uint64_t s_http_request_buffer_size = 0;
-static uint64_t s_http_request_max_body_size = 0;
-static uint64_t s_http_response_buffer_size = 0;
-static uint64_t s_http_response_max_body_size = 0;
+static uint64_t s_http_request_buffer_size = 4096;
+static uint64_t s_http_request_max_body_size = 4096;
+static uint64_t s_http_response_buffer_size = 4096;
+static uint64_t s_http_response_max_body_size = 4096;
 
 void on_request_method(void* data, const char* at, size_t len){
     HTTPRequestParser* parser = static_cast<HTTPRequestParser*>(data);

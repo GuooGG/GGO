@@ -19,24 +19,23 @@ HTTPRequest::ptr HTTPSession::recvRequest()
     char* data = buffer.get();
     int offset = 0;
     do{
-        int recved_length = read(data + offset, buffer_size - offset);
-        if(recved_length < 0){
+        int len = read(data + offset, buffer_size - offset);
+        if(len <= 0) {
             close();
             return nullptr;
         }
-        recved_length += offset;
-        size_t parsed_length = parser->excute(data, recved_length);
-        if(parser->hasError()){
+        len += offset;
+        size_t nparse = parser->excute(data, len);
+        if(parser->hasError()) {
             close();
             return nullptr;
         }
-
-        offset = recved_length - parsed_length;
-        if(offset == (int)buffer_size){
+        offset = len - nparse;
+        if(offset == (int)buffer_size) {
             close();
             return nullptr;
         }
-        if(parser->isFinished()){
+        if(parser->isFinished()) {
             break;
         }
 
