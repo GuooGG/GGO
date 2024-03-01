@@ -37,7 +37,7 @@ void run(){
 }
 
 int main(int argc, char** argv){
-    GGo::IOScheduler iom(1);
+    GGo::IOScheduler iom(4);
     worker.reset(new GGo::IOScheduler(4, false));
     iom.schedule(run);
     return 0;
