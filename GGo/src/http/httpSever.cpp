@@ -42,7 +42,7 @@ void HTTPSever::handleCilent(Socket::ptr cilent)
         }
 
         HTTPResponse::ptr rsp(new HTTPResponse(req->getVersion(),
-                                                req->isAutoClose() || m_isKeepAlive));
+                                                req->isAutoClose() || !m_isKeepAlive));
         rsp->setHeader("Sever", getName());
         m_dispatch->handle(req,rsp, session);
         session->sendResponse(rsp);
