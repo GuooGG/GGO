@@ -27,9 +27,11 @@
 #include"singleton.h"
 #include"thread.h"
 #include"timer.h"
+#include"uri.h"
 #include"util.h"
 
 #include "http/http.h"
+#include "http/httpConnection.h"
 #include "http/httpParser.h"
 #include "http/httpSession.h"
 #include "http/httpSever.h"
