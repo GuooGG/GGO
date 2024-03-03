@@ -73,6 +73,18 @@ class HTTPConnectionPool;
 class HTTPConnection : public SocketStream{
 friend class HTTPConnectionPool;
 public:
+    using ptr = std::shared_ptr<HTTPConnection>;
+
+    /// @brief 发送HTTP GET请求
+    /// @param url 请求的url字符串
+    /// @param timeout_ms 超时时间
+    /// @param headers HTTP请求头部参数
+    /// @param body 请求消息体
+    /// @return HTTP结果消息体
+    static HTTPResult::ptr sendGet(const std::string& url, uint64_t timeout_ms 
+                                    , const std::map<std::string, std::string>& headers = {}
+                                    , const std::string& body = "");
+    
 
 
 };
