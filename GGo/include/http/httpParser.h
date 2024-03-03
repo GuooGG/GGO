@@ -10,8 +10,8 @@
 
 #pragma once
 #include "http.h"
-#include "../../../mongrel/http11_parser.h"
-#include "../../../mongrel/httpclient_parser.h"
+#include "http/http11_parser.h"
+#include "http/httpclient_parser.h"
 
 
 namespace GGo{
