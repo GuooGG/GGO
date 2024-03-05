@@ -48,7 +48,7 @@ public:
     const std::string& getHost() const { return m_host; }
 
     /// @brief 返回path 
-    const std::string& getPath() const { return m_path; }
+    const std::string& getPath() const;
 
     /// @brief 返回query 
     const std::string& getQuery() const { return m_query; }
