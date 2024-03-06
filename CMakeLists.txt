@@ -27,17 +27,25 @@ link_directories(/usr/local/lib64)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 #yaml-cpp动态库
 find_library(yaml-cpp /usr/local/lib64/libyaml-cpp.so)
+find_library(zlib-cpp /usr/lib64/pkgconfig/zlib.pc )
 
 #源码文件
 file(GLOB_RECURSE GGO_LIB_SRC ./GGo/src/*.cpp)
 #制作GGo动态库
 add_library(GGO_LIB SHARED ${GGO_LIB_SRC})
 
+
+find_package(ZLIB REQUIRED)
+if(ZLIB_FOUND)
+    include_directories(${ZLIB_INCLUDE_DIR})
+endif()
+
 set(LIBS 
         GGO_LIB
         dl
         pthread
         yaml-cpp
+        ${ZLIB_LIBRARIES}
 )
 
 message(STATUS ${PROJECT_BINARY_DIR})
