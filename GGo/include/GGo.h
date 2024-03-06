@@ -44,3 +44,4 @@
 
 #include "streams/stream.h"
 #include "streams/socketStream.h"
+#include "streams/zlibStream.h"

@@ -2,6 +2,7 @@
 #include "httpConnection.h"
 #include"http/httpParser.h"
 #include "logSystem.h"
+#include "streams/zlibStream.h"
 
 namespace GGo{ 
 namespace HTTP{
@@ -222,12 +223,12 @@ if(client_parser.chunked) {
         GGO_LOG_DEBUG(g_logger) << "content_encoding: " << content_encoding
             << " size=" << body.size();
         if(strcasecmp(content_encoding.c_str(), "gzip") == 0) {
-            auto zs = ZlibStream::CreateGzip(false);
+            auto zs = zlibStream::createGzip(false);
             zs->write(body.c_str(), body.size());
             zs->flush();
             zs->getResult().swap(body);
         } else if(strcasecmp(content_encoding.c_str(), "deflate") == 0) {
-            auto zs = ZlibStream::CreateDeflate(false);
+            auto zs = zlibStream::createDeflate(false);
             zs->write(body.c_str(), body.size());
             zs->flush();
             zs->getResult().swap(body);
